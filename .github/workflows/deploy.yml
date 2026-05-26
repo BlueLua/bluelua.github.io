@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - docs/**
+      - vendor/**
+      - .gitmodules
       - .github/workflows/deploy.yml
   workflow_dispatch:
 
@@ -29,6 +31,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          submodules: recursive
 
       - name: Setup Node
         uses: actions/setup-node@v6
