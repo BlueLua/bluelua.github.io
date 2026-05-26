@@ -1,0 +1,89 @@
+:root {
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(
+    120deg,
+    #5f8fd1 30%,
+    #1f4594
+  );
+  --vp-home-hero-image-background-image: linear-gradient(
+    -45deg,
+    #5f8fd1 50%,
+    #1f4594 50%
+  );
+  --vp-home-hero-image-filter: blur(44px);
+
+  --vp-font-family-mono:
+    "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --vp-home-hero-image-filter: blur(56px);
+  }
+}
+
+@media (min-width: 960px) {
+  :root {
+    --vp-home-hero-image-filter: blur(58px);
+  }
+}
+
+.VPHero .VPImage {
+  filter: drop-shadow(-2px 4px 6px rgba(0, 0, 0, 0.2));
+  padding: 18px;
+}
+
+/* Remove underline from links in docs content */
+.VPDoc a {
+  text-decoration: none;
+}
+
+/* Make inline code use normal text color (including callouts/admonitions) */
+.VPDoc :not(pre) > code,
+.VPDoc .custom-block :not(pre) > code,
+.VPDoc .vp-admonition :not(pre) > code,
+.VPDoc blockquote :not(pre) > code {
+  color: var(--vp-c-text-1);
+  background-color: var(--vp-c-default-soft);
+}
+
+/* Keep inline code link color when code is clickable */
+.VPDoc a > code,
+.VPDoc a:hover > code,
+.VPDoc a:visited > code,
+.VPDoc a:active > code {
+  color: var(--vp-c-brand-1) !important;
+}
+
+/* Add icons to VitePress/GitHub-style alert callouts */
+.VPDoc .custom-block.github-alert .custom-block-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.VPDoc .custom-block.note .custom-block-title::before {
+  content: "💡";
+}
+
+.VPDoc .custom-block.info .custom-block-title::before {
+  content: "ℹ️";
+}
+
+.VPDoc .custom-block.tip .custom-block-title::before {
+  content: "✅";
+}
+
+.VPDoc .custom-block.important .custom-block-title::before {
+  content: "❗";
+}
+
+.VPDoc .custom-block.warning .custom-block-title::before {
+  content: "⚠️";
+}
+
+.VPDoc .custom-block.danger .custom-block-title::before,
+.VPDoc .custom-block.caution .custom-block-title::before {
+  content: "❌";
+}
