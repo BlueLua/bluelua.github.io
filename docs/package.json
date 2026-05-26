@@ -1,0 +1,15 @@
+{
+  "name": "bluelua-github-io",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev",
+    "sync:org-docs": "node ../scripts/sync-org-docs.mjs",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "1.6.4",
+    "vitepress-plugin-group-icons": "^1.7.5"
+  }
+}
