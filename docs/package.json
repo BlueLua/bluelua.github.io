@@ -4,7 +4,6 @@
   "type": "module",
   "scripts": {
     "dev": "vitepress dev",
-    "sync:org-docs": "node ../scripts/sync-org-docs.mjs",
     "build": "vitepress build",
     "preview": "vitepress preview"
   },
