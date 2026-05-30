@@ -1,9 +1,12 @@
 [submodule "vendor/evdev"]
 	path = vendor/evdev
 	url = git@github.com:BlueLua/evdev.git
+	branch = main
 [submodule "vendor/timeutil"]
 	path = vendor/timeutil
 	url = git@github.com:BlueLua/timeutil.git
+	branch = main
 [submodule "vendor/tty"]
 	path = vendor/tty
 	url = git@github.com:BlueLua/tty.git
+	branch = main
