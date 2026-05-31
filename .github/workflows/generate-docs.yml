@@ -1,0 +1,70 @@
+name: Generate docs
+
+on:
+  workflow_call:
+    inputs:
+      types-dir:
+        description: "Directory containing LuaLS type annotation files."
+        required: false
+        type: string
+        default: types
+      output-dir:
+        description: "Directory where generated markdown docs are written."
+        required: false
+        type: string
+        default: docs
+      branch:
+        description: "Branch used for the generated docs pull request."
+        required: false
+        type: string
+        default: automation/generate-docs
+      title:
+        description: "Generated docs pull request title."
+        required: false
+        type: string
+        default: "docs: generate API docs"
+      commit-message:
+        description: "Generated docs commit message."
+        required: false
+        type: string
+        default: "docs: generate API docs"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Checkout docs generator
+        run: git clone --depth 1 https://github.com/BlueLua/bluelua.github.io.git "${RUNNER_TEMP}/docgen"
+
+      - name: Setup LuaJIT
+        uses: leafo/gh-actions-lua@v13
+        with:
+          luaVersion: "luajit"
+
+      - name: Generate docs
+        run: luajit "${RUNNER_TEMP}/docgen/scripts/generate-api-docs.lua" "${TYPES_DIR}" "${OUTPUT_DIR}"
+        env:
+          TYPES_DIR: ${{ inputs.types-dir }}
+          OUTPUT_DIR: ${{ inputs.output-dir }}
+
+      - name: Format docs
+        run: npx --yes prettier@3.8.3 --write "${OUTPUT_DIR}/**/*.md"
+        env:
+          OUTPUT_DIR: ${{ inputs.output-dir }}
+
+      - name: Open docs PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: ${{ inputs.commit-message }}
+          title: ${{ inputs.title }}
+          body: "Generate and format API docs from LuaLS type annotations."
+          branch: ${{ inputs.branch }}
+          add-paths: |
+            ${{ inputs.output-dir }}
