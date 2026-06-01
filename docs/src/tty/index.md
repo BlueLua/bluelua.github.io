@@ -2,20 +2,34 @@
 
 `tty` provides small cross-platform Lua bindings for terminal inspection.
 
-## Compatibility
+Compatible with Lua 5.1, 5.2, 5.3, 5.4, 5.5, and LuaJIT.
 
-`tty` supports:
+Use `tty` to detect whether streams, file handles, or file descriptors are
+attached to a terminal, and to read terminal rows and columns for CLI output.
 
-- Lua 5.1
-- Lua 5.2
-- Lua 5.3
-- Lua 5.4
-- Lua 5.5
-- LuaJIT
+## Install
 
-## Use Cases
+::: code-group
 
-- Detect whether standard streams are attached to a terminal.
-- Check Lua file handles and numeric file descriptors.
-- Read terminal rows and columns for command-line output.
-- Build terminal-aware Lua tools.
+```sh [LuaRocks]
+luarocks install tty
+```
+
+:::
+
+## Quick Start
+
+::: code-group
+
+```lua [exmaple.lua]
+local tty = require "tty"
+
+if tty.isatty(io.stdout) then
+  local rows, cols = tty.size()
+  print(("terminal: %dx%d"):format(cols, rows))
+else
+  print("stdout is redirected")
+end
+```
+
+:::
