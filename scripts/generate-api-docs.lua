@@ -5,6 +5,9 @@ local script_path = debug.getinfo(1, "S").source:gsub("^@", "")
 local script_dir = script_path:match("^(.*)/[^/]*$") or "."
 local lls = dofile(script_dir .. "/luals-type-parser.lua")
 local render = dofile(script_dir .. "/render-api-docs.lua")
+local ignored_stems = {
+  ecodes = true,
+}
 
 local function shell_quote(s)
   return "'" .. tostring(s):gsub("'", [['"'"']]) .. "'"
@@ -54,7 +57,7 @@ local function render_type_file(types_dir, filename)
   return render(lls.parse(content))
 end
 
-local function generate_docs(types_dir, output_dir, project_name)
+local function generate_docs(types_dir, output_dir)
   if not exists_dir(types_dir) then
     error("types directory does not exist: " .. types_dir)
   end
@@ -69,7 +72,7 @@ local function generate_docs(types_dir, output_dir, project_name)
   local generated = 0
   for _, filename in ipairs(files) do
     local stem = page_stem(filename)
-    if stem ~= project_name then
+    if not ignored_stems[stem] then
       local markdown = render_type_file(types_dir, filename)
       write_file(output_dir .. "/" .. stem .. ".md", markdown)
       generated = generated + 1
@@ -79,16 +82,15 @@ local function generate_docs(types_dir, output_dir, project_name)
 end
 
 local function usage()
-  return "usage: lua scripts/generate-api-docs.lua [types-dir] [output-dir] [project-name]\n"
+  return "usage: lua scripts/generate-api-docs.lua [types-dir] [output-dir]\n"
 end
 
 local types_dir = (arg and arg[1]) or "types"
 local output_dir = (arg and arg[2]) or "docs"
-local project_name = (arg and arg[3]) or nil
 if types_dir == "-h" or types_dir == "--help" then
   io.stdout:write(usage())
   os.exit(0)
 end
 
-local result = generate_docs(types_dir, output_dir, project_name)
+local result = generate_docs(types_dir, output_dir)
 io.stdout:write(string.format("generated %d doc file(s) in %s\n", result.files, result.output_dir))
