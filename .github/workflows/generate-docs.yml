@@ -75,16 +75,21 @@ jobs:
         run: |
           set -euo pipefail
 
-          output_dir="docs/src/${REPO_NAME}"
+          output_dir="docs/src/${REPO_NAME}/api"
           mkdir -p "$output_dir"
-          find "$output_dir" -maxdepth 1 -type f -name "*.md" ! -name "index.md" -delete
+          find "$output_dir" -maxdepth 1 -type f -name "*.md" -delete
 
-          luajit scripts/generate-api-docs.lua "${RUNNER_TEMP}/source/types" "$output_dir"
+          luajit scripts/generate-api-docs.lua "${RUNNER_TEMP}/source/types" "$output_dir" "$REPO_NAME"
         env:
           REPO_NAME: ${{ matrix.repo.name }}
 
       - name: Format docs
-        run: npx --yes prettier@3.8.3 --write "docs/src/${REPO_NAME}/*.md"
+        run: |
+          set -euo pipefail
+
+          if compgen -G "docs/src/${REPO_NAME}/api/*.md" > /dev/null; then
+            npx --yes prettier@3.8.3 --write "docs/src/${REPO_NAME}/api/*.md"
+          fi
         env:
           REPO_NAME: ${{ matrix.repo.name }}
 
@@ -96,4 +101,4 @@ jobs:
           body: "Generate and format API docs from `${{ matrix.repo.name }}` LuaLS type annotations."
           branch: "automation/generate-docs-${{ matrix.repo.name }}"
           add-paths: |
-            docs/src/${{ matrix.repo.name }}
+            docs/src/${{ matrix.repo.name }}/api
