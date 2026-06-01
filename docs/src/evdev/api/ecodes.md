@@ -4,7 +4,7 @@
 
 Event type constants used in the `type` field of Linux input events.
 
-| Field          | Description |
+| Name           | Description |
 | -------------- | ----------- |
 | `EV_ABS`       | `3`         |
 | `EV_CNT`       | `32`        |
@@ -21,12 +21,25 @@ Event type constants used in the `type` field of Linux input events.
 | `EV_SW`        | `5`         |
 | `EV_SYN`       | `0`         |
 
+## SYN
+
+Synchronization constants used to separate or mark input event packets.
+
+| Name            | Description |
+| --------------- | ----------- |
+| `SYN_CNT`       | `16`        |
+| `SYN_CONFIG`    | `1`         |
+| `SYN_DROPPED`   | `3`         |
+| `SYN_MAX`       | `15`        |
+| `SYN_MT_REPORT` | `2`         |
+| `SYN_REPORT`    | `0`         |
+
 ## REL
 
 Relative axis constants used with `EV_REL` events, such as mouse movement and
 wheel input.
 
-| Field               | Description |
+| Name                | Description |
 | ------------------- | ----------- |
 | `REL_CNT`           | `16`        |
 | `REL_DIAL`          | `7`         |
@@ -44,25 +57,12 @@ wheel input.
 | `REL_Y`             | `1`         |
 | `REL_Z`             | `2`         |
 
-## SYN
-
-Synchronization constants used to separate or mark input event packets.
-
-| Field           | Description |
-| --------------- | ----------- |
-| `SYN_CNT`       | `16`        |
-| `SYN_CONFIG`    | `1`         |
-| `SYN_DROPPED`   | `3`         |
-| `SYN_MAX`       | `15`        |
-| `SYN_MT_REPORT` | `2`         |
-| `SYN_REPORT`    | `0`         |
-
 ## BTN
 
 Button constants used with `EV_KEY` events for mouse, joystick, gamepad, tablet,
 and other button-like inputs.
 
-| Field                 | Description |
+| Name                  | Description |
 | --------------------- | ----------- |
 | `BTN_0`               | `256`       |
 | `BTN_1`               | `257`       |
@@ -192,7 +192,7 @@ and other button-like inputs.
 
 Keyboard and consumer key constants used with `EV_KEY` events.
 
-| Field                          | Description |
+| Name                           | Description |
 | ------------------------------ | ----------- |
 | `KEY_0`                        | `11`        |
 | `KEY_1`                        | `2`         |
