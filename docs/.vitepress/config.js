@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import matter from "gray-matter";
 import { defineConfig } from "vitepress";
 import {
   groupIconMdPlugin,
@@ -67,6 +68,14 @@ function pageItem(project, relativeFile) {
   };
 }
 
+function pageOrder(project, relativeFile) {
+  const filePath = path.join(docsSrcDir, project, relativeFile);
+  const content = fs.readFileSync(filePath, "utf8");
+  const order = matter(content).data.order;
+
+  return Number.isFinite(order) ? order : Number.POSITIVE_INFINITY;
+}
+
 function listMarkdownFiles(project, relativeDir = "") {
   const dir = path.join(docsSrcDir, project, relativeDir);
 
@@ -75,7 +84,15 @@ function listMarkdownFiles(project, relativeDir = "") {
     .filter((entry) => entry.isFile())
     .map((entry) => entry.name)
     .filter((file) => file.endsWith(".md") && file !== "index.md")
-    .sort();
+    .sort((a, b) => {
+      const relA = path.join(relativeDir, a);
+      const relB = path.join(relativeDir, b);
+      const orderA = pageOrder(project, relA);
+      const orderB = pageOrder(project, relB);
+
+      if (orderA !== orderB) return orderA - orderB;
+      return a.localeCompare(b);
+    });
 }
 
 function listNestedDocDirs(project) {
