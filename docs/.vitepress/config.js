@@ -58,20 +58,34 @@ function titleFromDir(dir) {
   return dir.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+function pageData(project, relativeFile) {
+  const filePath = path.join(docsSrcDir, project, relativeFile);
+  const content = fs.readFileSync(filePath, "utf8");
+  return matter(content).data;
+}
+
+function pageTitle(project, relativeFile) {
+  const title = pageData(project, relativeFile).title;
+  if (typeof title === "string" && title.trim() !== "") {
+    return title;
+  }
+  if (relativeFile === "index.md") {
+    return project;
+  }
+
+  return titleFromFile(path.basename(relativeFile));
+}
+
 function pageItem(project, relativeFile) {
   const slug = relativeFile.replace(/\.md$/, "");
-  const file = path.basename(relativeFile);
-
   return {
-    text: titleFromFile(file),
+    text: pageTitle(project, relativeFile),
     link: `/${project}/${slug}`,
   };
 }
 
 function pageOrder(project, relativeFile) {
-  const filePath = path.join(docsSrcDir, project, relativeFile);
-  const content = fs.readFileSync(filePath, "utf8");
-  const order = matter(content).data.order;
+  const order = pageData(project, relativeFile).order;
 
   return Number.isFinite(order) ? order : Number.POSITIVE_INFINITY;
 }
@@ -116,7 +130,7 @@ function buildSidebar() {
         `/${project}/`,
         [
           {
-            text: project,
+            text: pageTitle(project, "index.md"),
             items: [
               { text: "Overview", link: `/${project}/` },
               ...pages.map((file) => pageItem(project, file)),
@@ -137,7 +151,7 @@ function buildSidebar() {
 
 function buildProjectNavItems() {
   return listProjects().map((project) => ({
-    text: project,
+    text: pageTitle(project, "index.md"),
     link: `/${project}/`,
   }));
 }
