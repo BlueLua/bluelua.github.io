@@ -1,47 +1,70 @@
 name: Generate docs
 
 on:
-  workflow_call:
-    inputs:
-      types-dir:
-        description: "Directory containing LuaLS type annotation files."
-        required: false
-        type: string
-        default: types
-      output-dir:
-        description: "Directory where generated markdown docs are written."
-        required: false
-        type: string
-        default: docs
-      branch:
-        description: "Branch used for the generated docs pull request."
-        required: false
-        type: string
-        default: automation/generate-docs
-      title:
-        description: "Generated docs pull request title."
-        required: false
-        type: string
-        default: "docs: generate API docs"
-      commit-message:
-        description: "Generated docs commit message."
-        required: false
-        type: string
-        default: "docs: generate API docs"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/generate-docs.yml"
+      - "scripts/**"
+  # Run every day at 00:00 UTC to refresh docs from BlueLua source repos.
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  generate-docs:
+  discover:
     runs-on: ubuntu-latest
+    outputs:
+      repos: ${{ steps.repos.outputs.repos }}
     steps:
-      - name: Checkout
+      - name: Discover source repos
+        id: repos
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ORG: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+
+          tmp="$(mktemp -d)"
+          repos_file="$tmp/repos.jsonl"
+
+          gh api --paginate "/orgs/${ORG}/repos" \
+            --jq '.[] | select(.archived == false and .disabled == false) | [.name, .clone_url] | @tsv' \
+            > "$repos_file"
+
+          found="[]"
+          while IFS=$'\t' read -r name clone_url; do
+            [ "$name" != "${ORG}.github.io" ] || continue
+
+            if gh api "/repos/${ORG}/${name}/contents/types" >/dev/null 2>&1; then
+              found="$(jq --arg name "$name" --arg clone_url "$clone_url" \
+                '. + [{ "name": $name, "clone_url": $clone_url }]' <<< "$found")"
+            fi
+          done < "$repos_file"
+
+          echo "repos=$(jq -c . <<< "$found")" >> "$GITHUB_OUTPUT"
+
+  generate:
+    needs: discover
+    if: ${{ needs.discover.outputs.repos != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        repo: ${{ fromJson(needs.discover.outputs.repos) }}
+    steps:
+      - name: Checkout docs repo
         uses: actions/checkout@v6
 
-      - name: Checkout docs generator
-        run: git clone --depth 1 https://github.com/BlueLua/bluelua.github.io.git "${RUNNER_TEMP}/docgen"
+      - name: Checkout source repo
+        run: git clone --depth 1 "${CLONE_URL}" "${RUNNER_TEMP}/source"
+        env:
+          CLONE_URL: ${{ matrix.repo.clone_url }}
 
       - name: Setup LuaJIT
         uses: leafo/gh-actions-lua@v13
@@ -49,22 +72,28 @@ jobs:
           luaVersion: "luajit"
 
       - name: Generate docs
-        run: luajit "${RUNNER_TEMP}/docgen/scripts/generate-api-docs.lua" "${TYPES_DIR}" "${OUTPUT_DIR}"
+        run: |
+          set -euo pipefail
+
+          output_dir="docs/src/${REPO_NAME}"
+          mkdir -p "$output_dir"
+          find "$output_dir" -maxdepth 1 -type f -name "*.md" ! -name "index.md" -delete
+
+          luajit scripts/generate-api-docs.lua "${RUNNER_TEMP}/source/types" "$output_dir"
         env:
-          TYPES_DIR: ${{ inputs.types-dir }}
-          OUTPUT_DIR: ${{ inputs.output-dir }}
+          REPO_NAME: ${{ matrix.repo.name }}
 
       - name: Format docs
-        run: npx --yes prettier@3.8.3 --write "${OUTPUT_DIR}/**/*.md"
+        run: npx --yes prettier@3.8.3 --write "docs/src/${REPO_NAME}/*.md"
         env:
-          OUTPUT_DIR: ${{ inputs.output-dir }}
+          REPO_NAME: ${{ matrix.repo.name }}
 
       - name: Open docs PR
         uses: peter-evans/create-pull-request@v7
         with:
-          commit-message: ${{ inputs.commit-message }}
-          title: ${{ inputs.title }}
-          body: "Generate and format API docs from LuaLS type annotations."
-          branch: ${{ inputs.branch }}
+          commit-message: "docs(${{ matrix.repo.name }}): generate API docs"
+          title: "docs(${{ matrix.repo.name }}): generate API docs"
+          body: "Generate and format API docs from `${{ matrix.repo.name }}` LuaLS type annotations."
+          branch: "automation/generate-docs-${{ matrix.repo.name }}"
           add-paths: |
-            ${{ inputs.output-dir }}
+            docs/src/${{ matrix.repo.name }}
