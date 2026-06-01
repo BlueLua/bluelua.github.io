@@ -7,6 +7,7 @@ local lls = dofile(script_dir .. "/luals-type-parser.lua")
 local render = dofile(script_dir .. "/render-api-docs.lua")
 local ignored_stems = {
   ecodes = true,
+  evdev = true,
 }
 
 local function shell_quote(s)
