@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitepress";
 import {
   groupIconMdPlugin,
@@ -5,6 +8,8 @@ import {
   groupIconVitePlugin,
 } from "vitepress-plugin-group-icons";
 
+const configDir = path.dirname(fileURLToPath(import.meta.url));
+const docsSrcDir = path.resolve(configDir, "../src");
 const repoUrl = "https://github.com/BlueLua";
 const siteOrigin = "https://BlueLua.github.io";
 const siteBasePath = "/";
@@ -30,6 +35,95 @@ const websiteJsonLd = {
   url: siteUrl,
   description: siteDescription,
 };
+
+function listProjects() {
+  return fs
+    .readdirSync(docsSrcDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .filter((project) =>
+      fs.existsSync(path.join(docsSrcDir, project, "index.md")),
+    )
+    .sort();
+}
+
+function titleFromFile(file) {
+  return file.replace(/\.md$/, "").replace(/-/g, " ");
+}
+
+function titleFromDir(dir) {
+  if (dir === "api") return "API";
+
+  return dir.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function pageItem(project, relativeFile) {
+  const slug = relativeFile.replace(/\.md$/, "");
+  const file = path.basename(relativeFile);
+
+  return {
+    text: titleFromFile(file),
+    link: `/${project}/${slug}`,
+  };
+}
+
+function listMarkdownFiles(project, relativeDir = "") {
+  const dir = path.join(docsSrcDir, project, relativeDir);
+
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isFile())
+    .map((entry) => entry.name)
+    .filter((file) => file.endsWith(".md") && file !== "index.md")
+    .sort();
+}
+
+function listNestedDocDirs(project) {
+  const dir = path.join(docsSrcDir, project);
+
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .filter((name) => listMarkdownFiles(project, name).length > 0)
+    .sort();
+}
+
+function buildSidebar() {
+  return Object.fromEntries(
+    listProjects().map((project) => {
+      const pages = listMarkdownFiles(project);
+      const nestedDirs = listNestedDocDirs(project);
+
+      return [
+        `/${project}/`,
+        [
+          {
+            text: project,
+            items: [
+              { text: "Overview", link: `/${project}/` },
+              ...pages.map((file) => pageItem(project, file)),
+            ],
+          },
+          ...nestedDirs.map((dir) => ({
+            text: titleFromDir(dir),
+            collapsed: false,
+            items: listMarkdownFiles(project, dir).map((file) =>
+              pageItem(project, `${dir}/${file}`),
+            ),
+          })),
+        ],
+      ];
+    }),
+  );
+}
+
+function buildProjectNavItems() {
+  return listProjects().map((project) => ({
+    text: project,
+    link: `/${project}/`,
+  }));
+}
 
 export default defineConfig({
   srcDir: "./src",
@@ -79,11 +173,7 @@ export default defineConfig({
       { text: "Home", link: "/" },
       {
         text: "Projects",
-        items: [
-          { text: "evdev", link: "evdev" },
-          { text: "timeutil", link: "timeutil" },
-          { text: "tty", link: "tty" },
-        ],
+        items: buildProjectNavItems(),
       },
       { text: "GitHub", link: "https://github.com/BlueLua" },
       {
@@ -91,5 +181,6 @@ export default defineConfig({
         link: "https://techforpalestine.org/learn-more",
       },
     ],
+    sidebar: buildSidebar(),
   },
 });
