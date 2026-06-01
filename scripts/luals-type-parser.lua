@@ -474,15 +474,15 @@ local function parse_alias(line)
     return key, rhs
   end
 
-  local lhs, rhs = line:match("^%s*([%w_%.:]+)%s*=%s*([%w_%.:]+)%s*$")
-  if not lhs or not rhs then
+  local lhs, alias_rhs = line:match("^%s*([%w_%.:]+)%s*=%s*([%w_%.:]+)%s*$")
+  if not lhs or not alias_rhs then
     return
-  elseif rhs == "true" or rhs == "false" or rhs == "nil" then
+  elseif alias_rhs == "true" or alias_rhs == "false" or alias_rhs == "nil" then
     return
-  elseif rhs:match("^%d+$") or rhs:match("^%d+%.%d+$") then
+  elseif alias_rhs:match("^%d+$") or alias_rhs:match("^%d+%.%d+$") then
     return
   end
-  return lhs, rhs
+  return lhs, alias_rhs
 end
 
 local function parse_module_table(line)

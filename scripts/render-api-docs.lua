@@ -303,7 +303,6 @@ local function append_function_api_contract(doc, item, alias_views)
   local params = tags.params or {}
   local returns = tags.returns or {}
   local has_params = false
-  local has_returns = false
 
   for _, param in ipairs(params) do
     local pname = param and param.name or ""
@@ -312,7 +311,7 @@ local function append_function_api_contract(doc, item, alias_views)
       break
     end
   end
-  has_returns = #returns > 0
+  local has_returns = #returns > 0
 
   if not has_params and not has_returns then
     return
