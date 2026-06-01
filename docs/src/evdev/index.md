@@ -3,24 +3,48 @@
 `evdev` is a Lua module for working with Linux input devices through the evdev
 interface.
 
-It lets Lua discover Linux input devices, read raw events, grab devices, and
-create virtual input devices with uinput.
+Compatible with Lua 5.1, 5.2, 5.3, 5.4, 5.5, and LuaJIT.
 
-## Compatibility
+Use `evdev` to read events from keyboards, mice, gamepads, and other
+`/dev/input` devices, grab a device while handling input yourself, or create
+virtual keyboards, mice, and controllers through `/dev/uinput`.
 
-`evdev` supports:
+## Install
 
-- Lua 5.1
-- Lua 5.2
-- Lua 5.3
-- Lua 5.4
-- Lua 5.5
-- LuaJIT
+::: code-group
 
-## Use Cases
+```sh [LuaRocks]
+luarocks install bluelua-evdev
+```
 
-- Build input automation tools.
-- Read keyboard, mouse, gamepad, and other Linux input events from Lua.
-- Inspect devices under `/dev/input`.
-- Grab a device while handling input yourself.
-- Create virtual keyboards, mice, or controllers for tests and tooling.
+:::
+
+## Quick Start
+
+::: code-group
+
+```lua [lis-devices.lua]
+local evdev = require "evdev"
+
+for _, info in ipairs(devices) do
+  print(info.path, info.name)
+end
+```
+
+```lua [open-device.lua]
+local evdev = require "evdev"
+
+local dev = assert(evdev.device("/dev/input/event3"))
+print("opened:", dev.name)
+```
+
+```lua [read-events.lua]
+local evdev = require "evdev"
+local dev = assert(evdev.device("/dev/input/event3"))
+
+for event in dev:events() do
+  print(event.type, event.code, event.value)
+end
+```
+
+:::
