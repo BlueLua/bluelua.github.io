@@ -1,5 +1,21 @@
 # `ecodes`
 
+Linux input event code constants used when reading events from `/dev/input` or
+emitting events through `uinput`.
+
+```lua
+local evdev = require "evdev"
+
+local Device = evdev.device.open
+local dev = assert(Device("/dev/input/event3"))
+
+for e in dev:events() do
+  if e.type == evdev.ecodes.EV_KEY and e.code == evdev.ecodes.KEY_ENTER then
+    print("Enter key event", e.value)
+  end
+end
+```
+
 ## EV
 
 Event type constants used in the `type` field of Linux input events.
