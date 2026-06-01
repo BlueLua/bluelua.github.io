@@ -198,7 +198,27 @@ export default defineConfig({
   themeConfig: {
     logo: "/logo.svg",
     outline: [2, 5], // show h2-h5
-    search: { provider: "local" },
+    search: {
+      provider: "local",
+      options: {
+        miniSearch: {
+          searchOptions: {
+            filter(result) {
+              const project =
+                location.pathname.match(/^\/([^/]+)(?:\/|$)/)?.[1];
+              if (!project) {
+                return true;
+              }
+
+              return (
+                result.id === `/${project}/` ||
+                result.id.startsWith(`/${project}/`)
+              );
+            },
+          },
+        },
+      },
+    },
     editLink: {
       pattern: ({ filePath }) => {
         const repoUrl = "https://github.com/BlueLua";
