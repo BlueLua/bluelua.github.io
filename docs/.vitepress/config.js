@@ -156,6 +156,19 @@ function buildProjectNavItems() {
   }));
 }
 
+function buildEditLink({ filePath }) {
+  const repoUrl = "https://github.com/BlueLua";
+  const parts = filePath.split("/");
+  const [project, section, file] = parts;
+
+  if (parts.length === 3 && section === "api" && file.endsWith(".md")) {
+    const stem = file.replace(/\.md$/, "");
+    return `${repoUrl}/${project}/edit/main/types/${stem}.d.lua`;
+  }
+
+  return `${repoUrl}/bluelua.github.io/edit/main/docs/src/${filePath}`;
+}
+
 export default defineConfig({
   srcDir: "./src",
   title: "BlueLua",
@@ -220,21 +233,7 @@ export default defineConfig({
         },
       },
     },
-    editLink: {
-      pattern: ({ filePath }) => {
-        const repoUrl = "https://github.com/BlueLua";
-        const parts = filePath.split("/");
-        const [project, section, file] = parts;
-
-        if (parts.length === 3 && section === "api" && file.endsWith(".md")) {
-          const stem = file.replace(/\.md$/, "");
-          return `${repoUrl}/${project}/edit/main/types/${stem}.d.lua`;
-        }
-
-        return `${repoUrl}/bluelua.github.io/edit/main/docs/src/${filePath}`;
-      },
-      text: "Edit this page",
-    },
+    editLink: { pattern: buildEditLink },
     socialLinks: [{ icon: "github", link: repoUrl }],
     nav: [
       { text: "Home", link: "/" },
