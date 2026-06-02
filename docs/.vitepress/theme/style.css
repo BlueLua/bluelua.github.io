@@ -84,7 +84,7 @@
 }
 
 .VPDoc .custom-block.tip .custom-block-title::before {
-  content: "✅";
+  content: "✨";
 }
 
 .VPDoc .custom-block.important .custom-block-title::before {
