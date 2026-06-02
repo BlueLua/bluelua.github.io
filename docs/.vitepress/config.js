@@ -169,6 +169,15 @@ function buildEditLink({ filePath }) {
   return `${repoUrl}/bluelua.github.io/edit/main/docs/src/${filePath}`;
 }
 
+function filterSearchResult(result) {
+  const project = location.pathname.match(/^\/([^/]+)(?:\/|$)/)?.[1];
+  if (!project) {
+    return true;
+  }
+
+  return result.id === `/${project}/` || result.id.startsWith(`/${project}/`);
+}
+
 export default defineConfig({
   srcDir: "./src",
   title: "BlueLua",
@@ -215,22 +224,7 @@ export default defineConfig({
     search: {
       provider: "local",
       options: {
-        miniSearch: {
-          searchOptions: {
-            filter(result) {
-              const project =
-                location.pathname.match(/^\/([^/]+)(?:\/|$)/)?.[1];
-              if (!project) {
-                return true;
-              }
-
-              return (
-                result.id === `/${project}/` ||
-                result.id.startsWith(`/${project}/`)
-              );
-            },
-          },
-        },
+        miniSearch: { searchOptions: { filter: filterSearchResult } },
       },
     },
     editLink: { pattern: buildEditLink },
