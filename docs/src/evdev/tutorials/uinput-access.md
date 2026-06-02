@@ -1,5 +1,5 @@
 ---
-order: 7
+order: 6
 title: UInput Access Setup
 description:
   Configure permissions so Lua programs can create virtual input devices with
