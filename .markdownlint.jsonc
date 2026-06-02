@@ -1,4 +1,8 @@
 {
   // frontmatter title + in-body h1
-  "MD025": false
+  "MD025": false,
+  // anchor links in api docs
+  "MD033": false,
+  // long code lines in examples
+  "MD013": false,
 }
