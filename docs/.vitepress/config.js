@@ -161,6 +161,7 @@ export default defineConfig({
   title: "BlueLua",
   description: "Centralized docs for BlueLua",
   base: siteBasePath,
+  cleanUrls: true,
   appearance: true,
   markdown: {
     config(md) {
