@@ -232,7 +232,7 @@ export default defineConfig({
     // prettier-ignore
     nav: [
       { text: "Home", link: "/" },
-      { text: "Projects", items: buildProjectNavItems() },
+      { text: "Modules", items: buildProjectNavItems() },
       { text: "🇵🇸 Free Palestine", link: "https://techforpalestine.org/learn-more" },
     ],
     sidebar: buildSidebar(),
