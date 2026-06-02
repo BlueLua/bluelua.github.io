@@ -241,7 +241,6 @@ export default defineConfig({
         text: "Projects",
         items: buildProjectNavItems(),
       },
-      { text: "GitHub", link: repoUrl },
       {
         text: "🇵🇸 Free Palestine",
         link: "https://techforpalestine.org/learn-more",
