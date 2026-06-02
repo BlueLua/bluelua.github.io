@@ -23,10 +23,11 @@ luarocks install bluelua-evdev
 
 ::: code-group
 
-```lua [lis-devices.lua]
+```lua [list-devices.lua]
 local evdev = require "evdev"
 
-for _, info in ipairs(devices) do
+local devs = assert(evdev.devices.list_devices())
+for _, info in ipairs(devs) do
   print(info.path, info.name)
 end
 ```
