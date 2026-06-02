@@ -95,7 +95,10 @@
   content: "⚠️";
 }
 
-.VPDoc .custom-block.danger .custom-block-title::before,
-.VPDoc .custom-block.caution .custom-block-title::before {
+.VPDoc .custom-block.danger .custom-block-title::before {
   content: "❌";
+}
+
+.VPDoc .custom-block.caution .custom-block-title::before {
+  content: "⚠️";
 }
