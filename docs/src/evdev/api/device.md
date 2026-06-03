@@ -335,6 +335,6 @@ Release exclusive control of the input device.
 ```lua
 local Device = evdev.device.open
 local dev = assert(Device("/dev/input/eventX"))
-assert(dev:grap())
+assert(dev:grab())
 assert(dev:ungrab())
 ```
