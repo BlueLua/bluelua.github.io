@@ -21,7 +21,7 @@ luarocks install tty
 
 ::: code-group
 
-```lua [exmaple.lua]
+```lua [example.lua]
 local tty = require "tty"
 
 if tty.isatty(io.stdout) then
