@@ -94,7 +94,7 @@ jobs:
           REPO_NAME: ${{ matrix.repo.name }}
 
       - name: Open docs PR
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           commit-message: "docs(${{ matrix.repo.name }}): generate API docs"
           title: "docs(${{ matrix.repo.name }}): generate API docs"
