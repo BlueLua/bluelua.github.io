@@ -23,6 +23,9 @@ features:
   - title: 🔳 tty
     details: Terminal inspection helpers.
     link: /tty/
+  - title: 🧩 mods
+    details: Predictable utility module library.
+    link: /mods/
 ---
 
 BlueLua is still early. We are building it piece by piece, with a focus on clean
