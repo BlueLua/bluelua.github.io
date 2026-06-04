@@ -132,7 +132,7 @@ function buildSidebar() {
           {
             text: pageTitle(project, "index.md"),
             items: [
-              { text: "Overview", link: `/${project}/` },
+              { text: "Getting Started", link: `/${project}/` },
               ...pages.map((file) => pageItem(project, file)),
             ],
           },
