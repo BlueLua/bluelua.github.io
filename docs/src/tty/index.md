@@ -14,7 +14,7 @@
   </a>
 </p>
 
-`[tty]` provides lightweight, cross-platform C-backed Lua bindings for terminal
+`tty` provides lightweight, cross-platform C-backed Lua bindings for terminal
 detection and terminal size inspection.
 
 ## ✨ Features
@@ -54,5 +54,4 @@ end
 
 :::
 
-[tty]: https://en.wikipedia.org/wiki/Tty_(Unix)
 [file descriptor]: https://en.wikipedia.org/wiki/File_descriptor
