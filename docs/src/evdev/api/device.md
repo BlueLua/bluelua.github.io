@@ -110,8 +110,6 @@ local Device = evdev.device.open
 local dev = assert(Device("/dev/input/eventX"))
 
 assert(dev:grab())
-os.execute("sleep 3")
-
 -- Move the mouse or press keys during the sleep.
 
 local dropped = assert(dev:flush())
