@@ -172,9 +172,9 @@ scroll_h(ui, -3)
 Press and release a mouse button.
 
 ```lua
-tap(ui, ecodes.BTN_RIGHT)  -- left click
+tap(ui, ecodes.BTN_LEFT)   -- left click
 delay(500)
-tap(ui, ecodes.BTN_LEFT)   -- right click
+tap(ui, ecodes.BTN_RIGHT)  -- right click
 delay(500)
 tap(ui, ecodes.BTN_MIDDLE) -- middle click
 ```
