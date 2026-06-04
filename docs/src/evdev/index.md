@@ -35,13 +35,13 @@ end
 ```lua [open-device.lua]
 local evdev = require "evdev"
 
-local dev = assert(evdev.device("/dev/input/event3"))
+local dev = assert(evdev.device.open("/dev/input/event3"))
 print("opened:", dev.name)
 ```
 
 ```lua [read-events.lua]
 local evdev = require "evdev"
-local dev = assert(evdev.device("/dev/input/event3"))
+local dev = assert(evdev.device.open("/dev/input/event3"))
 
 for event in dev:events() do
   print(event.type, event.code, event.value)
