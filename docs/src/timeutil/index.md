@@ -22,7 +22,7 @@ luarocks install timeutil
 
 ::: code-group
 
-```lua [exmaple.lua]
+```lua [example.lua]
 local time = require "timeutil"
 
 local start = time.mono()
