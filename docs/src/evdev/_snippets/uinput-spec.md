@@ -10,7 +10,7 @@
 | `product`     | `integer`   | Product ID (default: `0xE7DE`)                                         |
 | `version`     | `integer`   | Version number (default: `1`)                                          |
 
-[KEY_*]: ../api/ecodes.md#key
-[BTN_*]: ../api/ecodes.md#btn
-[REL_*]: ../api/ecodes.md#rel
-[EV_*]: ../api/ecodes.md#ev
+[KEY_*]: ../api/ecodes#key
+[BTN_*]: ../api/ecodes#btn
+[REL_*]: ../api/ecodes#rel
+[EV_*]: ../api/ecodes#ev

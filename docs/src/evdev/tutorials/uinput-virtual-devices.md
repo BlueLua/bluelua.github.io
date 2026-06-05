@@ -111,5 +111,5 @@ mouse:emit(evdev.ecodes.EV_KEY, evdev.ecodes.BTN_RIGHT, 0)
 mouse:sync()
 ```
 
-[KEY_*]: ../api/ecodes.md#key
-[BTN_*]: ../api/ecodes.md#btn
+[KEY_*]: ../api/ecodes#key
+[BTN_*]: ../api/ecodes#btn
