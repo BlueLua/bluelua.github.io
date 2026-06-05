@@ -32,11 +32,11 @@ print(utils.quote('hello "world"')) --> 'hello "world"'
 
 **Validation**:
 
-| Function                                                            | Description                                                                                        |
-| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| [`assert_arg(argn, v, validator?, optional?, lv?)`](#fn-assert-arg) | Assert argument value using [`mods.validate`](/modules/validate) and raise a Lua error on failure. |
-| [`validate(name, v, validator?, optional?, msg?)`](#fn-validate)    | Validate a value using [`mods.validate`](/modules/validate) and raise a Lua error on failure.      |
-| [`validate(path, v, validator?, optional?, msg?)`](#fn-validate)    | Validate a value using [`mods.validate`](/modules/validate) and raise a Lua error on failure.      |
+| Function                                                            | Description                                                                   |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [`assert_arg(argn, v, validator?, optional?, lv?)`](#fn-assert-arg) | Assert argument value using `mods.validate` and raise a Lua error on failure. |
+| [`validate(name, v, validator?, optional?, msg?)`](#fn-validate)    | Validate a value using `mods.validate` and raise a Lua error on failure.      |
+| [`validate(path, v, validator?, optional?, msg?)`](#fn-validate)    | Validate a value using `mods.validate` and raise a Lua error on failure.      |
 
 ### Formatting
 
@@ -148,8 +148,7 @@ print(stringify({ a = 1 }))
 
 #### `assert_arg(argn, v, validator?, optional?, lv?)`
 
-Assert argument value using [`mods.validate`](/modules/validate) and raise a Lua
-error on failure.
+Assert argument value using `mods.validate` and raise a Lua error on failure.
 
 **Parameters**:
 
@@ -183,8 +182,7 @@ utils.assert_arg(3, "x", "number", false, "need {{expected}}, got {{got}}")
 
 #### `validate(name, v, validator?, optional?, msg?)`
 
-Validate a value using [`mods.validate`](/modules/validate) and raise a Lua
-error on failure.
+Validate a value using `mods.validate` and raise a Lua error on failure.
 
 **Parameters**:
 
@@ -192,8 +190,7 @@ error on failure.
 - `v` (`any`): Value to validate.
 - `validator?` (`modsValidatorName`): Validator name (defaults to `"truthy"`).
 - `optional?` (`boolean`): Skip errors when `v` is `nil` (defaults to `false`).
-- `msg?` (`string`): Optional override template passed to
-  [`mods.validate`](/modules/validate).
+- `msg?` (`string`): Optional override template passed to `mods.validate`.
 
 **Return**:
 
@@ -212,8 +209,7 @@ utils.validate("count", "x", "number")
 
 #### `validate(path, v, validator?, optional?, msg?)`
 
-Validate a value using [`mods.validate`](/modules/validate) and raise a Lua
-error on failure.
+Validate a value using `mods.validate` and raise a Lua error on failure.
 
 **Parameters**:
 
@@ -221,8 +217,7 @@ error on failure.
 - `v` (`any`): Value to validate.
 - `validator?` (`modsValidatorName`): Validator name (defaults to `"truthy"`).
 - `optional?` (`boolean`): Skip errors when `v` is `nil` (defaults to `false`).
-- `msg?` (`string`): Optional override template passed to
-  [`mods.validate`](/modules/validate).
+- `msg?` (`string`): Optional override template passed to `mods.validate`.
 
 **Return**:
 
@@ -238,5 +233,4 @@ utils.validate({ "ctx", "users", 1, "name" }, 123, "string")
 
 > [!NOTE]
 >
-> On failure, `path` is rendered with
-> [`mods.utils.keypath`](/modules/utils#fn-keypath).
+> On failure, `path` is rendered with `mods.utils.keypath`.

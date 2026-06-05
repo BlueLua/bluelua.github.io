@@ -568,9 +568,9 @@ print(d:weekday(-7)) --> 2026-03-23 00:00:00
 ```
 
 The getter returns a number in the range `0..6`, relative to the current
-[`mods.calendar.firstweekday`](/modules/calendar#fn-firstweekday). Passing an
-integer returns a shifted copy in the same locale-relative week space, with
-negative and overflow values moving into previous or next weeks.
+`mods.calendar.firstweekday`. Passing an integer returns a shifted copy in the
+same locale-relative week space, with negative and overflow values moving into
+previous or next weeks.
 
 <a id="fn-weeks-in-year"></a>
 
@@ -876,8 +876,7 @@ Return `true` when the value is a duration created by `date.duration(...)`.
 
 **Return**:
 
-- `isDuration` (`boolean`): Whether the value is a
-  [`mods.Duration`](/modules/duration).
+- `isDuration` (`boolean`): Whether the value is a `mods.Duration`.
 
 **Example**:
 
