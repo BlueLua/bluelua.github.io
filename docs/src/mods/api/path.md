@@ -693,9 +693,8 @@ path.normcase("/A/B") --> "\\a\\b"
 
 > [!NOTE]
 >
-> On POSIX semantics this returns the input unchanged. Use
-> [`mods.ntpath`](/modules/ntpath) to force Windows-style case folding and
-> separator normalization.
+> On POSIX semantics this returns the input unchanged. Use `mods.ntpath` to
+> force Windows-style case folding and separator normalization.
 
 <a id="fn-normpath"></a>
 

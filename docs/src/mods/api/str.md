@@ -377,7 +377,7 @@ s = format_map("hi {name}", { name = "bob" }) --> "hi bob"
 > [!NOTE]
 >
 > `format_map` is a lightweight `{key}` replacement helper. For richer
-> templating, use [`mods.template`](/modules/template).
+> templating, use `mods.template`.
 
 ### Layout
 

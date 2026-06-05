@@ -19,8 +19,7 @@ print(ntpath.splitdrive([[C:\Users\me]]))     --> "C:", [[\Users\me]]
 print(ntpath.isreserved([[C:\Temp\CON.txt]])) --> true
 ```
 
-> ✨ Same API as [`mods.path`](/modules/path), but with Windows/NT path
-> semantics.
+> ✨ Same API as `mods.path`, but with Windows/NT path semantics.
 
 ## Functions
 

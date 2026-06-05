@@ -19,10 +19,10 @@ kw.isidentifier("hello_world") --> true
 
 **Collections**:
 
-| Function                 | Description                                            |
-| ------------------------ | ------------------------------------------------------ |
-| [`kwlist()`](#fn-kwlist) | Return Lua keywords as a [`mods.List`](/modules/list). |
-| [`kwset()`](#fn-kwset)   | Return Lua keywords as a [`mods.Set`](/modules/set).   |
+| Function                 | Description                           |
+| ------------------------ | ------------------------------------- |
+| [`kwlist()`](#fn-kwlist) | Return Lua keywords as a `mods.List`. |
+| [`kwset()`](#fn-kwset)   | Return Lua keywords as a `mods.Set`.  |
 
 **Normalization**:
 
@@ -43,7 +43,7 @@ kw.isidentifier("hello_world") --> true
 
 #### `kwlist()`
 
-Return Lua keywords as a [`mods.List`](/modules/list).
+Return Lua keywords as a `mods.List`.
 
 **Return**:
 
@@ -60,7 +60,7 @@ kw.kwlist():contains("global") --> true -- Lua 5.5+
 
 #### `kwset()`
 
-Return Lua keywords as a [`mods.Set`](/modules/set).
+Return Lua keywords as a `mods.Set`.
 
 **Return**:
 
