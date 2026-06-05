@@ -233,6 +233,7 @@ export default defineConfig({
     nav: [
       { text: "Home", link: "/" },
       { text: "Modules", items: buildProjectNavItems() },
+      { text: "Sponsor", link: "https://ko-fi.com/haithium" },
       { text: "🇵🇸 Free Palestine", link: "https://techforpalestine.org/learn-more" },
     ],
     sidebar: buildSidebar(),
