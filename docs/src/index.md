@@ -30,3 +30,5 @@ features:
 
 BlueLua is still early. We are building it piece by piece, with a focus on clean
 APIs, useful native modules, and tools that are simple to understand.
+
+[![Support me on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/haithium)
