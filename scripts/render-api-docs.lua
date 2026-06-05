@@ -272,30 +272,10 @@ local function expand_type_view(view, alias_views, seen)
   return out, mapped.desc or nested_desc
 end
 
----Turn inline code refs like `mods.path` into markdown links.
-local function linkify_mods_refs(s)
-  if not s or s == "" then
-    return s or ""
-  end
-  s = s:gsub("`(mods%.([%a_][%w_]*)%.([%a_][%w_]*))`", function(ref, module_name, member_name)
-    local anchor = heading_anchor(member_name)
-    return fmt("[`%s`](/modules/%s#fn-%s)", ref, module_name:lower(), anchor)
-  end)
-  return (
-    s:gsub("`(mods%.[%a_][%w_]*)`", function(ref)
-      local module_name = ref:match("^mods%.([%a_][%w_]*)$")
-      if not module_name then
-        return "`" .. ref .. "`"
-      end
-      return fmt("[`%s`](/modules/%s)", ref, module_name:lower())
-    end)
-  )
-end
-
 local function normalize_api_desc(desc)
   local d = trim(desc or "")
   d = d:gsub("^#%s*", "")
-  return linkify_mods_refs(d)
+  return d
 end
 
 local function append_function_api_contract(doc, item, alias_views)
@@ -365,12 +345,12 @@ local function append_function_signature_details(doc, item, alias_views)
   if code then
     local pre = trim(before or "")
     if pre ~= "" then
-      insert(doc, linkify_mods_refs(pre))
+      insert(doc, pre)
       insert(doc, "")
     end
   else
     if desc ~= "" then
-      insert(doc, linkify_mods_refs(desc))
+      insert(doc, desc)
     end
   end
 
@@ -384,7 +364,7 @@ local function append_function_signature_details(doc, item, alias_views)
     local post = trim(after or "")
     if post ~= "" then
       insert(doc, "")
-      insert(doc, linkify_mods_refs(post))
+      insert(doc, post)
     end
     insert(doc, "")
   end
@@ -422,9 +402,9 @@ local function append_fields_table(doc, fields, alias_views)
     local link = fmt("[`%s`](#%s)", esc_table_cell(name), anchor)
     local fview = field and field.view or "any"
     local _, alias_desc = expand_type_view(fview, alias_views)
-    local desc = esc_table_cell(first_paragraph(linkify_mods_refs(field.desc)))
+    local desc = esc_table_cell(first_paragraph(field.desc))
     if desc == "" and alias_desc and alias_desc ~= "" then
-      desc = esc_table_cell(first_paragraph(linkify_mods_refs(alias_desc)))
+      desc = esc_table_cell(first_paragraph(alias_desc))
     elseif desc == "" and field.value ~= nil then
       desc = value_to_markdown(field.value) or ""
     end
@@ -521,7 +501,7 @@ local function build_markdown(items)
   end
   insert(doc, fmt("# `%s`", module_name))
   if module_desc then
-    insert(doc, linkify_mods_refs(module_desc))
+    insert(doc, module_desc)
   end
 
   if not has_functions and #fields == 0 then
@@ -560,7 +540,7 @@ local function build_markdown(items)
       local row = {
         signature = signature,
         anchor = row_anchor,
-        desc = first_paragraph(linkify_mods_refs(item.desc)),
+        desc = first_paragraph(item.desc),
       }
       if section_fields then
         local entry = {
@@ -681,14 +661,14 @@ local function build_markdown(items)
         insert(doc, heading)
         if (not field.desc or field.desc == "") and alias_desc and alias_desc ~= "" then
           insert(doc, "")
-          insert(doc, linkify_mods_refs(alias_desc))
+          insert(doc, alias_desc)
         end
       else
         insert(doc, heading)
       end
       if field.desc then
         insert(doc, "")
-        insert(doc, linkify_mods_refs(field.desc))
+        insert(doc, field.desc)
       elseif field.value ~= nil then
         local rendered_value = value_to_markdown(field.value)
         if rendered_value then
