@@ -14,14 +14,21 @@
   </a>
 </p>
 
-`mods` is a comprehensive Lua utility library featuring predictable APIs, lazy-loaded inter-module dependencies, and wide Lua runtime compatibility.
+`mods` is a comprehensive Lua utility library featuring lazy-loaded modules and
+wide runtime compatibility.
 
 ## ✨ Features
 
-- **Predictable APIs**: Standard utility functions for strings, tables, filesystem paths, lists, sets, and template rendering.
-- **Lazy Loading**: Automatic lazy loading of sub-modules to keep startup times fast.
+- **Predictable APIs**: A cohesive collection of helper utilities for common
+  programming tasks and data structures.
+- **Lazy Loading**: Automatic lazy loading of sub-modules to keep startup times
+  fast.
 - **Cross-Platform**: Works consistently across Windows, macOS, and Linux.
-- **Multiple Lua Versions**: Compatible with LuaJIT, Lua 5.1, 5.2, 5.3, 5.4, and 5.5.
+- **Multiple Lua Versions**: Compatible with LuaJIT, Lua 5.1, 5.2, 5.3, 5.4, and
+  5.5.
+- **Lightweight**: Pure Lua with no dependencies, except optional [LFS] for file
+  operations.
+- **Autocomplete**: [LuaLS] type annotations.
 
 ## 📦 Installation
 
@@ -40,14 +47,16 @@ luarocks install mods
 ```lua [example.lua]
 local mods = require "mods"
 
--- Use the lazy-loaded stringcase sub-module
-local title = mods.stringcase.titlecase("hello world")
-print(title) -- Output: Hello World
+local stripped = mods.str.strip("   hello world   ")
+print(stripped) -- Output: "hello world"
 
--- Use the lazy-loaded List class
-local items = mods.List { 1, 2, 3 }
-local doubled = items:map(function(x) return x * 2 end)
-print(doubled:join(", ")) -- Output: 2, 4, 6
+local items = mods.list({ 1, 2, 3 })
+local reversed = items:reverse()
+print(reversed:join(", ")) -- Output: "3, 2, 1"
 ```
 
 :::
+
+[documentation]: https://bluelua.github.io/mods
+[LFS]: https://github.com/lunarmodules/luafilesystem
+[LuaLS]: https://github.com/LuaLS/lua-language-server
