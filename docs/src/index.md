@@ -31,4 +31,8 @@ features:
 BlueLua is still early. We are building it piece by piece, with a focus on clean
 APIs, useful native modules, and tools that are simple to understand.
 
-[![Support me on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/haithium)
+<div style="display: flex; justify-content: center; margin-top: 2rem;">
+  <a href="https://ko-fi.com/haithium" target="_blank">
+    <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi" />
+  </a>
+</div>
