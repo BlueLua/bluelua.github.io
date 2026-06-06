@@ -228,12 +228,14 @@ export default defineConfig({
       },
     },
     editLink: { pattern: buildEditLink },
-    socialLinks: [{ icon: "github", link: repoUrl }],
+    socialLinks: [
+      { icon: "github", link: repoUrl },
+      { icon: "kofi", link: "https://ko-fi.com/haithium" },
+    ],
     // prettier-ignore
     nav: [
       { text: "Home", link: "/" },
       { text: "Modules", items: buildProjectNavItems() },
-      { text: "Sponsor", link: "https://ko-fi.com/haithium" },
       { text: "🇵🇸 Free Palestine", link: "https://techforpalestine.org/learn-more" },
     ],
     sidebar: buildSidebar(),
