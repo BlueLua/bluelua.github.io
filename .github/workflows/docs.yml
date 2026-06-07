@@ -7,9 +7,6 @@ on:
     paths:
       - ".github/workflows/generate-docs.yml"
       - "scripts/**"
-  # Run every day at 00:00 UTC to refresh docs from BlueLua source repos.
-  schedule:
-    - cron: "0 0 * * *"
   workflow_dispatch:
 
 permissions:
