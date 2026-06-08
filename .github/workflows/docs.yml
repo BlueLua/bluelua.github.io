@@ -19,6 +19,10 @@ on:
         description: "Repo to generate docs for"
         type: string
         required: true
+    secrets:
+      DOCS_TOKEN:
+        description: "Token with write access to the docs repo"
+        required: true
 
 permissions:
   contents: write
@@ -91,6 +95,7 @@ jobs:
       - name: Open docs PR
         uses: peter-evans/create-pull-request@v8
         with:
+          token: ${{ secrets.DOCS_TOKEN }}
           path: _docs
           commit-message: "docs(${{ matrix.repo.name }}): generate API docs"
           title: "docs(${{ matrix.repo.name }}): generate API docs"
