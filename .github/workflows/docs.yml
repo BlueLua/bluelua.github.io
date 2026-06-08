@@ -52,9 +52,11 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Checkout source repo
-        run: git clone --depth 1 "${CLONE_URL}" "${RUNNER_TEMP}/source"
-        env:
-          CLONE_URL: ${{ matrix.repo.clone_url }}
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ github.repository_owner }}/${{ matrix.repo.name }}
+          path: ${{ runner.temp }}/source
+          depth: 1
 
       - name: Setup LuaJIT
         uses: leafo/gh-actions-lua@v13
