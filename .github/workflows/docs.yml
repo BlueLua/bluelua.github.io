@@ -50,6 +50,9 @@ jobs:
     steps:
       - name: Checkout docs repo
         uses: actions/checkout@v6
+        with:
+          repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
+          path: _docs
 
       - name: Checkout source repo
         uses: actions/checkout@v6
@@ -67,11 +70,11 @@ jobs:
         run: |
           set -euo pipefail
 
-          output_dir="docs/src/${REPO_NAME}/api"
+          output_dir="_docs/docs/src/${REPO_NAME}/api"
           mkdir -p "$output_dir"
           find "$output_dir" -maxdepth 1 -type f -name "*.md" ! -name "ecodes.md" -delete
 
-          luajit scripts/generate-api-docs.lua "_source/types" "$output_dir"
+          luajit _docs/scripts/generate-api-docs.lua "_source/types" "$output_dir"
         env:
           REPO_NAME: ${{ matrix.repo.name }}
 
@@ -79,8 +82,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          if compgen -G "docs/src/${REPO_NAME}/api/*.md" > /dev/null; then
-            npx --yes prettier@3.8.3 --write "docs/src/${REPO_NAME}/api/*.md"
+          if compgen -G "_docs/docs/src/${REPO_NAME}/api/*.md" > /dev/null; then
+            npx --yes prettier@3.8.3 --write "_docs/docs/src/${REPO_NAME}/api/*.md"
           fi
         env:
           REPO_NAME: ${{ matrix.repo.name }}
@@ -88,9 +91,11 @@ jobs:
       - name: Open docs PR
         uses: peter-evans/create-pull-request@v8
         with:
+          path: _docs
           commit-message: "docs(${{ matrix.repo.name }}): generate API docs"
           title: "docs(${{ matrix.repo.name }}): generate API docs"
           body: "Generate and format API docs from `${{ matrix.repo.name }}` LuaLS type annotations."
           branch: "automation/generate-docs-${{ matrix.repo.name }}"
           add-paths: |
             docs/src/${{ matrix.repo.name }}/api
+
