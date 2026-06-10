@@ -12,19 +12,19 @@ on:
       run_luacheck:
         description: "Run Luacheck"
         type: boolean
-        default: true
+        default: false
       run_stylua:
         description: "Run StyLua"
         type: boolean
-        default: true
+        default: false
       run_markdownlint:
         description: "Run Markdownlint"
         type: boolean
-        default: true
+        default: false
       run_docs:
         description: "Run Docs Generation"
         type: boolean
-        default: true
+        default: false
   workflow_call:
     secrets:
       DOCS_TOKEN:
