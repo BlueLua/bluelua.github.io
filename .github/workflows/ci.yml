@@ -1,0 +1,208 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+  workflow_call:
+    secrets:
+      DOCS_TOKEN:
+        description: "Token with write access to the docs repo"
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  luacheck:
+    name: Luacheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Resolve paths
+        id: paths
+        run: |
+          if [ -d src ]; then
+            echo "paths=src" >> "$GITHUB_OUTPUT"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          elif [ -d lua ]; then
+            echo "paths=lua" >> "$GITHUB_OUTPUT"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Luajit
+        if: steps.paths.outputs.exists == 'true'
+        uses: leafo/gh-actions-lua@v13
+        with:
+          luaVersion: luajit
+
+      - name: Setup LuaRocks
+        if: steps.paths.outputs.exists == 'true'
+        uses: leafo/gh-actions-luarocks@v6
+
+      - name: Install Luacheck
+        if: steps.paths.outputs.exists == 'true'
+        run: luarocks install luacheck
+
+      - name: Lint Lua
+        if: steps.paths.outputs.exists == 'true'
+        run: luacheck ${{ steps.paths.outputs.paths }}
+
+  stylua:
+    name: StyLua
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Resolve paths
+        id: paths
+        run: |
+          if [ -d src ]; then
+            echo "paths=src" >> "$GITHUB_OUTPUT"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          elif [ -d lua ]; then
+            echo "paths=lua" >> "$GITHUB_OUTPUT"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check Lua formatting
+        if: steps.paths.outputs.exists == 'true'
+        uses: JohnnyMorganz/stylua-action@v5
+        with:
+          token: ${{ github.token }}
+          version: latest
+          args: --check ${{ steps.paths.outputs.paths }}
+
+  markdownlint:
+    name: Markdownlint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Lint Markdown
+        run: npx --yes markdownlint-cli2 "**/*.md"
+
+  discover:
+    name: Discover Repositories
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      repos: ${{ steps.repos.outputs.repos }}
+    steps:
+      - name: Discover source repos
+        id: repos
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ORG: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+
+          RUNNING_REPO="${GITHUB_REPOSITORY#*/}"
+
+          # If running on a library repo, return it and exit early
+          if [ "${RUNNING_REPO}" != "${ORG}.github.io" ]; then
+            clone_url="https://github.com/${GITHUB_REPOSITORY}.git"
+            echo "repos=$(jq -cn --arg name "$RUNNING_REPO" --arg clone_url "$clone_url" '[{name: $name, clone_url: $clone_url}]')" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          tmp="$(mktemp -d)"
+          repos_file="$tmp/repos.jsonl"
+
+          gh api --paginate "/orgs/${ORG}/repos" \
+            --jq '.[] | select(.archived == false and .disabled == false) | [.name, .clone_url] | @tsv' \
+            > "$repos_file"
+
+          found="[]"
+          while IFS=$'\t' read -r name clone_url; do
+            [ "$name" != "${ORG}.github.io" ] || continue
+
+            if gh api "/repos/${ORG}/${name}/contents/types" >/dev/null 2>&1; then
+              found="$(jq --arg name "$name" --arg clone_url "$clone_url" \
+                '. + [{ "name": $name, "clone_url": $clone_url }]' <<< "$found")"
+            fi
+          done < "$repos_file"
+
+          echo "repos=$(jq -c . <<< "$found")" >> "$GITHUB_OUTPUT"
+
+  generate:
+    name: Generate API Docs (${{ matrix.repo.name }})
+    needs: discover
+    if: ${{ needs.discover.outputs.repos != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        repo: ${{ fromJson(needs.discover.outputs.repos) }}
+    steps:
+      - name: Checkout docs repo
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
+          path: _docs
+
+      - name: Checkout source repo
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ github.repository_owner }}/${{ matrix.repo.name }}
+          path: _source
+          fetch-depth: 1
+
+      - name: Validate types directory
+        run: |
+          if [ ! -d "_source/types" ]; then
+            echo "::error::The 'types' directory does not exist in the source repository: ${{ matrix.repo.name }}"
+            exit 1
+          fi
+
+      - name: Setup LuaJIT
+        uses: leafo/gh-actions-lua@v13
+        with:
+          luaVersion: "luajit"
+
+      - name: Generate docs
+        run: |
+          set -euo pipefail
+
+          output_dir="_docs/docs/src/${REPO_NAME}/api"
+          mkdir -p "$output_dir"
+          find "$output_dir" -maxdepth 1 -type f -name "*.md" ! -name "ecodes.md" -delete
+
+          luajit _docs/scripts/generate-api-docs.lua "_source/types" "$output_dir"
+        env:
+          REPO_NAME: ${{ matrix.repo.name }}
+
+      - name: Format docs
+        run: |
+          set -euo pipefail
+
+          if compgen -G "_docs/docs/src/${REPO_NAME}/api/*.md" > /dev/null; then
+            npx --yes prettier@3.8.3 --write "_docs/docs/src/${REPO_NAME}/api/*.md"
+          fi
+        env:
+          REPO_NAME: ${{ matrix.repo.name }}
+
+      - name: Open docs PR
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.DOCS_TOKEN }}
+          path: _docs
+          commit-message: "docs(${{ matrix.repo.name }}): generate API docs"
+          title: "docs(${{ matrix.repo.name }}): generate API docs"
+          body: "Generate and format API docs from `${{ matrix.repo.name }}` LuaLS type annotations."
+          branch: "automation/generate-docs-${{ matrix.repo.name }}"
+          add-paths: |
+            docs/src/${{ matrix.repo.name }}/api
