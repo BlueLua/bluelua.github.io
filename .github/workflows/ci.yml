@@ -8,6 +8,17 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      job:
+        description: "Job to run"
+        required: true
+        default: "luacheck"
+        type: choice
+        options:
+          - luacheck
+          - stylua
+          - markdownlint
+          - docs
   workflow_call:
     secrets:
       DOCS_TOKEN:
@@ -21,6 +32,7 @@ permissions:
 jobs:
   luacheck:
     name: Luacheck
+    if: github.event_name != 'workflow_dispatch' || inputs.job == 'luacheck'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -59,6 +71,7 @@ jobs:
 
   stylua:
     name: StyLua
+    if: github.event_name != 'workflow_dispatch' || inputs.job == 'stylua'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -87,6 +100,7 @@ jobs:
 
   markdownlint:
     name: Markdownlint
+    if: github.event_name != 'workflow_dispatch' || inputs.job == 'markdownlint'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -97,7 +111,9 @@ jobs:
 
   discover:
     name: Discover Repositories
-    if: github.event_name != 'pull_request'
+    if: |
+      github.event_name != 'pull_request' &&
+      (github.event_name != 'workflow_dispatch' || inputs.job == 'docs')
     runs-on: ubuntu-latest
     outputs:
       repos: ${{ steps.repos.outputs.repos }}
