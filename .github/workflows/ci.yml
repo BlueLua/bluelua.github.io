@@ -134,6 +134,10 @@ jobs:
 
           RUNNING_REPO="${GITHUB_REPOSITORY#*/}"
 
+          # Convert to lowercase to avoid case-sensitivity mismatches
+          RUNNING_REPO="${RUNNING_REPO,,}"
+          ORG="${ORG,,}"
+
           # If running on a library repo, return it and exit early
           if [ "${RUNNING_REPO}" != "${ORG}.github.io" ]; then
             clone_url="https://github.com/${GITHUB_REPOSITORY}.git"
@@ -150,7 +154,8 @@ jobs:
 
           found="[]"
           while IFS=$'\t' read -r name clone_url; do
-            [ "$name" != "${ORG}.github.io" ] || continue
+            name_lower="${name,,}"
+            [ "${name_lower}" != "${ORG}.github.io" ] || continue
 
             if gh api "/repos/${ORG}/${name}/contents/types" >/dev/null 2>&1; then
               found="$(jq --arg name "$name" --arg clone_url "$clone_url" \
