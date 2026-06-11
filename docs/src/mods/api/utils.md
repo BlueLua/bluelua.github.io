@@ -60,10 +60,6 @@ Format a list-like table as a comma-separated argument string.
 utils.args_repr({ "a", 1, true }) --> '"a", 1, true'
 ```
 
-> [!NOTE]
->
-> Requires [`inspect`](https://github.com/kikito/inspect.lua)
-
 <a id="fn-keypath"></a>
 
 #### `keypath(...)`
