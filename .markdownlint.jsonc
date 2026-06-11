@@ -5,4 +5,6 @@
   "MD033": false,
   // long code lines in examples
   "MD013": false,
+  // first line in a file should be a top-level heading
+  "MD041": false,
 }
