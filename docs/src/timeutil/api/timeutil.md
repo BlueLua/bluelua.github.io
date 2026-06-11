@@ -76,3 +76,11 @@ Blocks the current thread for the requested non-negative duration.
 local time = require("timeutil")
 time.sleep(1.5) -- sleep for 1.5 seconds
 ```
+
+## Fields
+
+<a id="version"></a>
+
+### `_VERSION` (`string`)
+
+Value: `"version"`
