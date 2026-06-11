@@ -31,6 +31,28 @@ permissions:
   pull-requests: write
 
 jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      markdown: ${{ steps.filter.outputs.markdown }}
+      docs: ${{ steps.filter.outputs.docs }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check path filters
+        id: filter
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            markdown:
+              - '**/*.md'
+            docs:
+              - 'scripts/**/*.lua'
+              - '.markdownlint.jsonc'
+              - '.prettierrc.json'
+
   markdownlint:
     name: Markdownlint
     if: github.event_name != 'workflow_dispatch' || inputs.run_markdownlint
