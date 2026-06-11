@@ -26,11 +26,15 @@ ok = is.table({})          --> true
 > is.tAbLe({})  --> true
 > ```
 
+<!-- markdownlint-disable MD028 -->
+
 > [!IMPORTANT]
 >
 > Path checks require **LuaFileSystem**
 > ([`lfs`](https://github.com/lunarmodules/luafilesystem)) and raise an error if
 > it is not installed.
+
+<!-- markdownlint-enable MD028 -->
 
 ## `is()`
 
