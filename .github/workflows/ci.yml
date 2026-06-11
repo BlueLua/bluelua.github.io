@@ -3,8 +3,14 @@ name: CI
 on:
   push:
     branches: [main]
+    paths:
+      - "scripts/**"
+      - ".github/workflows/ci.yml"
   pull_request:
     branches: [main]
+    paths:
+      - "scripts/**"
+      - ".github/workflows/ci.yml"
   workflow_dispatch:
   workflow_call:
     inputs:
@@ -22,48 +28,9 @@ permissions:
   pull-requests: write
 
 jobs:
-  changes:
-    name: Detect Changes
-    runs-on: ubuntu-latest
-    outputs:
-      markdown: ${{ steps.filter.outputs.markdown }}
-      docs: ${{ steps.filter.outputs.docs }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Check path filters
-        id: filter
-        uses: dorny/paths-filter@v4
-        with:
-          filters: |
-            markdown:
-              - '**/*.md'
-            docs:
-              - 'scripts/**/*.lua'
-              - '.markdownlint.jsonc'
-              - '.prettierrc.json'
-
-  markdownlint:
-    name: Markdownlint
-    needs: changes
-    if: |
-      github.event_name != 'workflow_call' &&
-      (needs.changes.outputs.markdown == 'true' || github.event_name == 'workflow_dispatch')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Lint Markdown
-        run: npx --yes markdownlint-cli2 "**/*.md"
-
   discover:
     name: Discover Repositories
-    needs: changes
-    if: |
-      github.event_name != 'pull_request' &&
-      (needs.changes.outputs.markdown == 'true' || needs.changes.outputs.docs == 'true' || github.event_name == 'workflow_dispatch')
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     outputs:
       repos: ${{ steps.repos.outputs.repos }}
