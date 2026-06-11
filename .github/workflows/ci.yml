@@ -1,16 +1,16 @@
-name: CI
+name: Docs Automation
 
 on:
   push:
     branches: [main]
     paths:
       - "scripts/**"
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/docs.yml"
   pull_request:
     branches: [main]
     paths:
       - "scripts/**"
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/docs.yml"
   workflow_dispatch:
   workflow_call:
     inputs:
