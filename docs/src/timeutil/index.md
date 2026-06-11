@@ -4,8 +4,8 @@
   <a href="https://luarocks.org/modules/BlueLua/timeutil">
     <img src="https://img.shields.io/luarocks/v/BlueLua/timeutil?color=blue&style=flat-square" alt="LuaRocks">
   </a>
-  <a href="https://github.com/BlueLua/timeutil/actions/workflows/test.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/BlueLua/timeutil/test.yml?style=flat-square" alt="Test Status">
+  <a href="https://github.com/BlueLua/timeutil/actions/workflows/ci.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/BlueLua/timeutil/ci.yml?label=CI&style=flat-square" alt="CI Status">
   </a>
   <img src="https://img.shields.io/badge/lua-5.1%20%7C%205.2%20%7C%205.3%20%7C%205.4%20%7C%205.5%20%7C%20LuaJIT-blue?style=flat-square" alt="Lua Versions">
   <img src="https://img.shields.io/badge/platform-linux%20%7C%20macos%20%7C%20windows-blue?style=flat-square" alt="Platform">
