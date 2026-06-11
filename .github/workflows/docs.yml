@@ -13,11 +13,6 @@ on:
       - ".github/workflows/docs.yml"
   workflow_dispatch:
   workflow_call:
-    inputs:
-      run_docs:
-        description: "Run Docs Generation"
-        type: boolean
-        default: true
     secrets:
       DOCS_TOKEN:
         description: "Token with write access to the docs repo"
