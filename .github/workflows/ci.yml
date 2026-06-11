@@ -167,12 +167,7 @@ jobs:
           REPO_NAME: ${{ matrix.repo.name }}
 
       - name: Format docs
-        run: |
-          set -euo pipefail
-
-          if compgen -G "_docs/docs/src/${REPO_NAME}/api/*.md" > /dev/null; then
-            npx --yes prettier@3.8.3 --write "_docs/docs/src/${REPO_NAME}/api/*.md"
-          fi
+        run: npx --yes prettier@3.8.3 --write "_docs/docs/src/${REPO_NAME}/api/*.md" --no-error-on-unmatched-pattern
         env:
           REPO_NAME: ${{ matrix.repo.name }}
 
