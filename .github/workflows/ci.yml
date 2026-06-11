@@ -6,15 +6,6 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      run_markdownlint:
-        description: "Run Markdownlint"
-        type: boolean
-        default: false
-      run_docs:
-        description: "Run Docs Generation"
-        type: boolean
-        default: false
   workflow_call:
     inputs:
       run_docs:
@@ -56,9 +47,7 @@ jobs:
   markdownlint:
     name: Markdownlint
     needs: changes
-    if: |
-      (github.event_name != 'workflow_dispatch' || inputs.run_markdownlint) &&
-      (needs.changes.outputs.markdown == 'true' || inputs.run_markdownlint)
+    if: needs.changes.outputs.markdown == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -72,8 +61,7 @@ jobs:
     needs: changes
     if: |
       github.event_name != 'pull_request' &&
-      (github.event_name != 'workflow_dispatch' || inputs.run_docs) &&
-      (needs.changes.outputs.markdown == 'true' || needs.changes.outputs.docs == 'true' || inputs.run_docs)
+      (needs.changes.outputs.markdown == 'true' || needs.changes.outputs.docs == 'true' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     outputs:
       repos: ${{ steps.repos.outputs.repos }}
