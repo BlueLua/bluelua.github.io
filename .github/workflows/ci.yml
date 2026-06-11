@@ -55,7 +55,10 @@ jobs:
 
   markdownlint:
     name: Markdownlint
-    if: github.event_name != 'workflow_dispatch' || inputs.run_markdownlint
+    needs: changes
+    if: |
+      (github.event_name != 'workflow_dispatch' || inputs.run_markdownlint) &&
+      (needs.changes.outputs.markdown == 'true' || inputs.run_markdownlint)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
