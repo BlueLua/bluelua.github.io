@@ -12,6 +12,7 @@ on:
       - "scripts/**"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: write
