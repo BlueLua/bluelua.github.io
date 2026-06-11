@@ -69,9 +69,11 @@ jobs:
 
   discover:
     name: Discover Repositories
+    needs: changes
     if: |
       github.event_name != 'pull_request' &&
-      (github.event_name != 'workflow_dispatch' || inputs.run_docs)
+      (github.event_name != 'workflow_dispatch' || inputs.run_docs) &&
+      (needs.changes.outputs.markdown == 'true' || needs.changes.outputs.docs == 'true' || inputs.run_docs)
     runs-on: ubuntu-latest
     outputs:
       repos: ${{ steps.repos.outputs.repos }}
