@@ -108,7 +108,6 @@ jobs:
 
           output_dir="_docs/docs/src/${{ matrix.repo.name }}/api"
           mkdir -p "$output_dir"
-          find "$output_dir" -maxdepth 1 -type f -name "*.md" ! -name "ecodes.md" -delete
 
           luajit _docs/scripts/generate-api-docs.lua "_source/types" "$output_dir"
 
