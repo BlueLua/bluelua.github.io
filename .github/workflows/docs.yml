@@ -121,7 +121,6 @@ jobs:
           path: _docs
           commit-message: "docs(${{ matrix.repo.name }}): generate API docs"
           title: "docs(${{ matrix.repo.name }}): generate API docs"
-          body: "Generate and format API docs from `${{ matrix.repo.name }}` LuaLS type annotations."
           branch: "automation/generate-docs-${{ matrix.repo.name }}"
-          add-paths: |
-            docs/src/${{ matrix.repo.name }}/api
+          add-paths: docs/src/${{ matrix.repo.name }}/api
+
