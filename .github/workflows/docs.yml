@@ -84,12 +84,8 @@ jobs:
 
       - name: Generate docs
         run: |
-          set -euo pipefail
-
-          output_dir="_docs/docs/src/${{ matrix.repo.name }}/api"
-          mkdir -p "$output_dir"
-
-          luajit _docs/scripts/generate-api-docs.lua "_source/types" "$output_dir"
+          mkdir -p "_docs/docs/src/${{ matrix.repo.name }}/api"
+          luajit _docs/scripts/generate-api-docs.lua "_source/types" "_docs/docs/src/${{ matrix.repo.name }}/api"
 
       - name: Format docs
         run: npx --yes prettier@latest --write "_docs/docs/src/${{ matrix.repo.name }}/api/*.md" --no-error-on-unmatched-pattern
