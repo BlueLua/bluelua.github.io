@@ -106,13 +106,11 @@ jobs:
         run: |
           set -euo pipefail
 
-          output_dir="_docs/docs/src/${REPO_NAME}/api"
+          output_dir="_docs/docs/src/${{ matrix.repo.name }}/api"
           mkdir -p "$output_dir"
           find "$output_dir" -maxdepth 1 -type f -name "*.md" ! -name "ecodes.md" -delete
 
           luajit _docs/scripts/generate-api-docs.lua "_source/types" "$output_dir"
-        env:
-          REPO_NAME: ${{ matrix.repo.name }}
 
       - name: Format docs
         run: npx --yes prettier@3.8.3 --write "_docs/docs/src/${REPO_NAME}/api/*.md" --no-error-on-unmatched-pattern
