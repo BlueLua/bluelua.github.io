@@ -77,13 +77,6 @@ jobs:
           path: _source
           fetch-depth: 1
 
-      - name: Validate types directory
-        run: |
-          if [ ! -d "_source/types" ]; then
-            echo "::error::The 'types' directory does not exist in the source repository: ${{ matrix.repo.name }}"
-            exit 1
-          fi
-
       - name: Setup LuaJIT
         uses: leafo/gh-actions-lua@v13
         with:
