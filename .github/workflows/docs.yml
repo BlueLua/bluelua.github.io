@@ -112,7 +112,7 @@ jobs:
           luajit _docs/scripts/generate-api-docs.lua "_source/types" "$output_dir"
 
       - name: Format docs
-        run: npx --yes prettier@3.8.3 --write "_docs/docs/src/${{ matrix.repo.name }}/api/*.md" --no-error-on-unmatched-pattern
+        run: npx --yes prettier@latest --write "_docs/docs/src/${{ matrix.repo.name }}/api/*.md" --no-error-on-unmatched-pattern
 
       - name: Open docs PR
         uses: peter-evans/create-pull-request@v8
