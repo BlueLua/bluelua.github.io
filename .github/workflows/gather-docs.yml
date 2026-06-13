@@ -1,4 +1,4 @@
-name: Gather Project Docs
+name: Gather Docs
 
 on:
   push:
