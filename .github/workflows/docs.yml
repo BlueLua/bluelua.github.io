@@ -74,7 +74,6 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: ${{ github.repository_owner }}/${{ matrix.repo.name }}
-          path: _source
           fetch-depth: 1
 
       - name: Setup LuaJIT
@@ -84,18 +83,16 @@ jobs:
 
       - name: Generate docs
         run: |
-          mkdir -p "_docs/docs/src/${{ matrix.repo.name }}/api"
-          luajit _docs/scripts/generate-api-docs.lua "_source/types" "_docs/docs/src/${{ matrix.repo.name }}/api"
+          mkdir -p "docs/api"
+          luajit _docs/scripts/generate-api-docs.lua "types" "docs/api"
 
       - name: Format docs
-        run: npx --yes prettier@latest --write "_docs/docs/src/${{ matrix.repo.name }}/api/*.md" --no-error-on-unmatched-pattern
+        run: npx --yes prettier@latest --write "docs/api/*.md" --no-error-on-unmatched-pattern
 
       - name: Open docs PR
         uses: peter-evans/create-pull-request@v8
         with:
-          token: ${{ secrets.DOCS_TOKEN }}
-          path: _docs
-          commit-message: "docs(${{ matrix.repo.name }}): generate API docs"
-          title: "docs(${{ matrix.repo.name }}): generate API docs"
-          branch: "automation/generate-docs-${{ matrix.repo.name }}"
-          add-paths: docs/src/${{ matrix.repo.name }}/api
+          commit-message: "docs: generate API docs"
+          title: "docs: generate API docs"
+          branch: "automation/generate-docs"
+          add-paths: docs/api
