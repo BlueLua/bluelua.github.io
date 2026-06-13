@@ -31,10 +31,11 @@ jobs:
       - name: Generate docs
         run: |
           mkdir -p "docs/api"
+          [ -f "README.md" ] && cp "README.md" "docs/index.md"
           luajit _docs/scripts/generate-api-docs.lua "types" "docs/api"
 
       - name: Format docs
-        run: npx --yes prettier@latest --write "docs/api/*.md" --no-error-on-unmatched-pattern
+        run: npx --yes prettier@latest --write "docs/**/*.md" --no-error-on-unmatched-pattern
 
       - name: Open docs PR
         uses: peter-evans/create-pull-request@v8
@@ -42,4 +43,4 @@ jobs:
           commit-message: "docs: generate API docs"
           title: "docs: generate API docs"
           branch: "automation/generate-docs"
-          add-paths: docs/api
+          add-paths: docs
