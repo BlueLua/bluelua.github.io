@@ -71,7 +71,7 @@ jobs:
       - name: Open docs PR
         uses: peter-evans/create-pull-request@v8
         with:
-          commit-message: "docs: sync gathered documentation from ${{ matrix.repo }}"
-          title: "docs: sync gathered documentation from ${{ matrix.repo }}"
+          commit-message: "docs: sync ${{ matrix.repo }}"
+          title: "docs: sync ${{ matrix.repo }}"
           branch: docs/${{ matrix.repo }}
           add-paths: docs/src/${{ matrix.repo }}
