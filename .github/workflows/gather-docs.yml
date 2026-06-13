@@ -1,6 +1,11 @@
 name: Gather Project Docs
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/gather-docs.yml
   schedule:
     - cron: "0 0 * * *"
   workflow_dispatch:
