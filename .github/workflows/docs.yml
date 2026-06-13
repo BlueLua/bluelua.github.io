@@ -1,12 +1,6 @@
-name: Docs Automation
+name: Generate API Docs
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "scripts/**"
-      - ".github/workflows/docs.yml"
-  workflow_dispatch:
   workflow_call:
 
 permissions:
@@ -14,57 +8,11 @@ permissions:
   pull-requests: write
 
 jobs:
-  discover:
-    name: Discover Repositories
-    if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    outputs:
-      repos: ${{ steps.repos.outputs.repos }}
-    steps:
-      - name: Discover source repos
-        id: repos
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-
-          ORG="${GITHUB_REPOSITORY_OWNER,,}"
-          RUNNING_REPO="${GITHUB_REPOSITORY#*/}"
-          RUNNING_REPO="${RUNNING_REPO,,}"
-
-          # If triggered from a library repo, return only that repo
-          if [ "$RUNNING_REPO" != "${ORG}.github.io" ]; then
-            echo "repos=$(jq -cn --arg name "$RUNNING_REPO" '[{name: $name}]')" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # Discover all org repos that have a /types directory
-          repos="$(
-            gh api --paginate "/orgs/${ORG}/repos" \
-              --jq '[.[] | select(.archived == false and .disabled == false) | .name]' \
-              | jq -c '[.[] | select(ascii_downcase != "'"${ORG}.github.io"'")]'
-          )"
-
-          found="[]"
-          while IFS= read -r name; do
-            if gh api "/repos/${ORG}/${name}/contents/types" > /dev/null 2>&1; then
-              found="$(jq -c --arg name "$name" '. + [{name: $name}]' <<< "$found")"
-            fi
-          done < <(jq -r '.[]' <<< "$repos")
-
-          echo "repos=$(jq -c . <<< "$found")" >> "$GITHUB_OUTPUT"
-
   generate:
-    name: Generate API Docs (${{ matrix.repo.name }})
-    needs: discover
-    if: ${{ needs.discover.outputs.repos != '[]' }}
+    name: Generate API Docs
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        repo: ${{ fromJson(needs.discover.outputs.repos) }}
     steps:
-      - name: Checkout docs repo
+      - name: Checkout docs repo (tooling)
         uses: actions/checkout@v6
         with:
           repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
@@ -73,7 +21,6 @@ jobs:
       - name: Checkout source repo
         uses: actions/checkout@v6
         with:
-          repository: ${{ github.repository_owner }}/${{ matrix.repo.name }}
           fetch-depth: 1
 
       - name: Setup LuaJIT
