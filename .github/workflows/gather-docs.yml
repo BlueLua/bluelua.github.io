@@ -1,86 +1,70 @@
 name: Gather Project Docs
 
 on:
+  schedule:
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  gather:
-    name: Gather Docs
+  discover:
+    name: Discover Repos
     runs-on: ubuntu-latest
+    outputs:
+      repos: ${{ steps.find.outputs.repos }}
     steps:
-      - name: Checkout central docs repo
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
-
-      - name: Gather docs from projects
-        env:
-          GH_TOKEN: ${{ secrets.DOCS_TOKEN || github.token }}
+      - name: Find repos
+        id: find
         run: |
           set -euo pipefail
 
           ORG="${GITHUB_REPOSITORY_OWNER,,}"
-          CENTRAL_REPO="${GITHUB_REPOSITORY#*/}"
-          CENTRAL_REPO="${CENTRAL_REPO,,}"
 
-          # Discover all org repos (excluding the central repo itself)
-          repos="$(
+          repos=$(
             gh api --paginate "/orgs/${ORG}/repos" \
-              --jq '[.[] | select(.archived == false and .disabled == false) | .name]' \
-              | jq -c '[.[] | select(ascii_downcase != "'"${CENTRAL_REPO}"'")]'
-          )"
+              --jq '[.[] | select(
+                .archived == false and
+                .disabled == false and
+                (.name | ascii_downcase | IN("bluelua.github.io", ".github") | not)
+              ) | .name]'
+          )
 
-          echo "Discovered repositories: ${repos}"
+          echo "repos=${repos}" >> "${GITHUB_OUTPUT}"
 
-          # Loop over each repository
-          while IFS= read -r name; do
-            echo "Checking repository: ${name}"
+  sync:
+    name: Sync ${{ matrix.repo }}
+    needs: discover
+    if: ${{ needs.discover.outputs.repos != '[]' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    strategy:
+      matrix:
+        repo: ${{ fromJson(needs.discover.outputs.repos) }}
+      fail-fast: false
+    steps:
+      - name: Checkout central docs repo
+        uses: actions/checkout@v6
 
-            # Check if the repository has a docs directory
-            if gh api "/repos/${ORG}/${name}/contents/docs" >/dev/null 2>&1; then
-              echo "Found docs/ in ${name}. Gathering..."
+      - name: Checkout ${{ matrix.repo }} docs
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ github.repository_owner }}/${{ matrix.repo }}
+          sparse-checkout: docs
+          path: _src
 
-              # Create target directory in central repo
-              target_dir="docs/src/${name}"
-              rm -rf "${target_dir}"
-              mkdir -p "${target_dir}"
-
-              # Clone the library repo docs directory only
-              temp_dir=$(mktemp -d)
-              git clone --depth 1 --no-checkout "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY_OWNER}/${name}.git" "${temp_dir}"
-              (
-                cd "${temp_dir}"
-                git sparse-checkout init --cone
-                git sparse-checkout set docs
-                git checkout
-              )
-
-              # Copy the contents of the docs directory to the target directory
-              if [ -d "${temp_dir}/docs" ]; then
-                cp -R "${temp_dir}/docs/"* "${target_dir}/"
-                echo "Successfully gathered docs from ${name}"
-              else
-                echo "Warning: docs directory not found after checkout for ${name}"
-              fi
-
-              rm -rf "${temp_dir}"
-            else
-              echo "No docs/ directory found in ${name}. Skipping."
-            fi
-          done < <(jq -r '.[]' <<< "$repos")
-
-      - name: Commit and push changes
+      - name: Copy docs
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          target="docs/src/${{ matrix.repo }}"
+          rm -rf "${target}"
+          [ -d "_src/docs" ] || exit 0
+          mkdir -p "${target}"
+          cp -R _src/docs/. "${target}"
 
-          git add docs/src/
-          if git diff --cached --quiet; then
-            echo "No changes in docs to commit."
-          else
-            git commit -m "docs: sync gathered documentation from project repositories"
-            git push origin main
-          fi
+      - name: Open docs PR
+        uses: peter-evans/create-pull-request@v8
+        with:
+          commit-message: "docs: sync gathered documentation from ${{ matrix.repo }}"
+          title: "docs: sync gathered documentation from ${{ matrix.repo }}"
+          branch: docs/${{ matrix.repo }}
+          add-paths: docs/src/${{ matrix.repo }}
