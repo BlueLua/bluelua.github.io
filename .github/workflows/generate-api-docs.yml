@@ -12,16 +12,16 @@ jobs:
     name: Generate API Docs
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
       - name: Checkout docs repo (tooling)
         uses: actions/checkout@v6
         with:
           repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
           path: _docs
-
-      - name: Checkout source repo
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
 
       - name: Setup LuaJIT
         uses: leafo/gh-actions-lua@v13
