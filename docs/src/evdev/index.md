@@ -1,21 +1,12 @@
 # evdev
 
-<p style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
-  <a href="https://luarocks.org/modules/BlueLua/bluelua-evdev">
-    <img src="https://img.shields.io/luarocks/v/BlueLua/bluelua-evdev?color=blue&style=flat-square" alt="LuaRocks">
-  </a>
-  <a href="https://github.com/BlueLua/evdev/actions/workflows/ci.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/BlueLua/evdev/ci.yml?label=CI&style=flat-square" alt="CI Status">
-  </a>
-  <img src="https://img.shields.io/badge/lua-5.1%20%7C%205.2%20%7C%205.3%20%7C%205.4%20%7C%205.5%20%7C%20LuaJIT-blue?style=flat-square" alt="Lua Versions">
-  <img src="https://img.shields.io/badge/platform-linux-blue?style=flat-square" alt="Platform">
-  <a href="https://github.com/BlueLua/evdev/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License">
-  </a>
-</p>
+[![LuaRocks](https://img.shields.io/luarocks/v/BlueLua/bluelua-evdev?color=blue&style=flat-square)](https://luarocks.org/modules/BlueLua/bluelua-evdev)
+![Lua Versions](https://img.shields.io/badge/lua-5.1%20%7C%205.2%20%7C%205.3%20%7C%205.4%20%7C%205.5%20%7C%20LuaJIT-blue?style=flat-square)
+![Platform](https://img.shields.io/badge/platform-linux-blue?style=flat-square)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](https://github.com/BlueLua/evdev/blob/main/LICENSE)
 
-`evdev` is a C-backed Lua module for working with Linux input devices through
-the [evdev] interface.
+Lua bindings for Linux `evdev` input devices and `/dev/uinput` virtual devices
+(keyboards, mice, and relative pointers).
 
 ## ✨ Features
 
@@ -23,9 +14,7 @@ the [evdev] interface.
   path, or physical location.
 - **Event Stream**: Easily read kernel input events with high-resolution
   timestamps.
-- **Exclusive Grabbing**: Grab a device to prevent its events from reaching
-  other applications (like desktop environments).
-- **Virtual Devices ([uinput])**: Emulate any hardware input device (mouse,
+- **Virtual Devices (uinput)**: Emulate any hardware input device (mouse,
   keyboard, gamepad) programmatically.
 - **Event Selector**: Poll multiple input devices concurrently in a single
   non-blocking event loop.
@@ -34,63 +23,49 @@ the [evdev] interface.
 
 ## 📦 Installation
 
-::: code-group
+Install the library via LuaRocks:
 
-```sh [LuaRocks]
+```bash
 luarocks install bluelua-evdev
 ```
 
-:::
-
 ## 🚀 Usage
 
-::: code-group
+### Listening to Key Presses
 
-```lua [list-devices.lua]
+```lua
 local evdev = require "evdev"
 
--- Discover and list all connected devices
-local devs = assert(evdev.devices.list_devices())
-for _, dev in ipairs(devs) do
-  print(dev.path, dev.name)
-end
-```
-
-```lua [read-events.lua]
-local evdev = require "evdev"
-
--- Open a specific input device
-local dev = assert(evdev.device.open("/dev/input/event3"))
+-- Find and open the primary keyboard
+local dev = assert(evdev.device.open("/dev/input/event0"))
 print("Opened device: " .. dev.name)
 
--- Read event stream
-for e in dev:events() do
-  if e.events.is_press(e) then
-    print("Key Pressed! Code: " .. e.code)
+-- Process events in a loop
+for event in dev:events() do
+  if evdev.events.is_press(event) then
+    print("Key Pressed! Code: " .. event.code)
   end
 end
 ```
 
-```lua [virtual-keyboard.lua]
+### Creating a Virtual Keyboard
+
+```lua
 local evdev = require "evdev"
 local ecodes = evdev.ecodes
 
--- Create a virtual keyboard device
+-- Create the virtual keyboard
 local ui = assert(evdev.uinput.create())
 
--- Press and release Shift + A
+-- Press Shift + A
 ui:emit(ecodes.EV_KEY, ecodes.KEY_LEFTSHIFT, 1)
 ui:emit(ecodes.EV_KEY, ecodes.KEY_A, 1)
 ui:sync()
 
+-- Release Shift + A
 ui:emit(ecodes.EV_KEY, ecodes.KEY_A, 0)
 ui:emit(ecodes.EV_KEY, ecodes.KEY_LEFTSHIFT, 0)
 ui:sync()
 
 ui:close()
 ```
-
-:::
-
-[evdev]: https://www.freedesktop.org/wiki/Software/libevdev/
-[uinput]: https://en.wikipedia.org/wiki/Uinput

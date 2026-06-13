@@ -37,7 +37,7 @@ print(dev.name)
 
 ::: details Device info
 
-<!-- @include: ../_snippets/device-info.md -->
+<!-- @include: ../reference/device-info.md -->
 
 :::
 
@@ -100,6 +100,6 @@ runs until the device is closed or an error occurs.
 
 ::: details Event fields
 
-<!-- @include: ../_snippets/event-fields.md -->
+<!-- @include: ../reference/event-fields.md -->
 
 :::

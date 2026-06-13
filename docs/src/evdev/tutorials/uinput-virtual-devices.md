@@ -32,7 +32,7 @@ print(ui.path)
 
 ::: details UInput options
 
-<!-- @include: ../_snippets/uinput-spec.md -->
+<!-- @include: ../reference/uinput-spec.md -->
 
 :::
 

@@ -1,18 +1,9 @@
-# mods
+# Mods
 
-<p style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
-  <a href="https://luarocks.org/modules/BlueLua/mods">
-    <img src="https://img.shields.io/luarocks/v/BlueLua/mods?color=blue&style=flat-square" alt="LuaRocks">
-  </a>
-  <a href="https://github.com/BlueLua/mods/actions/workflows/ci.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/BlueLua/mods/ci.yml?label=CI&style=flat-square" alt="CI Status">
-  </a>
-  <img src="https://img.shields.io/badge/lua-5.1%20%7C%205.2%20%7C%205.3%20%7C%205.4%20%7C%205.5%20%7C%20LuaJIT-blue?style=flat-square" alt="Lua Versions">
-  <img src="https://img.shields.io/badge/platform-linux%20%7C%20macos%20%7C%20windows-blue?style=flat-square" alt="Platform">
-  <a href="https://github.com/BlueLua/mods/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License">
-  </a>
-</p>
+[![LuaRocks](https://img.shields.io/luarocks/v/BlueLua/mods?color=blue&style=flat-square)](https://luarocks.org/modules/BlueLua/mods)
+![Lua Versions](https://img.shields.io/badge/lua-5.1%20%7C%205.2%20%7C%205.3%20%7C%205.4%20%7C%205.5%20%7C%20LuaJIT-blue?style=flat-square)
+![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos%20%7C%20windows-blue?style=flat-square)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](https://github.com/BlueLua/mods/blob/main/LICENSE)
 
 `mods` is a comprehensive Lua utility library featuring lazy-loaded modules and
 wide runtime compatibility.
@@ -32,19 +23,13 @@ wide runtime compatibility.
 
 ## 📦 Installation
 
-::: code-group
-
-```sh [LuaRocks]
+```sh
 luarocks install mods
 ```
 
-:::
-
 ## 🚀 Usage
 
-::: code-group
-
-```lua [example.lua]
+```lua
 local mods = require "mods"
 
 local stripped = mods.str.strip("   hello world   ")
@@ -54,8 +39,6 @@ local items = mods.list({ 1, 2, 3 })
 local reversed = items:reverse()
 print(reversed:join(", ")) -- Output: "3, 2, 1"
 ```
-
-:::
 
 [LFS]: https://github.com/lunarmodules/luafilesystem
 [LuaLS]: https://github.com/LuaLS/lua-language-server

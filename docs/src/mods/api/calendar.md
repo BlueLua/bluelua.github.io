@@ -6,6 +6,11 @@ description: "Calendar and date helpers."
 
 Calendar and date helpers.
 
+> [!WARNING]
+>
+> This module is still under development and may not be stable. The API is
+> incomplete and may change in future versions.
+
 ## Usage
 
 ```lua
@@ -56,6 +61,7 @@ Return the default first weekday.
 **Example**:
 
 ```lua
+local cal = mods.calendar
 print(cal.getfirstweekday()) --> 1
 ```
 
@@ -76,6 +82,7 @@ Set the default first weekday.
 **Example**:
 
 ```lua
+local cal = mods.calendar
 cal.setfirstweekday(cal.SUNDAY)
 ```
 
@@ -102,6 +109,7 @@ Return `true` for leap years.
 **Example**:
 
 ```lua
+local cal = mods.calendar
 print(cal.isleap(2024)) --> true
 ```
 
@@ -123,6 +131,7 @@ Return the number of leap years from `y1` up to but not including `y2`.
 **Example**:
 
 ```lua
+local cal = mods.calendar
 print(cal.leapdays(2000, 2025)) --> 7
 ```
 
@@ -145,6 +154,7 @@ Return the first weekday and number of days for a month.
 **Example**:
 
 ```lua
+local cal = mods.calendar
 wday, ndays = cal.monthrange(2026, 2)
 print(wday, ndays) --> 7 28
 ```
@@ -169,6 +179,7 @@ Return weekday number where Monday is `1` and Sunday is `7`.
 **Example**:
 
 ```lua
+local cal = mods.calendar
 print(cal.weekday(2026, 3, 26)) --> 4
 ```
 
@@ -192,6 +203,8 @@ Return the formatted weekday header string.
 **Example**:
 
 ```lua
+local cal = mods.calendar
+
 print(cal.weekheader(1, cal.SUNDAY)) --> "S M T W T F S"
 print(cal.weekheader(2, cal.SUNDAY)) --> "Su Mo Tu We Th Fr Sa"
 print(cal.weekheader(3, cal.SUNDAY)) --> "Sun Mon Tue Wed Thu Fri Sat"
@@ -219,9 +232,7 @@ Iterate `(year, month, day, weekday)` tuples for a full calendar grid.
 **Example**:
 
 ```lua
-local mods = require "mods"
-
-local List = mods.List
+local List = mods.list
 local cal = mods.calendar
 local str = mods.str
 
@@ -267,6 +278,7 @@ Iterate weekday numbers for one full week.
 **Example**:
 
 ```lua
+local cal = mods.calendar
 local weekdays = {}
 for day in cal.weekdays() do
   weekdays[#weekdays + 1] = day
