@@ -1,5 +1,8 @@
 # Documentation Generator Scripts
 
+> [!NOTE] These scripts were generated and are maintained by an AI coding
+> assistant.
+
 These Lua scripts parse Lua Language Server (LuaLS) type annotations/definitions
 and generate Markdown documentation suitable for [VitePress].
 
