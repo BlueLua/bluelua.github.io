@@ -5,8 +5,6 @@ description:
   Build tap, hold, chord, sequence, and macro helpers on top of uinput events.
 ---
 
-# Building UInput actions
-
 This tutorial shows how to build helper actions (tap, hold, macro, ..) on top of
 the low-level `emit` and `sync` primitives.
 

@@ -6,8 +6,6 @@ description:
   uinput.
 ---
 
-# Creating Virtual Input Devices with UInput
-
 This tutorial covers creating virtual keyboards, relative pointer devices, and
 synthetic input events.
 

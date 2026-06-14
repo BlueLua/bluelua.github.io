@@ -4,8 +4,6 @@ title: Quick Start
 description: Discover Linux input devices and read your first evdev events.
 ---
 
-# Quick Start
-
 This tutorial walks through discovering input devices and reading events.
 
 ## Discover input devices

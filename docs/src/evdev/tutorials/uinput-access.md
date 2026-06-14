@@ -6,8 +6,6 @@ description:
   uinput.
 ---
 
-# UInput Access Setup
-
 Creating virtual input devices requires `/dev/uinput` to exist and be writable
 by the current user.
 

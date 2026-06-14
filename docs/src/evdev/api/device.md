@@ -1,8 +1,7 @@
 ---
+title: "device"
 description: "One Linux input event returned by `Device:read()`."
 ---
-
-# `device`
 
 One Linux input event returned by `Device:read()`.
 

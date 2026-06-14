@@ -5,8 +5,6 @@ description:
   Grab input devices exclusively and configure keyboard repeat behavior.
 ---
 
-# Grabbing Devices and Configuring Repeat
-
 This tutorial covers exclusive device access and auto-repeat settings.
 
 ## Grabbing a device

@@ -6,8 +6,6 @@ description:
   device.
 ---
 
-# Why multi-device polling?
-
 When you need to handle input from multiple devices (e.g., two keyboards or a
 keyboard and a mouse), you can't block on one device's `poll()` — the other
 device's events would be delayed.
