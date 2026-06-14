@@ -1,9 +1,8 @@
 ---
+title: "tty"
 description:
   "Terminal helpers for checking TTY state and reading terminal dimensions."
 ---
-
-# `tty`
 
 Terminal helpers for checking TTY state and reading terminal dimensions.
 
