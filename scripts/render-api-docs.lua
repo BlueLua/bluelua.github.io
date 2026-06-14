@@ -466,8 +466,6 @@ local function has_section_field(items)
 end
 
 ---Build full markdown output: frontmatter, quick reference, and details.
----@param items annot.item[]
----@return string
 local function build_markdown(items)
   local module_name = pick_module_name(items)
   local module_desc = pick_module_desc(items)
