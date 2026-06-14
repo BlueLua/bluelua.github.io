@@ -418,6 +418,13 @@ end
 
 local function sort_function_entries(entries)
   sort(entries, function(a, b)
+    local a_name = a.item and (a.item.shortname or a.item.name)
+    local b_name = b.item and (b.item.shortname or b.item.name)
+    local a_is_new = a_name == "new"
+    local b_is_new = b_name == "new"
+    if a_is_new ~= b_is_new then
+      return a_is_new
+    end
     return (a.signature or "") < (b.signature or "")
   end)
 end
