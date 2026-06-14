@@ -114,7 +114,7 @@ function listNestedDocDirs(project) {
 
   return fs
     .readdirSync(dir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && !entry.name.startsWith("_"))
+    .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
     .filter((name) => listMarkdownFiles(project, name).length > 0)
     .sort();
