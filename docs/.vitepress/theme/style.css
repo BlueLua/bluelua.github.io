@@ -110,3 +110,14 @@
 .VPDoc .custom-block.caution .custom-block-title::before {
   content: "⚠️";
 }
+
+/* Sidebar section header emojis */
+.VPSidebarItem:has(a[href*="/api/"]) > .item > .text::before {
+  content: "🧬 ";
+}
+.VPSidebarItem:has(a[href*="/reference/"]) > .item > .text::before {
+  content: "📖 ";
+}
+.VPSidebarItem:has(a[href*="/tutorials/"]) > .item > .text::before {
+  content: "🎓 ";
+}
