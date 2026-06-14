@@ -68,6 +68,14 @@
   color: var(--vp-c-brand-1) !important;
 }
 
+/* Inline badges */
+.VPDoc p:has(img[src*="img.shields.io"]) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 /* Add icons to VitePress/GitHub-style alert callouts */
 .VPDoc .custom-block.github-alert .custom-block-title {
   display: flex;
