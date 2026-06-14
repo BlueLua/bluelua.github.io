@@ -122,30 +122,27 @@ function listNestedDocDirs(project) {
 
 function buildSidebar() {
   return Object.fromEntries(
-    listProjects().map((project) => {
-      const pages = listMarkdownFiles(project);
-      const nestedDirs = listNestedDocDirs(project);
-
-      return [
-        `/${project}/`,
-        [
-          {
-            text: pageTitle(project, "index.md"),
-            items: [
-              { text: "Getting Started", link: `/${project}/` },
-              ...pages.map((file) => pageItem(project, file)),
-            ],
-          },
-          ...nestedDirs.map((dir) => ({
-            text: titleFromDir(dir),
-            collapsed: false,
-            items: listMarkdownFiles(project, dir).map((file) =>
-              pageItem(project, `${dir}/${file}`),
+    listProjects().map((project) => [
+      `/${project}/`,
+      [
+        {
+          text: pageTitle(project, "index.md"),
+          items: [
+            { text: "Getting Started", link: `/${project}/` },
+            ...listMarkdownFiles(project).map((file) =>
+              pageItem(project, file),
             ),
-          })),
-        ],
-      ];
-    }),
+          ],
+        },
+        ...listNestedDocDirs(project).map((dir) => ({
+          text: titleFromDir(dir),
+          collapsed: dir === "reference",
+          items: listMarkdownFiles(project, dir).map((file) =>
+            pageItem(project, `${dir}/${file}`),
+          ),
+        })),
+      ],
+    ]),
   );
 }
 
