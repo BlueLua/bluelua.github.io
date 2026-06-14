@@ -1,8 +1,7 @@
 ---
+title: "timeutil"
 description: "Wall-clock time, monotonic time, and native sleep utilities."
 ---
-
-# `timeutil`
 
 Wall-clock time, monotonic time, and native sleep utilities.
 
