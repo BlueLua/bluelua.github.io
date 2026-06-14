@@ -146,13 +146,16 @@ local function first_sentence(s)
   return flattened
 end
 
----Render YAML frontmatter for page description.
-local function render_frontmatter(desc)
+---Render YAML frontmatter for page title and description.
+local function render_frontmatter(module_name, desc)
+  local lines = { "---" }
+  insert(lines, fmt('title: "%s"', module_name:gsub('"', '\\"')))
   local short_desc = first_sentence(desc)
-  if not short_desc then
-    return nil
+  if short_desc then
+    insert(lines, fmt('description: "%s"', short_desc:gsub('"', '\\"')))
   end
-  return fmt('---\ndescription: "%s"\n---', short_desc:gsub('"', '\\"'))
+  insert(lines, "---")
+  return concat(lines, "\n")
 end
 
 ---Extract and flatten the first paragraph from a longer description.
@@ -474,7 +477,7 @@ local function build_markdown(items)
   local has_functions_header = has_functions and total_functions > 1
   local include_paths = collect_include_paths(items)
   local include_blocks = collect_include_blocks(items)
-  local frontmatter = render_frontmatter(module_desc)
+  local frontmatter = render_frontmatter(module_name, module_desc)
   local section_fields = has_section_field(items)
   local alias_views = collect_alias_views(items)
   local function_heading_level
@@ -499,7 +502,6 @@ local function build_markdown(items)
   if frontmatter then
     insert(doc, frontmatter)
   end
-  insert(doc, fmt("# `%s`", module_name))
   if module_desc then
     insert(doc, module_desc)
   end
