@@ -158,15 +158,8 @@ function buildProjectNavItems() {
 
 function buildEditLink({ filePath }) {
   const repoUrl = "https://github.com/BlueLua";
-  const parts = filePath.split("/");
-  const [project, section, file] = parts;
-
-  if (parts.length === 3 && section === "api" && file.endsWith(".md")) {
-    const stem = file.replace(/\.md$/, "");
-    return `${repoUrl}/${project}/edit/main/types/${stem}.d.lua`;
-  }
-
-  return `${repoUrl}/bluelua.github.io/edit/main/docs/src/${filePath}`;
+  const [repo, ...rest] = filePath.split("/");
+  return `${repoUrl}/${repo}/edit/main/docs/${rest.join("/")}`;
 }
 
 function filterSearchResult(result) {
