@@ -154,9 +154,12 @@ function buildProjectNavItems() {
 }
 
 function buildEditLink({ filePath }) {
-  const repoUrl = "https://github.com/BlueLua";
   const [repo, ...rest] = filePath.split("/");
-  return `${repoUrl}/${repo}/edit/main/docs/${rest.join("/")}`;
+  const isApi = rest[0] === "api";
+  const target = isApi
+    ? `types/${rest.slice(1).join("/").replace(/\.md$/, ".d.lua")}`
+    : `docs/${rest.join("/")}`;
+  return `https://github.com/BlueLua/${repo}/edit/main/${target}`;
 }
 
 function filterSearchResult(result) {
