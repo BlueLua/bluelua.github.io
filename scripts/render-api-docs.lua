@@ -152,7 +152,8 @@ local function render_frontmatter(module_name, desc)
   insert(lines, fmt('title: "%s"', module_name:gsub('"', '\\"')))
   local short_desc = first_sentence(desc)
   if short_desc then
-    insert(lines, fmt('description: "%s"', short_desc:gsub('"', '\\"')))
+    local clean_desc = short_desc:gsub("<[^>]+>", "")
+    insert(lines, fmt('description: "%s"', clean_desc:gsub('"', '\\"')))
   end
   insert(lines, "---")
   return concat(lines, "\n")
