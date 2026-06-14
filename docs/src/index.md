@@ -15,7 +15,7 @@ hero:
 
 features:
   - title: 🧩 mods
-    details: Predictable utility module library.
+    details: Cohesive Lua utility modules.
     link: /mods/
   - title: 🕹️ evdev
     details: Linux input event bindings.
