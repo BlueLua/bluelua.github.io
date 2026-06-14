@@ -1,8 +1,7 @@
 ---
+title: "uinput"
 description: "Configuration used to create a `/dev/uinput` virtual device."
 ---
-
-# `uinput`
 
 Configuration used to create a `/dev/uinput` virtual device.
 

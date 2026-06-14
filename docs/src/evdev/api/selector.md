@@ -1,8 +1,7 @@
 ---
+title: "selector"
 description: "Selector for polling and reading from multiple devices."
 ---
-
-# `selector`
 
 Selector for polling and reading from multiple devices.
 

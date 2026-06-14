@@ -1,8 +1,7 @@
 ---
+title: "devices"
 description: "Input device discovery helpers."
 ---
-
-# `devices`
 
 Input device discovery helpers.
 

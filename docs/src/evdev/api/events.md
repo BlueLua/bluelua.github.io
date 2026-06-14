@@ -1,8 +1,7 @@
 ---
+title: "events"
 description: "Event value constants and event predicates."
 ---
-
-# `events`
 
 Event value constants and event predicates.
 
