@@ -22,13 +22,11 @@ You can run the generator locally using `luajit` (or standard `lua`).
 ### Usage
 
 ```sh
-lua scripts/generate-docs.lua <source_types_dir> <output_markdown_dir>
+lua scripts/generate-docs.lua <types> <output>
 ```
 
-- **`<source_types_dir>`**: Path to the directory containing LuaLS type files
-  (e.g. `types/` or `lua/`).
-- **`<output_markdown_dir>`**: Path to the directory where you want the
-  generated Markdown files to be saved (e.g. `docs/api` or `docs/src/mods/api`).
+- **`<types>`**: Path to LuaLS type files (e.g. `types/`).
+- **`<output>`**: Path to the documentation folder (e.g. `docs/src/x`).
 
 [VitePress]: https://vitepress.dev/
 [`generate-docs.lua`]: ./generate-docs.lua
