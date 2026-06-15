@@ -32,7 +32,7 @@ jobs:
         run: |
           mkdir -p "docs/api"
           [ -f "README.md" ] && cp "README.md" "docs/index.md"
-          luajit _docs/scripts/generate-api-docs.lua "types" "docs/api"
+          luajit _docs/scripts/generate-docs.lua "types" "docs/api"
 
       - name: Format docs
         run: npx --yes prettier@latest --write "docs/**/*.md" --no-error-on-unmatched-pattern
