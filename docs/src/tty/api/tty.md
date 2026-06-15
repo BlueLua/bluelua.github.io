@@ -56,3 +56,11 @@ local tty = require "tty"
 local rows, cols = tty.size()
 print(("terminal: %dx%d"):format(cols, rows))
 ```
+
+## Fields
+
+<a id="version"></a>
+
+### `_VERSION` (`string`)
+
+Value: `"version"`
