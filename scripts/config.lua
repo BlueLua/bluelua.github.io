@@ -13,4 +13,10 @@ return {
 
   -- Site domain name for internal link resolution.
   domain = "bluelua.github.io",
+
+  -- The directory name for individual API pages.
+  api_dir_name = "api",
+
+  -- The filename for the consolidated types document.
+  types_file_name = "types",
 }
