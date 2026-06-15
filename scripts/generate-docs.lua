@@ -23,6 +23,8 @@ local github_types_url_template = "https://github.com/"
 local domain = config.domain or "bluelua.github.io"
 local escaped_domain = domain:gsub("%.", "%%.")
 local internal_link_pattern = "https?://" .. escaped_domain .. "/([^%s%)%\"%'%>]+)"
+local api_dir_name = config.api_dir_name or "api"
+local types_file_name = config.types_file_name or "types"
 local link_refs = {}
 local types_dir, output_dir
 
@@ -1428,7 +1430,7 @@ local function generate_alias_docs(types_dir, output_dir)
     insert(md, "<!-- markdownlint-enable MD053 -->")
   end
 
-  local filepath = output_dir .. "/types.md"
+  local filepath = output_dir .. "/" .. types_file_name .. ".md"
   local output = table.concat(md, "\n")
   output = resolve_code_spans_and_add_links(output)
   output = resolve_internal_links(output)
@@ -1479,19 +1481,31 @@ local function usage()
 end
 
 types_dir = (arg and arg[1]) or "types"
-output_dir = (arg and arg[2]) or "docs"
+local input_output_dir = (arg and arg[2]) or "docs"
 if types_dir == "-h" or types_dir == "--help" then
   io.stdout:write(usage())
   os.exit(0)
+end
+
+local base_dir
+local clean_path = input_output_dir:gsub("[/\\]+$", "")
+local escaped_api_name = api_dir_name:gsub("([^%w])", "%%%1")
+local pattern = "([/\\])(" .. escaped_api_name .. ")$"
+local _, suffix = clean_path:match(pattern)
+if suffix then
+  output_dir = clean_path
+  base_dir = clean_path:sub(1, #clean_path - #suffix - 1)
+else
+  base_dir = clean_path
+  output_dir = base_dir .. "/" .. api_dir_name
 end
 
 -- 1. Generate API docs in the specified output directory
 local result = generate_docs(types_dir, output_dir)
 io.stdout:write(string.format("generated %d doc file(s) in %s\n", result.files, result.output_dir))
 
--- 2. Generate consolidated alias types in the parent directory of the API output folder (if it ends in /api)
-local types_output_dir = output_dir:match("^(.*)/api/?$") or output_dir:match("^(.*)\\api\\?$") or output_dir
-local alias_result = generate_alias_docs(types_dir, types_output_dir)
+-- 2. Generate consolidated alias types in the base directory
+local alias_result = generate_alias_docs(types_dir, base_dir)
 io.stdout:write(
   string.format("generated %d consolidated alias doc file(s) in %s\n", alias_result.files, alias_result.output_dir)
 )
