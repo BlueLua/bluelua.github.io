@@ -319,6 +319,7 @@ local function parse_field(payload)
     return
   end
 
+  rest = rest or ""
   local first_line, tail = rest:match("^(.-)\n(.+)$")
   local view = trim(first_line or rest or "")
   local out = {
