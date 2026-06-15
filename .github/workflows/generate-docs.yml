@@ -1,4 +1,4 @@
-name: Generate API Docs
+name: Generate Docs
 
 on:
   workflow_call:
@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   generate:
-    name: Generate API Docs
+    name: Generate Docs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source repo
@@ -40,7 +40,7 @@ jobs:
       - name: Open docs PR
         uses: peter-evans/create-pull-request@v8
         with:
-          commit-message: "docs: generate API docs"
-          title: "docs: generate API docs"
+          commit-message: "docs: generate docs"
+          title: "docs: generate docs"
           branch: "automation/generate-docs"
           add-paths: docs
