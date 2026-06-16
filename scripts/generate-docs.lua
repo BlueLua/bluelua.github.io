@@ -435,12 +435,14 @@ local function write_file(path, data)
   f:close()
 end
 
-local function list_type_files(path)
+local function list_type_files(path, include_all)
   local p = assert(io.popen("ls -1 " .. shell_quote(path), "r"))
   local out = {}
   for line in p:lines() do
-    if line:match("%.lua$") and line:sub(1, 1) ~= "_" then
-      insert(out, line)
+    if line:match("%.lua$") then
+      if include_all or line:sub(1, 1) ~= "_" then
+        insert(out, line)
+      end
     end
   end
   p:close()
@@ -1157,7 +1159,7 @@ local function generate_alias_docs(types_dir, output_dir)
     error("types directory does not exist: " .. types_dir)
   end
 
-  local files = list_type_files(types_dir)
+  local files = list_type_files(types_dir, true)
   if #files == 0 then
     error("no Lua type files found in: " .. types_dir)
   end
@@ -1172,7 +1174,7 @@ local function generate_alias_docs(types_dir, output_dir)
     local parsed = lls.parse(content)
     for _, item in ipairs(parsed or {}) do
       item.filename = filename
-      if item.kind == "alias" and not is_function_doc_item(item) then
+      if (item.kind == "alias" and not is_function_doc_item(item)) or item.kind == "enum" then
         insert(aliases, item)
       elseif item.kind == "class" then
         insert(classes, item)
@@ -1287,10 +1289,10 @@ local function generate_alias_docs(types_dir, output_dir)
   local md = {}
   insert(md, "---")
   insert(md, 'title: "Types"')
-  insert(md, 'description: "Type aliases defined in the ' .. module_name .. ' module."')
+  insert(md, 'description: "Types defined in the ' .. module_name .. ' module."')
   insert(md, "---")
   insert(md, "")
-  insert(md, "Type aliases defined in the " .. module_name .. " module.")
+  insert(md, "Types defined in the " .. module_name .. " module.")
 
   local details = {}
   local link_refs = {}
@@ -1311,106 +1313,142 @@ local function generate_alias_docs(types_dir, output_dir)
       insert(detail, "")
     end
 
-    local parts = get_union_parts(item.view)
-    if parts then
-      sort(parts, compare_union_values)
-      local has_any_desc = false
-      for _, part in ipairs(parts) do
-        if part.desc and part.desc ~= "" then
-          has_any_desc = true
-          break
+    if item.kind == "enum" then
+      local is_map = false
+      local keys = {}
+      for k in pairs(item.values or {}) do
+        if type(k) == "string" then
+          is_map = true
         end
+        insert(keys, k)
       end
-      if has_any_desc then
-        insert(detail, "Value | Description")
+
+      if is_map then
+        sort(keys, function(a, b)
+          return tostring(a):lower() < tostring(b):lower()
+        end)
+        insert(detail, "Name | Value")
         insert(detail, "--- | ---")
-        for _, part in ipairs(parts) do
-          insert(
-            detail,
-            string.format(
-              "%s | %s",
-              esc_table_cell(format_type_value_inline(part.value)),
-              esc_table_cell(part.desc or "")
-            )
-          )
+        for _, k in ipairs(keys) do
+          local val = item.values[k]
+          insert(detail, string.format("`%s` | %s", k, value_to_markdown(val) or esc_table_cell(tostring(val))))
         end
       else
+        sort(keys, function(a, b)
+          local val_a = item.values[a]
+          local val_b = item.values[b]
+          return tostring(val_a):lower() < tostring(val_b):lower()
+        end)
         local inline = {}
-        for _, part in ipairs(parts) do
-          insert(inline, format_type_value_inline(part.value))
+        for _, k in ipairs(keys) do
+          local val = item.values[k]
+          insert(inline, value_to_markdown(val) or ("`" .. tostring(val) .. "`"))
         end
         insert(detail, "&nbsp;" .. table.concat(inline, " &nbsp;"))
       end
       insert(detail, "")
     else
-      local fields = item.fields or get_table_fields(val_str)
-      if fields then
-        local processed = {}
-        for _, field in ipairs(fields) do
-          local is_optional
-          local key = field.key
-          local tp = field.type
-          local desc = field.desc
-
-          if key:sub(-1) == "?" then
-            key = key:sub(1, -2)
-            is_optional = "Yes"
-          elseif tp:sub(-1) == "?" then
-            tp = tp:sub(1, -2)
-            is_optional = "Yes"
-          else
-            is_optional = "No"
-          end
-
-          insert(processed, { key = key, type = tp, is_optional = is_optional, desc = desc })
-        end
-
-        sort(processed, function(a, b)
-          return a.key:lower() < b.key:lower()
-        end)
-
+      local parts = get_union_parts(item.view)
+      if parts then
+        sort(parts, compare_union_values)
         local has_any_desc = false
-        for _, f in ipairs(processed) do
-          if f.desc and f.desc ~= "" then
+        for _, part in ipairs(parts) do
+          if part.desc and part.desc ~= "" then
             has_any_desc = true
             break
           end
         end
-
         if has_any_desc then
-          insert(detail, "Field | Type | Optional | Description")
-          insert(detail, "--- | --- | --- | ---")
-          for _, field in ipairs(processed) do
+          insert(detail, "Value | Description")
+          insert(detail, "--- | ---")
+          for _, part in ipairs(parts) do
             insert(
               detail,
               string.format(
-                "`%s` | %s | %s | %s",
-                field.key,
-                esc_table_cell(format_type_value_inline(field.type)),
-                field.is_optional,
-                esc_table_cell(field.desc or "")
+                "%s | %s",
+                esc_table_cell(format_type_value_inline(part.value)),
+                esc_table_cell(part.desc or "")
               )
             )
           end
         else
-          insert(detail, "Field | Type | Optional")
-          insert(detail, "--- | --- | ---")
-          for _, field in ipairs(processed) do
-            insert(
-              detail,
-              string.format(
-                "`%s` | %s | %s",
-                field.key,
-                esc_table_cell(format_type_value_inline(field.type)),
-                field.is_optional
-              )
-            )
+          local inline = {}
+          for _, part in ipairs(parts) do
+            insert(inline, format_type_value_inline(part.value))
           end
+          insert(detail, "&nbsp;" .. table.concat(inline, " &nbsp;"))
         end
         insert(detail, "")
       else
-        insert(detail, "`" .. val_str .. "`")
-        insert(detail, "")
+        local fields = item.fields or get_table_fields(val_str)
+        if fields then
+          local processed = {}
+          for _, field in ipairs(fields) do
+            local is_optional
+            local key = field.key
+            local tp = field.type
+            local desc = field.desc
+
+            if key:sub(-1) == "?" then
+              key = key:sub(1, -2)
+              is_optional = "Yes"
+            elseif tp:sub(-1) == "?" then
+              tp = tp:sub(1, -2)
+              is_optional = "Yes"
+            else
+              is_optional = "No"
+            end
+
+            insert(processed, { key = key, type = tp, is_optional = is_optional, desc = desc })
+          end
+
+          sort(processed, function(a, b)
+            return a.key:lower() < b.key:lower()
+          end)
+
+          local has_any_desc = false
+          for _, f in ipairs(processed) do
+            if f.desc and f.desc ~= "" then
+              has_any_desc = true
+              break
+            end
+          end
+
+          if has_any_desc then
+            insert(detail, "Field | Type | Optional | Description")
+            insert(detail, "--- | --- | --- | ---")
+            for _, field in ipairs(processed) do
+              insert(
+                detail,
+                string.format(
+                  "`%s` | %s | %s | %s",
+                  field.key,
+                  esc_table_cell(format_type_value_inline(field.type)),
+                  field.is_optional,
+                  esc_table_cell(field.desc or "")
+                )
+              )
+            end
+          else
+            insert(detail, "Field | Type | Optional")
+            insert(detail, "--- | --- | ---")
+            for _, field in ipairs(processed) do
+              insert(
+                detail,
+                string.format(
+                  "`%s` | %s | %s",
+                  field.key,
+                  esc_table_cell(format_type_value_inline(field.type)),
+                  field.is_optional
+                )
+              )
+            end
+          end
+          insert(detail, "")
+        else
+          insert(detail, "`" .. val_str .. "`")
+          insert(detail, "")
+        end
       end
     end
 
