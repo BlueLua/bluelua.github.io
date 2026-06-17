@@ -236,7 +236,7 @@ local function convert_inline_links_to_references(s)
   if split_idx then
     local ref_block = s:sub(split_idx)
     for line in ref_block:gmatch("[^\r\n]+") do
-      local key, url = line:match("^%s*%[([^%]]+)%]%:%s*(%S+)%s*$" )
+      local key, url = line:match("^%s*%[([^%]]+)%]%:%s*(%S+)%s*$")
       if key and url then
         existing_refs[key] = url
       end
@@ -339,26 +339,29 @@ local function resolve_code_spans_and_add_links(s)
   end
 
   local new_refs = {}
-  local modified_content = main_content:gsub("([%[%w_]?)`([%w_]+)%.([%w_%.]+)`([%]%w_]?)", function(before, module, name, after)
-    if before == "[" or after == "]" then
+  local modified_content = main_content:gsub(
+    "([%[%w_]?)`([%w_]+)%.([%w_%.]+)`([%]%w_]?)",
+    function(before, module, name, after)
+      if before == "[" or after == "]" then
+        return before .. "`" .. module .. "." .. name .. "`" .. after
+      end
+      if module == "mods" or module == "evdev" or module == "timeutil" or module == "tty" then
+        local clean_p = module .. "." .. name
+        local first_seg = name:match("^([^%.]+)") or name
+        local stem = first_seg:lower()
+        local url
+        if is_api_page(module, stem) then
+          url = string.format("/%s/api/%s", module, stem)
+        else
+          local slug = clean_p:lower():gsub("[^%w%-]+", "-"):gsub("%-+", "-"):gsub("^%-+", ""):gsub("%-+$", "")
+          url = string.format("/%s/types#%s", module, slug)
+        end
+        new_refs[clean_p] = url
+        return before .. "[`" .. clean_p .. "`]" .. after
+      end
       return before .. "`" .. module .. "." .. name .. "`" .. after
     end
-    if module == "mods" or module == "evdev" or module == "timeutil" or module == "tty" then
-      local clean_p = module .. "." .. name
-      local first_seg = name:match("^([^%.]+)") or name
-      local stem = first_seg:lower()
-      local url
-      if is_api_page(module, stem) then
-        url = string.format("/%s/api/%s", module, stem)
-      else
-        local slug = clean_p:lower():gsub("[^%w%-]+", "-"):gsub("%-+", "-"):gsub("^%-+", ""):gsub("%-+$", "")
-        url = string.format("/%s/types#%s", module, slug)
-      end
-      new_refs[clean_p] = url
-      return before .. "[`" .. clean_p .. "`]" .. after
-    end
-    return before .. "`" .. module .. "." .. name .. "`" .. after
-  end)
+  )
 
   for name, url in pairs(new_refs) do
     existing_refs[name] = url
@@ -386,7 +389,6 @@ local function resolve_code_spans_and_add_links(s)
     .. new_ref_block_content
     .. "\n<!-- prettier-ignore-end -->\n<!-- markdownlint-enable MD053 -->\n"
 end
-
 
 local function sanitize_alias_part(part)
   local p = trim(part)
@@ -1133,8 +1135,14 @@ local function render_api_markdown(items)
   if section_fields then
     sort_section_names(section_order)
     sort_function_entries(detail_entries)
+    local first = true
     for _, entry in ipairs(detail_entries) do
       if entry.item then
+        if not first then
+          insert(doc, "---")
+          insert(doc, "")
+        end
+        first = false
         insert(doc, fmt('<a id="%s"></a>', entry.ref_id))
         insert(doc, fmt("%s `%s`", unsectioned_function_heading_level, entry.signature))
         append_function_signature_details(doc, entry.item, alias_views)
@@ -1143,13 +1151,24 @@ local function render_api_markdown(items)
     for _, section_name in ipairs(section_order) do
       local section = detail_sections[section_name]
       if section then
+        if not first then
+          insert(doc, "---")
+          insert(doc, "")
+        end
         insert(doc, section.heading)
         if section.desc then
           insert(doc, section.desc)
         end
         sort_function_entries(section.entries)
+        local first_sec = true
         for _, entry in ipairs(section.entries) do
           if entry.item then
+            if not first_sec then
+              insert(doc, "---")
+              insert(doc, "")
+            end
+            first_sec = false
+            first = false
             insert(doc, fmt('<a id="%s"></a>', entry.ref_id))
             insert(doc, fmt("%s `%s`", function_heading_level, entry.signature))
             append_function_signature_details(doc, entry.item, alias_views)
@@ -1159,8 +1178,14 @@ local function render_api_markdown(items)
     end
   else
     sort_function_entries(detail_entries)
+    local first = true
     for _, entry in ipairs(detail_entries) do
       if entry.item then
+        if not first then
+          insert(doc, "---")
+          insert(doc, "")
+        end
+        first = false
         insert(doc, fmt('<a id="%s"></a>', entry.ref_id))
         insert(doc, fmt("%s `%s`", function_heading_level, entry.signature))
         append_function_signature_details(doc, entry.item, alias_views)
@@ -1173,8 +1198,14 @@ local function render_api_markdown(items)
     if #fields >= FIELD_OVERVIEW_MIN then
       append_fields_table(doc, fields, alias_views)
     end
+    insert(doc, "")
+    local first_field = true
     for _, field in ipairs(fields) do
-      insert(doc, "")
+      if not first_field then
+        insert(doc, "---")
+        insert(doc, "")
+      end
+      first_field = false
       insert(doc, fmt('<a id="%s"></a>', field.ref_id or heading_anchor(field.name or "")))
       local fview = field and field.view
       local heading = fmt("### `%s`", field.name or "")
