@@ -825,7 +825,7 @@ local function append_fields_table(doc, fields, alias_views)
   insert(doc, "---- | ----")
   for _, field in ipairs(fields) do
     local name = field.name or ""
-    local anchor = heading_anchor(name)
+    local anchor = field.ref_id or heading_anchor(name)
     local link = fmt("[`%s`](#%s)", esc_table_cell(name), anchor)
     local fview = field and field.view or "any"
     local _, alias_desc = expand_type_view(fview, alias_views)
@@ -881,9 +881,29 @@ end
 
 local function render_api_markdown(items)
   link_refs = {}
+  local seen_anchors = {}
+  local function unique_anchor(anchor)
+    if not seen_anchors[anchor] then
+      seen_anchors[anchor] = true
+      return anchor
+    end
+    local i = 1
+    while true do
+      local candidate = anchor .. "-" .. i
+      if not seen_anchors[candidate] then
+        seen_anchors[candidate] = true
+        return candidate
+      end
+      i = i + 1
+    end
+  end
+
   local module_name = pick_module_name(items)
   local module_desc = pick_module_desc(items)
   local fields = collect_class_fields(items)
+  for _, field in ipairs(fields) do
+    field.ref_id = unique_anchor(heading_anchor(field.name or ""))
+  end
   local has_functions = has_function_items(items)
   local total_functions = count_function_items(items)
   local has_functions_header = has_functions and total_functions > 1
@@ -940,7 +960,7 @@ local function render_api_markdown(items)
       local alias_doc_item = is_function_doc_item(item)
       function_count = function_count + 1
       local signature = function_signature(item)
-      local ref_id = function_ref_id(item)
+      local ref_id = unique_anchor(function_ref_id(item))
       local tags = item.tags or {}
       local section_tag = tags.section
       local section_name = nil
@@ -1066,7 +1086,7 @@ local function render_api_markdown(items)
     end
     for _, field in ipairs(fields) do
       insert(doc, "")
-      insert(doc, fmt('<a id="%s"></a>', heading_anchor(field.name or "")))
+      insert(doc, fmt('<a id="%s"></a>', field.ref_id or heading_anchor(field.name or "")))
       local fview = field and field.view
       local heading = fmt("### `%s`", field.name or "")
       if fview and fview ~= "" then
