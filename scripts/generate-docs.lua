@@ -188,9 +188,7 @@ local function resolve_internal_links(s)
     local base, hash = path:match("^([^#]+)(#.+)$")
     base = base or path
     hash = hash or ""
-    if not base:match("%.html$") and not base:match("%.md$") then
-      base = base .. ".html"
-    end
+    base = base:gsub("%.html$", ""):gsub("%.md$", "")
     return "/" .. base .. hash
   end)
 end
@@ -210,28 +208,138 @@ local function is_function_doc_item(item)
   return true
 end
 
+local function clean_main_content(s)
+  local split_idx = s:find("<!-- prettier-ignore-start -->", 1, true)
+  local main_content
+  if split_idx then
+    main_content = s:sub(1, split_idx - 1)
+  else
+    main_content = s
+  end
+  -- Strip trailing markdownlint-disable MD053 comment
+  main_content = main_content:gsub("%s*<!%-%-%s*markdownlint%-disable%s+MD053%s*%-%->%s*$", "")
+  -- Strip all trailing newlines and whitespace
+  main_content = main_content:gsub("%s*$", "")
+  return main_content
+end
+
+local function convert_inline_links_to_references(s)
+  if type(s) ~= "string" then
+    return s
+  end
+
+  local main_content = clean_main_content(s)
+
+  -- Extract existing references from s (if any)
+  local existing_refs = {}
+  local split_idx = s:find("<!-- prettier-ignore-start -->", 1, true)
+  if split_idx then
+    local ref_block = s:sub(split_idx)
+    for line in ref_block:gmatch("[^\r\n]+") do
+      local key, url = line:match("^%s*%[([^%]]+)%]%:%s*(%S+)%s*$" )
+      if key and url then
+        existing_refs[key] = url
+      end
+    end
+  end
+
+  local new_refs = {}
+
+  -- Match [link text](url)
+  local modified_content = main_content:gsub("([%!]?)%[([^%]]+)%]%(([^%)]+)%)", function(is_image, text, url)
+    if is_image == "!" then
+      return "!" .. "[" .. text .. "](" .. url .. ")"
+    end
+
+    local clean_text = text:gsub("^%s*(.-)%s*$", "%1")
+    local key = clean_text
+    local target_key = nil
+
+    if (existing_refs[key] and existing_refs[key] == url) or (new_refs[key] and new_refs[key] == url) then
+      target_key = key
+    elseif not existing_refs[key] and not new_refs[key] then
+      new_refs[key] = url
+      target_key = key
+    else
+      local base_key = key
+      local is_code = base_key:match("^`([^`]+)`$")
+      local i = 1
+      while true do
+        local candidate
+        if is_code then
+          candidate = "`" .. is_code .. "-" .. i .. "`"
+        else
+          candidate = base_key .. "-" .. i
+        end
+
+        if
+          (existing_refs[candidate] and existing_refs[candidate] == url)
+          or (new_refs[candidate] and new_refs[candidate] == url)
+        then
+          target_key = candidate
+          break
+        elseif not existing_refs[candidate] and not new_refs[candidate] then
+          new_refs[candidate] = url
+          target_key = candidate
+          break
+        end
+        i = i + 1
+      end
+    end
+
+    if clean_text == target_key then
+      return "[" .. clean_text .. "]"
+    else
+      return "[" .. clean_text .. "][" .. target_key .. "]"
+    end
+  end)
+
+  for k, v in pairs(new_refs) do
+    existing_refs[k] = v
+  end
+
+  local sorted_keys = {}
+  for k in pairs(existing_refs) do
+    insert(sorted_keys, k)
+  end
+  sort(sorted_keys)
+
+  if #sorted_keys == 0 then
+    return modified_content .. "\n"
+  end
+
+  local new_ref_lines = {}
+  for _, k in ipairs(sorted_keys) do
+    insert(new_ref_lines, string.format("[%s]: %s", k, existing_refs[k]))
+  end
+
+  local new_ref_block_content = concat(new_ref_lines, "\n")
+
+  return modified_content
+    .. "\n\n<!-- markdownlint-disable MD053 -->\n<!-- prettier-ignore-start -->\n"
+    .. new_ref_block_content
+    .. "\n<!-- prettier-ignore-end -->\n<!-- markdownlint-enable MD053 -->\n"
+end
+
 local function resolve_code_spans_and_add_links(s)
   if type(s) ~= "string" then
     return s
   end
 
-  local split_idx = s:find("<!-- prettier-ignore-start -->", 1, true)
-  local main_content, ref_block
-  if split_idx then
-    main_content = s:sub(1, split_idx - 1)
-    ref_block = s:sub(split_idx)
-  else
-    main_content = s
-    ref_block = ""
-  end
+  local main_content = clean_main_content(s)
 
+  -- Extract existing references from s (if any)
   local existing_refs = {}
-  for name, url in ref_block:gmatch("%[?`([^`]+)`%]?:%s*(%S+)") do
-    existing_refs[name] = url
+  local split_idx = s:find("<!-- prettier-ignore-start -->", 1, true)
+  if split_idx then
+    local ref_block = s:sub(split_idx)
+    for name, url in ref_block:gmatch("%[?`([^`]+)`%]?:%s*(%S+)") do
+      existing_refs[name] = url
+    end
   end
 
   local new_refs = {}
-  main_content = main_content:gsub("([%[%w_]?)`([%w_]+)%.([%w_%.]+)`([%]%w_]?)", function(before, module, name, after)
+  local modified_content = main_content:gsub("([%[%w_]?)`([%w_]+)%.([%w_%.]+)`([%]%w_]?)", function(before, module, name, after)
     if before == "[" or after == "]" then
       return before .. "`" .. module .. "." .. name .. "`" .. after
     end
@@ -241,10 +349,10 @@ local function resolve_code_spans_and_add_links(s)
       local stem = first_seg:lower()
       local url
       if is_api_page(module, stem) then
-        url = string.format("/%s/api/%s.html", module, stem)
+        url = string.format("/%s/api/%s", module, stem)
       else
         local slug = clean_p:lower():gsub("[^%w%-]+", "-"):gsub("%-+", "-"):gsub("^%-+", ""):gsub("%-+$", "")
-        url = string.format("/%s/types.html#%s", module, slug)
+        url = string.format("/%s/types#%s", module, slug)
       end
       new_refs[clean_p] = url
       return before .. "[`" .. clean_p .. "`]" .. after
@@ -252,24 +360,8 @@ local function resolve_code_spans_and_add_links(s)
     return before .. "`" .. module .. "." .. name .. "`" .. after
   end)
 
-  local added_any = false
   for name, url in pairs(new_refs) do
-    if not existing_refs[name] then
-      existing_refs[name] = url
-      added_any = true
-    end
-  end
-
-  if not added_any and split_idx then
-    local has_existing = false
-    for _ in pairs(existing_refs) do
-      has_existing = true
-      break
-    end
-    if not has_existing then
-      return main_content
-    end
-    return main_content .. ref_block
+    existing_refs[name] = url
   end
 
   local sorted_names = {}
@@ -279,7 +371,7 @@ local function resolve_code_spans_and_add_links(s)
   table.sort(sorted_names)
 
   if #sorted_names == 0 then
-    return main_content
+    return modified_content .. "\n"
   end
 
   local new_ref_lines = {}
@@ -289,18 +381,12 @@ local function resolve_code_spans_and_add_links(s)
 
   local new_ref_block_content = table.concat(new_ref_lines, "\n")
 
-  if split_idx then
-    return main_content
-      .. "<!-- prettier-ignore-start -->\n"
-      .. new_ref_block_content
-      .. "\n<!-- prettier-ignore-end -->\n<!-- markdownlint-enable MD053 -->\n"
-  else
-    return main_content
-      .. "\n\n<!-- markdownlint-disable MD053 -->\n<!-- prettier-ignore-start -->\n"
-      .. new_ref_block_content
-      .. "\n<!-- prettier-ignore-end -->\n<!-- markdownlint-enable MD053 -->\n"
-  end
+  return modified_content
+    .. "\n\n<!-- markdownlint-disable MD053 -->\n<!-- prettier-ignore-start -->\n"
+    .. new_ref_block_content
+    .. "\n<!-- prettier-ignore-end -->\n<!-- markdownlint-enable MD053 -->\n"
 end
+
 
 local function sanitize_alias_part(part)
   local p = trim(part)
@@ -642,11 +728,11 @@ local function format_type_value_ref(val)
         local stem = first_seg:lower()
         local url
         if is_api_page(module, stem) then
-          url = string.format("/%s/api/%s.html", module, stem)
+          url = string.format("/%s/api/%s", module, stem)
         else
           local clean_p = module .. "." .. name
           local slug = clean_p:lower():gsub("[^%w%-]+", "-"):gsub("%-+", "-"):gsub("^%-+", ""):gsub("%-+$", "")
-          url = string.format("/%s/types.html#%s", module, slug)
+          url = string.format("/%s/types#%s", module, slug)
         end
         local clean_p = module .. "." .. name
         link_refs[clean_p] = url
@@ -948,7 +1034,10 @@ local function render_api_markdown(items)
     for _, block in ipairs(include_blocks) do
       insert(doc, block)
     end
-    return concat(doc, "\n")
+    local output = concat(doc, "\n")
+    output = resolve_code_spans_and_add_links(output)
+    output = resolve_internal_links(output)
+    return convert_inline_links_to_references(output)
   end
 
   if has_functions_header then
@@ -1140,7 +1229,8 @@ local function render_api_markdown(items)
 
   local output = concat(doc, "\n")
   output = resolve_code_spans_and_add_links(output)
-  return resolve_internal_links(output)
+  output = resolve_internal_links(output)
+  return convert_inline_links_to_references(output)
 end
 
 -- =========================================================================
@@ -1158,11 +1248,11 @@ local function format_type_value_inline(val)
         local stem = first_seg:lower()
         local url
         if is_api_page(module, stem) then
-          url = string.format("/%s/api/%s.html", module, stem)
+          url = string.format("/%s/api/%s", module, stem)
         else
           local clean_p = module .. "." .. name
           local slug = clean_p:lower():gsub("[^%w%-]+", "-"):gsub("%-+", "-"):gsub("^%-+", ""):gsub("%-+$", "")
-          url = string.format("/%s/types.html#%s", module, slug)
+          url = string.format("/%s/types#%s", module, slug)
         end
         return "`[`" .. module .. "." .. name .. "`](" .. url .. ")`"
       end
@@ -1492,6 +1582,7 @@ local function generate_alias_docs(types_dir, output_dir)
   local output = table.concat(md, "\n")
   output = resolve_code_spans_and_add_links(output)
   output = resolve_internal_links(output)
+  output = convert_inline_links_to_references(output)
   write_file(filepath, output)
 
   return { output_dir = output_dir, files = 1 }
