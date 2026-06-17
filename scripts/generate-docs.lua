@@ -628,7 +628,7 @@ local function function_signature(item)
 end
 
 local function function_ref_id(item)
-  return "fn-" .. heading_anchor(item.shortname or item.name or "")
+  return heading_anchor(item.shortname or item.name or "")
 end
 
 local function format_type_value_ref(val)
