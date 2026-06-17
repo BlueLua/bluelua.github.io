@@ -831,7 +831,7 @@ local function append_function_api_contract(doc, item, alias_views)
 
   if has_returns then
     insert(doc, "")
-    insert(doc, "**Return**:")
+    insert(doc, "**Returns**:")
     for _, ret in ipairs(returns) do
       local rname = ret and ret.name or ""
       local rview = ret and ret.view or "any"
