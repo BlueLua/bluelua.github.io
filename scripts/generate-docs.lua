@@ -339,29 +339,39 @@ local function resolve_code_spans_and_add_links(s)
   end
 
   local new_refs = {}
-  local modified_content = main_content:gsub(
-    "([%[%w_]?)`([%w_]+)%.([%w_%.]+)`([%]%w_]?)",
-    function(before, module, name, after)
-      if before == "[" or after == "]" then
-        return before .. "`" .. module .. "." .. name .. "`" .. after
-      end
-      if module == "mods" or module == "evdev" or module == "timeutil" or module == "tty" then
-        local clean_p = module .. "." .. name
-        local first_seg = name:match("^([^%.]+)") or name
+  local modified_content = main_content:gsub("([%[%w_]?)`([^`]+)`([%]%w_]?)", function(before, content, after)
+    if before == "[" or after == "]" then
+      return before .. "`" .. content .. "`" .. after
+    end
+
+    local module, rest = content:match("^([%w_]+)%.(.+)$")
+    if module and (module == "mods" or module == "evdev" or module == "timeutil" or module == "tty") then
+      local name_path, paren_part = rest:match("^([%w_%.:]+)(.*)$")
+      if name_path then
+        local clean_p = module .. "." .. name_path
+        local first_seg = name_path:match("^([^%.%:]+)") or name_path
         local stem = first_seg:lower()
         local url
         if is_api_page(module, stem) then
           url = string.format("/%s/api/%s", module, stem)
+          local remaining = name_path:sub(#first_seg + 2)
+          if remaining ~= "" then
+            local anchor = remaining:lower():gsub("[^%w%-]+", "-"):gsub("%-+", "-"):gsub("^%-+", ""):gsub("%-+$", "")
+            url = url .. "#" .. anchor
+          end
         else
           local slug = clean_p:lower():gsub("[^%w%-]+", "-"):gsub("%-+", "-"):gsub("^%-+", ""):gsub("%-+$", "")
           url = string.format("/%s/types#%s", module, slug)
         end
-        new_refs[clean_p] = url
-        return before .. "[`" .. clean_p .. "`]" .. after
+
+        local display_text = module .. "." .. name_path .. paren_part
+        new_refs[display_text] = url
+        return before .. "[`" .. display_text .. "`]" .. after
       end
-      return before .. "`" .. module .. "." .. name .. "`" .. after
     end
-  )
+
+    return before .. "`" .. content .. "`" .. after
+  end)
 
   for name, url in pairs(new_refs) do
     existing_refs[name] = url
