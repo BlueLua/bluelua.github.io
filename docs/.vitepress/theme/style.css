@@ -121,3 +121,6 @@
 .VPSidebarItem:has(a[href*="/tutorials/"]) > .item > .text::before {
   content: "🎓 ";
 }
+.VPSidebarItem:has(a[href*="/types"]) > .item > .text::before {
+  content: "📜 ";
+}
