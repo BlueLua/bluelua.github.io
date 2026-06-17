@@ -731,6 +731,7 @@ end
 
 local function format_type_value_ref(val)
   local s = tostring(val):gsub("self:%s*[^,)]+", "self")
+  s = s:gsub("([%w_]+)%s*:%s*([^,%)]-)%?", "%1?: %2")
   local parts = {}
   for part in s:gmatch("[^|]+") do
     local p = part:match("^%s*(.-)%s*$") -- trim
@@ -806,7 +807,7 @@ local function adjust_optional_name_type(name, view)
   local clean_name = name or ""
   local clean_view = view or "any"
 
-  if clean_view:sub(-1) == "?" then
+  if clean_view:sub(-1) == "?" and not clean_view:match("^%s*fun%(") then
     clean_view = clean_view:sub(1, -2)
     if clean_name ~= "" and clean_name:sub(-1) ~= "?" then
       clean_name = clean_name .. "?"
@@ -872,7 +873,7 @@ local function append_function_api_contract(doc, item, alias_views)
       if clean_rname ~= "" then
         label = "`" .. clean_rname .. "`"
       else
-        if rview:sub(-1) == "?" then
+        if rview:sub(-1) == "?" and not rview:match("^%s*fun%(") then
           label = "**value?**"
         else
           label = "**value**"

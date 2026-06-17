@@ -137,8 +137,76 @@ end
 
 local parse_param = parse_name_view_desc
 
+local function split_type_rest(s)
+  if type(s) ~= "string" then
+    return
+  end
+
+  s = s:gsub("^%s+", "")
+  if s == "" then
+    return
+  end
+
+  local depth = 0
+  local quote = nil
+  local escape = false
+
+  local function non_space_char(idx, dir)
+    local cur = idx + dir
+    while cur >= 1 and cur <= #s do
+      local ch = s:sub(cur, cur)
+      if not ch:match("%s") then
+        return ch
+      end
+      cur = cur + dir
+    end
+    return nil
+  end
+
+  for i = 1, #s do
+    local ch = s:sub(i, i)
+    if quote then
+      if escape then
+        escape = false
+      elseif ch == "\\" then
+        escape = true
+      elseif ch == quote then
+        quote = nil
+      end
+    else
+      if ch == '"' or ch == "'" then
+        quote = ch
+      elseif ch == "(" or ch == "[" or ch == "{" or ch == "<" then
+        depth = depth + 1
+      elseif ch == ")" or ch == "]" or ch == "}" or ch == ">" then
+        if depth > 0 then
+          depth = depth - 1
+        end
+      elseif ch:match("%s") and depth == 0 then
+        local before = non_space_char(i, -1)
+        local after = non_space_char(i, 1)
+        local is_allowed = (before == "|" or before == "," or before == ":") or
+                           (after == "|" or after == "," or after == ":")
+        if not is_allowed then
+          local type_part = s:sub(1, i - 1)
+          local rest_part = s:sub(i + 1)
+          return type_part, rest_part:gsub("^%s+", "")
+        end
+      end
+    end
+  end
+
+  return s, ""
+end
+
 local function parse_return(payload)
-  local view, rest = split_name_rest(payload)
+  local view, rest
+  if payload:match("^%s*fun%(") then
+    view, rest = split_type_rest(payload)
+  else
+    view, rest = split_name_rest(payload)
+  end
+
   if not view then
     return
   end
