@@ -1316,9 +1316,16 @@ local function generate_alias_docs(types_dir, output_dir)
     for _, item in ipairs(parsed or {}) do
       item.filename = filename
       if (item.kind == "alias" and not is_function_doc_item(item)) or item.kind == "enum" then
-        insert(aliases, item)
+        local alias_name = (item.name or ""):gsub("<[^>]+>", "")
+        if alias_name ~= "M" and not alias_name:match("^M%.") then
+          insert(aliases, item)
+        end
       elseif item.kind == "class" then
-        insert(classes, item)
+        local class_name = item.view:match("^([^:]+)") or item.view
+        class_name = trim(class_name):gsub("<[^>]+>", "")
+        if class_name ~= "M" and not class_name:match("^M%.") then
+          insert(classes, item)
+        end
       elseif item.kind == "function" or (item.kind == "alias" and is_function_doc_item(item)) then
         if item.name then
           local prefix = item.name:match("^(.+)[%.:]")
