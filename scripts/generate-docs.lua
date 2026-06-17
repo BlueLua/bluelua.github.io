@@ -802,6 +802,20 @@ local function normalize_api_desc(desc)
   return d
 end
 
+local function adjust_optional_name_type(name, view)
+  local clean_name = name or ""
+  local clean_view = view or "any"
+
+  if clean_view:sub(-1) == "?" then
+    clean_view = clean_view:sub(1, -2)
+    if clean_name ~= "" and clean_name:sub(-1) ~= "?" then
+      clean_name = clean_name .. "?"
+    end
+  end
+
+  return clean_name, clean_view
+end
+
 local function append_function_api_contract(doc, item, alias_views)
   local tags = item.tags or {}
   local params = tags.params or {}
@@ -832,10 +846,11 @@ local function append_function_api_contract(doc, item, alias_views)
         pdesc = normalize_api_desc(alias_desc)
       end
       if pname ~= "" and pname ~= "self" then
+        local clean_pname, clean_pview = adjust_optional_name_type(pname, pview)
         if pdesc ~= "" then
-          insert(doc, fmt("- `%s` (%s): %s", pname, format_type_value_ref(pview), pdesc))
+          insert(doc, fmt("- `%s` (%s): %s", clean_pname, format_type_value_ref(clean_pview), pdesc))
         else
-          insert(doc, fmt("- `%s` (%s)", pname, format_type_value_ref(pview)))
+          insert(doc, fmt("- `%s` (%s)", clean_pname, format_type_value_ref(clean_pview)))
         end
       end
     end
@@ -852,11 +867,21 @@ local function append_function_api_contract(doc, item, alias_views)
       if rdesc == "" and alias_desc and alias_desc ~= "" then
         rdesc = normalize_api_desc(alias_desc)
       end
-      local label = rname ~= "" and ("`" .. rname .. "`") or "**value**"
-      if rdesc ~= "" then
-        insert(doc, fmt("- %s (%s): %s", label, format_type_value_ref(rview), rdesc))
+      local clean_rname, clean_rview = adjust_optional_name_type(rname, rview)
+      local label
+      if clean_rname ~= "" then
+        label = "`" .. clean_rname .. "`"
       else
-        insert(doc, fmt("- %s (%s)", label, format_type_value_ref(rview)))
+        if rview:sub(-1) == "?" then
+          label = "**value?**"
+        else
+          label = "**value**"
+        end
+      end
+      if rdesc ~= "" then
+        insert(doc, fmt("- %s (%s): %s", label, format_type_value_ref(clean_rview), rdesc))
+      else
+        insert(doc, fmt("- %s (%s)", label, format_type_value_ref(clean_rview)))
       end
     end
   end
