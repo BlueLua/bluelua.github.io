@@ -1109,6 +1109,18 @@ local function parse(source)
     return true
   end
 
+  local function parse_variable_assignment(line)
+    if type(line) ~= "string" then
+      return nil
+    end
+    local name = line:match("^%s*local%s+([%a_][%w_]*)%s*=")
+    if name then
+      return name
+    end
+    name = line:match("^%s*([%a_][%w_]*)%s*=")
+    return name
+  end
+
   local function handle_tag_block(line, line_no)
     if #desc_lines == 0 and #tag_items == 0 then
       return
@@ -1122,7 +1134,8 @@ local function parse(source)
       local class_view = tags.class
       local class_name = class_view:match("^%w+") or class_view
       tags.class = nil
-      flush_for_item({ kind = "class", name = class_name, view = class_view }, line_no)
+      local var_name = parse_variable_assignment(line)
+      flush_for_item({ kind = "class", name = class_name, view = class_view, var_name = var_name }, line_no)
     elseif tags.meta then
       local meta_desc = join_desc(desc_lines) or tags.meta_desc
       local meta_name = tags.meta

@@ -567,7 +567,29 @@ local function pick_module_name(items)
   return item and item.shortname or "module"
 end
 
-local function pick_module_desc(items)
+local function pick_module_desc(items, module_name)
+  local meta_item = first_match(items, function(it)
+    return it.kind == "meta" and it.desc
+  end)
+  if meta_item then
+    return meta_item.desc
+  end
+
+  local m_class = first_match(items, function(it)
+    if it.kind ~= "class" or not it.desc then
+      return false
+    end
+    if it.var_name == "M" then
+      return true
+    end
+    local view_name = it.view:match("^([^:]+)") or it.view
+    view_name = trim(view_name):gsub("<[^>]+>", "")
+    return view_name == "M"
+  end)
+  if m_class then
+    return m_class.desc
+  end
+
   local class_item = first_match(items, function(it)
     return it.kind == "class" and it.desc
   end)
@@ -1023,7 +1045,7 @@ local function render_api_markdown(items)
   end
 
   local module_name = pick_module_name(items)
-  local module_desc = pick_module_desc(items)
+  local module_desc = pick_module_desc(items, module_name)
   local fields = collect_class_fields(items)
   for _, field in ipairs(fields) do
     field.ref_id = unique_anchor(heading_anchor(field.name or ""))
