@@ -97,7 +97,7 @@ function listMarkdownFiles(project, relativeDir = "") {
     .readdirSync(dir, { withFileTypes: true })
     .filter((entry) => entry.isFile())
     .map((entry) => entry.name)
-    .filter((file) => file.endsWith(".md") && file !== "index.md")
+    .filter((file) => file.endsWith(".md") && file !== "index.md" && file !== "types.md")
     .sort((a, b) => {
       const relA = path.join(relativeDir, a);
       const relB = path.join(relativeDir, b);
@@ -122,9 +122,8 @@ function listNestedDocDirs(project) {
 
 function buildSidebar() {
   return Object.fromEntries(
-    listProjects().map((project) => [
-      `/${project}/`,
-      [
+    listProjects().map((project) => {
+      const items = [
         {
           text: pageTitle(project, "index.md"),
           items: [
@@ -141,8 +140,20 @@ function buildSidebar() {
             pageItem(project, `${dir}/${file}`),
           ),
         })),
-      ],
-    ]),
+      ];
+
+      const typesPath = path.join(docsSrcDir, project, "types.md");
+      if (fs.existsSync(typesPath)) {
+        items.push({
+          text: "Types",
+          items: [
+            { text: "Types", link: `/${project}/types` }
+          ]
+        });
+      }
+
+      return [ `/${project}/`, items ];
+    }),
   );
 }
 
