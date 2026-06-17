@@ -1201,8 +1201,7 @@ local function render_api_markdown(items)
           insert(doc, "")
         end
         first = false
-        insert(doc, fmt('<a id="%s"></a>', entry.ref_id))
-        insert(doc, fmt("%s `%s`", unsectioned_function_heading_level, entry.signature))
+        insert(doc, fmt("%s `%s` {#%s}", unsectioned_function_heading_level, entry.signature, entry.ref_id))
         append_function_signature_details(doc, entry.item, alias_views)
       end
     end
@@ -1227,8 +1226,7 @@ local function render_api_markdown(items)
             end
             first_sec = false
             first = false
-            insert(doc, fmt('<a id="%s"></a>', entry.ref_id))
-            insert(doc, fmt("%s `%s`", function_heading_level, entry.signature))
+            insert(doc, fmt("%s `%s` {#%s}", function_heading_level, entry.signature, entry.ref_id))
             append_function_signature_details(doc, entry.item, alias_views)
           end
         end
@@ -1244,8 +1242,7 @@ local function render_api_markdown(items)
           insert(doc, "")
         end
         first = false
-        insert(doc, fmt('<a id="%s"></a>', entry.ref_id))
-        insert(doc, fmt("%s `%s`", function_heading_level, entry.signature))
+        insert(doc, fmt("%s `%s` {#%s}", function_heading_level, entry.signature, entry.ref_id))
         append_function_signature_details(doc, entry.item, alias_views)
       end
     end
@@ -1264,18 +1261,19 @@ local function render_api_markdown(items)
         insert(doc, "")
       end
       first_field = false
-      insert(doc, fmt('<a id="%s"></a>', field.ref_id or heading_anchor(field.name or "")))
+      local ref_id = field.ref_id or heading_anchor(field.name or "")
       local fview = field and field.view
-      local heading = fmt("### `%s`", field.name or "")
+      local heading
       if fview and fview ~= "" then
         local _, alias_desc = expand_type_view(fview, alias_views)
-        heading = fmt("### `%s` (%s)", field.name or "", format_type_value_ref(fview))
+        heading = fmt("### `%s` (%s) {#%s}", field.name or "", format_type_value_ref(fview), ref_id)
         insert(doc, heading)
         if (not field.desc or field.desc == "") and alias_desc and alias_desc ~= "" then
           insert(doc, "")
           insert(doc, alias_desc)
         end
       else
+        heading = fmt("### `%s` {#%s}", field.name or "", ref_id)
         insert(doc, heading)
       end
       if field.desc then
