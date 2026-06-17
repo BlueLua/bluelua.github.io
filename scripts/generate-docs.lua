@@ -338,6 +338,31 @@ local function resolve_code_spans_and_add_links(s)
     end
   end
 
+  -- Extract code blocks to prevent backtick parity shifting
+  local code_blocks = {}
+  local block_count = 0
+  local cursor = 1
+  local parts = {}
+  while true do
+    local start_idx, end_idx = main_content:find("```", cursor)
+    if not start_idx then
+      table.insert(parts, main_content:sub(cursor))
+      break
+    end
+    local close_start, close_end = main_content:find("```", end_idx + 1)
+    if not close_start then
+      table.insert(parts, main_content:sub(cursor))
+      break
+    end
+    local block = main_content:sub(start_idx, close_end)
+    block_count = block_count + 1
+    code_blocks[block_count] = block
+    table.insert(parts, main_content:sub(cursor, start_idx - 1))
+    table.insert(parts, string.format("\001CODEBLOCK%d\002", block_count))
+    cursor = close_end + 1
+  end
+  main_content = table.concat(parts)
+
   local new_refs = {}
   local modified_content = main_content:gsub("([%[%w_]?)`([^`]+)`([%]%w_]?)", function(before, content, after)
     if before == "[" or after == "]" then
@@ -372,6 +397,13 @@ local function resolve_code_spans_and_add_links(s)
 
     return before .. "`" .. content .. "`" .. after
   end)
+
+  -- Restore code blocks
+  for i = 1, block_count do
+    modified_content = modified_content:gsub("\001CODEBLOCK" .. i .. "\002", function()
+      return code_blocks[i]
+    end)
+  end
 
   for name, url in pairs(new_refs) do
     existing_refs[name] = url
