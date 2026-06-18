@@ -245,54 +245,63 @@ local function convert_inline_links_to_references(s)
 
   local new_refs = {}
 
-  -- Match [link text](url)
-  local modified_content = main_content:gsub("([%!]?)%[([^%]]+)%]%(([^%)]+)%)", function(is_image, text, url)
-    if is_image == "!" then
-      return "!" .. "[" .. text .. "](" .. url .. ")"
-    end
-
-    local clean_text = text:gsub("^%s*(.-)%s*$", "%1")
-    local key = clean_text
-    local target_key = nil
-
-    if (existing_refs[key] and existing_refs[key] == url) or (new_refs[key] and new_refs[key] == url) then
-      target_key = key
-    elseif not existing_refs[key] and not new_refs[key] then
-      new_refs[key] = url
-      target_key = key
+  -- Match [link text](url) (skipping lines that start with a markdown header prefix '#')
+  local lines = {}
+  for line in (main_content .. "\n"):gmatch("([^\n]*)\n") do
+    if line:match("^%s*#") then
+      insert(lines, line)
     else
-      local base_key = key
-      local is_code = base_key:match("^`([^`]+)`$")
-      local i = 1
-      while true do
-        local candidate
-        if is_code then
-          candidate = "`" .. is_code .. "-" .. i .. "`"
+      local modified_line = line:gsub("([%!]?)%[([^%]]+)%]%(([^%)]+)%)", function(is_image, text, url)
+        if is_image == "!" then
+          return "!" .. "[" .. text .. "](" .. url .. ")"
+        end
+
+        local clean_text = text:gsub("^%s*(.-)%s*$", "%1")
+        local key = clean_text
+        local target_key = nil
+
+        if (existing_refs[key] and existing_refs[key] == url) or (new_refs[key] and new_refs[key] == url) then
+          target_key = key
+        elseif not existing_refs[key] and not new_refs[key] then
+          new_refs[key] = url
+          target_key = key
         else
-          candidate = base_key .. "-" .. i
+          local base_key = key
+          local is_code = base_key:match("^`([^`]+)`$")
+          local i = 1
+          while true do
+            local candidate
+            if is_code then
+              candidate = "`" .. is_code .. "-" .. i .. "`"
+            else
+              candidate = base_key .. "-" .. i
+            end
+
+            if
+              (existing_refs[candidate] and existing_refs[candidate] == url)
+              or (new_refs[candidate] and new_refs[candidate] == url)
+            then
+              target_key = candidate
+              break
+            elseif not existing_refs[candidate] and not new_refs[candidate] then
+              new_refs[candidate] = url
+              target_key = candidate
+              break
+            end
+            i = i + 1
+          end
         end
 
-        if
-          (existing_refs[candidate] and existing_refs[candidate] == url)
-          or (new_refs[candidate] and new_refs[candidate] == url)
-        then
-          target_key = candidate
-          break
-        elseif not existing_refs[candidate] and not new_refs[candidate] then
-          new_refs[candidate] = url
-          target_key = candidate
-          break
+        if clean_text == target_key then
+          return "[" .. clean_text .. "]"
+        else
+          return "[" .. clean_text .. "][" .. target_key .. "]"
         end
-        i = i + 1
-      end
+      end)
+      insert(lines, modified_line)
     end
-
-    if clean_text == target_key then
-      return "[" .. clean_text .. "]"
-    else
-      return "[" .. clean_text .. "][" .. target_key .. "]"
-    end
-  end)
+  end
+  local modified_content = concat(lines, "\n")
 
   for k, v in pairs(new_refs) do
     existing_refs[k] = v
@@ -1531,7 +1540,6 @@ local function generate_alias_docs(types_dir, output_dir)
   insert(md, "Types defined in the " .. module_name .. " module.")
 
   local details = {}
-  local link_refs = {}
   for _, item in ipairs(aliases) do
     local name = item.name or ""
     local val_str, val_desc = alias_view_to_string(item.view)
@@ -1539,10 +1547,9 @@ local function generate_alias_docs(types_dir, output_dir)
 
     local url =
       string.format(github_types_url_template, module_name, item.filename or "", item.start or 1, item.finish or 1)
-    insert(link_refs, string.format("[`%s`]: %s", name, url))
 
     local detail = {}
-    insert(detail, "## [`" .. name .. "`]")
+    insert(detail, "## [`" .. name .. "`](" .. url .. ")")
     insert(detail, "")
     if desc ~= "" then
       insert(detail, desc)
@@ -1693,16 +1700,6 @@ local function generate_alias_docs(types_dir, output_dir)
 
   insert(md, "")
   insert(md, table.concat(details, "\n\n"))
-  insert(md, "")
-  if #link_refs > 0 then
-    insert(md, "")
-    insert(md, "<!-- markdownlint-disable MD053 -->")
-    insert(md, "<!-- prettier-ignore-start -->")
-    sort(link_refs)
-    insert(md, table.concat(link_refs, "\n"))
-    insert(md, "<!-- prettier-ignore-end -->")
-    insert(md, "<!-- markdownlint-enable MD053 -->")
-  end
 
   local filepath = output_dir .. "/" .. types_file_name .. ".md"
   local output = table.concat(md, "\n")
