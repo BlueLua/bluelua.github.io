@@ -115,9 +115,6 @@
 .VPSidebarItem:has(a[href*="/api/"]) > .item > .text::before {
   content: "🧬 ";
 }
-.VPSidebarItem:has(a[href*="/reference/"]) > .item > .text::before {
-  content: "📖 ";
-}
 .VPSidebarItem:has(a[href*="/tutorials/"]) > .item > .text::before {
   content: "🎓 ";
 }
