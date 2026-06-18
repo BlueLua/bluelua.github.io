@@ -1,41 +1,75 @@
 ---
 title: "selector"
-description: "Selector for polling and reading from multiple devices."
+description: "Monitor and read events from multiple input devices."
 ---
 
-Selector for polling and reading from multiple devices.
+Monitor and read events from multiple input devices.
+
+## Usage
+
+```lua
+local evdev = require "evdev"
+
+local Device = evdev.device.open
+local Selector = evdev.selector.new
+
+local dev1 = assert(Device("/dev/input/eventX"))
+local dev2 = assert(Device("/dev/input/eventY"))
+local sel = Selector({ dev1, dev2 })
+
+for dev, ev in sel:events() do
+  print(dev.name, ev.code, ev.value)
+end
+```
 
 ## Functions
 
-| Function                       | Description                                                    |
-| ------------------------------ | -------------------------------------------------------------- |
-| [`add(device)`](#fn-add)       | Add a device to this selector.                                 |
-| [`clear()`](#fn-clear)         | Remove all devices from this selector.                         |
-| [`events()`](#fn-events)       | Return an iterator that yields events from registered devices. |
-| [`new(devices?)`](#fn-new)     | Create a selector from an optional list of devices.            |
-| [`poll()`](#fn-poll)           | Wait until at least one registered device has input available. |
-| [`remove(device)`](#fn-remove) | Remove a device from this selector.                            |
+| Function           | Description                                                    |
+| ------------------ | -------------------------------------------------------------- |
+| [`new(devices?)`]  | Create a selector from an optional list of devices.            |
+| [`add(device)`]    | Add a device to this selector.                                 |
+| [`clear()`]        | Remove all devices from this selector.                         |
+| [`events()`]       | Return an iterator that yields events from registered devices. |
+| [`poll()`]         | Wait until at least one registered device has input available. |
+| [`remove(device)`] | Remove a device from this selector.                            |
 
-<a id="fn-add"></a>
+### `new(devices?)` {#new}
 
-### `add(device)`
+Create a selector from an optional list of devices.
+
+**Parameters**:
+
+- `devices?` ([`evdev.Device`]`[]`)
+
+**Returns**:
+
+- **value** ([`evdev.Selector`])
+
+**Example**:
+
+```lua
+local kb1 = assert(Device("/dev/input/event5"))
+local kb2 = assert(Device("/dev/input/event10"))
+local sel = Selector({ kb1, kb2 })
+```
+
+---
+
+### `add(device)` {#add}
 
 Add a device to this selector.
 
 **Parameters**:
 
-- `device` (`evdev.Device`)
+- `device` ([`evdev.Device`])
 
-**Return**:
+**Returns**:
 
 - **value** (`self`)
 
 **Example**:
 
 ```lua
-local Device = evdev.device.open
-local Selector = evdev.selector.new
-
 local kb1 = assert(Device("/dev/input/event5"))
 local kb2 = assert(Device("/dev/input/event10"))
 local sel = Selector({ kb1 })
@@ -43,22 +77,19 @@ local sel = Selector({ kb1 })
 sel:add(kb2)
 ```
 
-<a id="fn-clear"></a>
+---
 
-### `clear()`
+### `clear()` {#clear}
 
 Remove all devices from this selector.
 
-**Return**:
+**Returns**:
 
 - **value** (`self`)
 
 **Example**:
 
 ```lua
-local Device = evdev.device.open
-local Selector = evdev.selector.new
-
 local kb1 = assert(Device("/dev/input/event5"))
 local kb2 = assert(Device("/dev/input/event10"))
 local sel = Selector({ kb1, kb2 })
@@ -66,22 +97,19 @@ local sel = Selector({ kb1, kb2 })
 sel:clear()
 ```
 
-<a id="fn-events"></a>
+---
 
-### `events()`
+### `events()` {#events}
 
 Return an iterator that yields events from registered devices.
 
-**Return**:
+**Returns**:
 
-- `evdev.Device?,` (`fun():`): evdev.event?
+- **value** (`fun(): (dev?: `[`evdev.Device`]`, ev?: `[`evdev.event`]`)`)
 
 **Example**:
 
 ```lua
-local Device = evdev.device.open
-local Selector = evdev.selector.new
-
 local kb1 = assert(Device("/dev/input/event5"))
 local kb2 = assert(Device("/dev/input/event10"))
 local sel = Selector({ kb1, kb2 })
@@ -91,49 +119,20 @@ for dev, e in sel:events() do
 end
 ```
 
-<a id="fn-new"></a>
+---
 
-### `new(devices?)`
-
-Create a selector from an optional list of devices.
-
-**Parameters**:
-
-- `devices?` (`evdev.Device[]`)
-
-**Return**:
-
-- **value** (`evdev.Selector`)
-
-**Example**:
-
-```lua
-local evdev = require "evdev"
-local Device = evdev.device.open
-local Selector = evdev.selector.new
-
-local kb1 = assert(Device("/dev/input/event5"))
-local kb2 = assert(Device("/dev/input/event10"))
-local sel = Selector({ kb1, kb2 })
-```
-
-<a id="fn-poll"></a>
-
-### `poll()`
+### `poll()` {#poll}
 
 Wait until at least one registered device has input available.
 
-**Return**:
+**Returns**:
 
-- `devs` (`evdev.Device[]?`)
-- `err` (`string?`)
+- `devs?` ([`evdev.Device`]`[]`)
+- `err?` (`string`)
 
 **Example**:
 
 ```lua
-local Device = evdev.device.open
-local Selector = evdev.selector.new
-
 local kb1 = assert(Device("/dev/input/event5"))
 local kb2 = assert(Device("/dev/input/event10"))
 local sel = Selector({ kb1, kb2 })
@@ -143,29 +142,40 @@ for _, dev in ipairs(assert(sel:poll())) do
 end
 ```
 
-<a id="fn-remove"></a>
+---
 
-### `remove(device)`
+### `remove(device)` {#remove}
 
 Remove a device from this selector.
 
 **Parameters**:
 
-- `device` (`evdev.Device`)
+- `device` ([`evdev.Device`])
 
-**Return**:
+**Returns**:
 
 - **value** (`self`)
 
 **Example**:
 
 ```lua
-local Device = evdev.device.open
-local Selector = evdev.selector.new
-
 local kb1 = assert(Device("/dev/input/event5"))
 local kb2 = assert(Device("/dev/input/event10"))
 local sel = Selector({ kb1, kb2 })
 
 sel:remove(kb2)
 ```
+
+<!-- markdownlint-disable MD053 -->
+<!-- prettier-ignore-start -->
+[`add(device)`]: #add
+[`clear()`]: #clear
+[`evdev.Device`]: /evdev/api/device
+[`evdev.Selector`]: /evdev/api/selector
+[`evdev.event`]: /evdev/types#evdev-event
+[`events()`]: #events
+[`new(devices?)`]: #new
+[`poll()`]: #poll
+[`remove(device)`]: #remove
+<!-- prettier-ignore-end -->
+<!-- markdownlint-enable MD053 -->

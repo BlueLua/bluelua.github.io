@@ -5,6 +5,8 @@ description: "Input device discovery helpers."
 
 Input device discovery helpers.
 
+## Usage
+
 ```lua
 local devices = assert(evdev.devices.list_devices())
 print(#devices)
@@ -12,27 +14,25 @@ print(#devices)
 
 ## Functions
 
-| Function                               | Description                                                                 |
-| -------------------------------------- | --------------------------------------------------------------------------- |
-| [`device_info(path)`](#fn-device-info) | Read metadata for one input device by path.                                 |
-| [`find(query)`](#fn-find)              | Return the first discovered input device matching a path or a device name.  |
-| [`find_all(query)`](#fn-find-all)      | Return all discovered input devices matching a path, alias, or device name. |
-| [`list_devices()`](#fn-list-devices)   | List evdev input devices under `/dev/input`.                                |
+| Function              | Description                                                                 |
+| --------------------- | --------------------------------------------------------------------------- |
+| [`device_info(path)`] | Read metadata for one input device by path.                                 |
+| [`find(query)`]       | Return the first discovered input device matching a path or a device name.  |
+| [`find_all(query)`]   | Return all discovered input devices matching a path, alias, or device name. |
+| [`list_devices()`]    | List evdev input devices under `/dev/input`.                                |
 
-<a id="fn-device-info"></a>
-
-### `device_info(path)`
+### `device_info(path)` {#device-info}
 
 Read metadata for one input device by path.
 
 **Parameters**:
 
-- `path` (`evdev.path`)
+- `path` ([`evdev.path`])
 
-**Return**:
+**Returns**:
 
-- `info` (`evdev.deviceInfo?`)
-- `err` (`string?`)
+- `info?` ([`evdev.deviceInfo`])
+- `err?` (`string`)
 
 **Example**:
 
@@ -41,9 +41,9 @@ local dev = assert(evdev.devices.device_info("/dev/input/event3"))
 print(dev.name)
 ```
 
-<a id="fn-find"></a>
+---
 
-### `find(query)`
+### `find(query)` {#find}
 
 Return the first discovered input device matching a path or a device name.
 
@@ -52,10 +52,10 @@ Return the first discovered input device matching a path or a device name.
 - `query` (`string`): Exact device path, by-id path, by-path path, or device
   name.
 
-**Return**:
+**Returns**:
 
-- `dev` (`evdev.deviceInfo?`)
-- `err` (`string?`)
+- `dev?` ([`evdev.deviceInfo`])
+- `err?` (`string`)
 
 **Example**:
 
@@ -73,9 +73,9 @@ print(by_id_alias   and by_id_alias.path)
 print(by_name       and by_name.path)
 ```
 
-<a id="fn-find-all"></a>
+---
 
-### `find_all(query)`
+### `find_all(query)` {#find-all}
 
 Return all discovered input devices matching a path, alias, or device name.
 
@@ -84,10 +84,10 @@ Return all discovered input devices matching a path, alias, or device name.
 - `query` (`string`): Exact device path, by-id path, by-path path, or device
   name.
 
-**Return**:
+**Returns**:
 
-- `devs` (`evdev.deviceInfo[]?`)
-- `err` (`string?`)
+- `devs?` ([`evdev.deviceInfo`]`[]`)
+- `err?` (`string`)
 
 **Example**:
 
@@ -105,16 +105,16 @@ print(#by_id_alias)
 print(#by_name)
 ```
 
-<a id="fn-list-devices"></a>
+---
 
-### `list_devices()`
+### `list_devices()` {#list-devices}
 
 List evdev input devices under `/dev/input`.
 
-**Return**:
+**Returns**:
 
-- `devs` (`evdev.deviceInfo[]?`)
-- `err` (`string?`)
+- `devs?` ([`evdev.deviceInfo`]`[]`)
+- `err?` (`string`)
 
 **Example**:
 
@@ -124,3 +124,14 @@ for _, dev in ipairs(devs) do
   print(dev.path, dev.name)
 end
 ```
+
+<!-- markdownlint-disable MD053 -->
+<!-- prettier-ignore-start -->
+[`device_info(path)`]: #device-info
+[`evdev.deviceInfo`]: /evdev/types#evdev-deviceinfo
+[`evdev.path`]: /evdev/types#evdev-path
+[`find(query)`]: #find
+[`find_all(query)`]: #find-all
+[`list_devices()`]: #list-devices
+<!-- prettier-ignore-end -->
+<!-- markdownlint-enable MD053 -->

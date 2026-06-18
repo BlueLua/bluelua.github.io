@@ -25,19 +25,14 @@ attaches them as `id_aliases` and `path_aliases` fields.
 
 ## Inspect a device
 
-If you know the path, inspect one device directly:
+If you know the path, inspect one device directly to get its
+[`evdev.deviceInfo`]:
 
 ```lua
 local path = "/dev/input/event1"
 local dev = assert(evdev.devices.device_info(path))
 print(dev.name)
 ```
-
-::: details Device info
-
-<!-- @include: ../reference/device-info.md -->
-
-:::
 
 ## Find devices by `name` or `path`
 
@@ -93,11 +88,8 @@ for e in dev:events() do
 end
 ```
 
-The iterator polls and reads in a loop, yielding each event as it arrives. It
-runs until the device is closed or an error occurs.
+The iterator polls and reads in a loop, yielding each [`evdev.event`] as it
+arrives. It runs until the device is closed or an error occurs.
 
-::: details Event fields
-
-<!-- @include: ../reference/event-fields.md -->
-
-:::
+[`evdev.deviceInfo`]: ../types#evdev-deviceinfo
+[`evdev.event`]: ../types#evdev-event

@@ -180,4 +180,4 @@ tap(ui, ecodes.BTN_MIDDLE) -- middle click
 Because the Linux kernel treats mouse buttons ( [BTN_*] ) as keys (both use the
 `EV_KEY` event type under the hood), we can use `tap()` to perform clicks.
 
-[BTN_*]: ../api/ecodes#btn
+[BTN_*]: ../types#evdev-ecodes-btn
