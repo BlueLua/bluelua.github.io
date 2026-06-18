@@ -447,7 +447,6 @@ local FLAG_TAGS = {
   package = true,
   deprecated = true,
   ignore = true,
-  enum = true,
 }
 
 local function parse_tags(tag_items)
@@ -500,6 +499,8 @@ local function parse_tags(tag_items)
         append_parsed_tag(tags, parsed.key, payload, parsed.parser)
       elseif tag == "generic" then
         tags.generic = split_commas(payload)
+      elseif tag == "enum" then
+        tags.enum = payload ~= "" and payload or true
       elseif FLAG_TAGS[tag] then
         tags[tag] = true
       elseif tag == "class" then
@@ -1049,9 +1050,13 @@ local function parse(source)
       return false
     end
     local depth = 1 + count_braces(rest)
+    local actual_name = enum_tags.enum
+    if type(actual_name) ~= "string" or actual_name == "" then
+      actual_name = enum_name
+    end
     enum_tags.enum = nil
     enum_capture = {
-      name = enum_name,
+      name = actual_name,
       desc = join_desc(desc_lines),
       lines = { rest },
       depth = depth,
