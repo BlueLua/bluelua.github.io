@@ -1141,6 +1141,48 @@ local function render_api_markdown(items)
     return convert_inline_links_to_references(output)
   end
 
+  if #fields > 0 then
+    insert(doc, "## Fields")
+    if #fields >= FIELD_OVERVIEW_MIN then
+      append_fields_table(doc, fields, alias_views)
+    end
+    insert(doc, "")
+    local first_field = true
+    for _, field in ipairs(fields) do
+      if not first_field then
+        insert(doc, "---")
+        insert(doc, "")
+      end
+      first_field = false
+      local ref_id = field.ref_id or heading_anchor(field.name or "")
+      local fview = field and field.view
+      local heading
+      if fview and fview ~= "" then
+        local _, alias_desc = expand_type_view(fview, alias_views)
+        heading = fmt("### `%s` (%s) {#%s}", field.name or "", format_type_value_ref(fview), ref_id)
+        insert(doc, heading)
+        if (not field.desc or field.desc == "") and alias_desc and alias_desc ~= "" then
+          insert(doc, "")
+          insert(doc, alias_desc)
+        end
+      else
+        heading = fmt("### `%s` {#%s}", field.name or "", ref_id)
+        insert(doc, heading)
+      end
+      if field.desc then
+        insert(doc, "")
+        insert(doc, field.desc)
+      elseif field.value ~= nil then
+        local rendered_value = value_to_markdown(field.value)
+        if rendered_value then
+          insert(doc, "")
+          insert(doc, "Value: " .. rendered_value)
+        end
+      end
+    end
+    insert(doc, "")
+  end
+
   if has_functions_header then
     insert(doc, "## Functions")
   end
@@ -1285,47 +1327,6 @@ local function render_api_markdown(items)
         first = false
         insert(doc, fmt("%s `%s` {#%s}", function_heading_level, entry.signature, entry.ref_id))
         append_function_signature_details(doc, entry.item, alias_views)
-      end
-    end
-  end
-
-  if #fields > 0 then
-    insert(doc, "## Fields")
-    if #fields >= FIELD_OVERVIEW_MIN then
-      append_fields_table(doc, fields, alias_views)
-    end
-    insert(doc, "")
-    local first_field = true
-    for _, field in ipairs(fields) do
-      if not first_field then
-        insert(doc, "---")
-        insert(doc, "")
-      end
-      first_field = false
-      local ref_id = field.ref_id or heading_anchor(field.name or "")
-      local fview = field and field.view
-      local heading
-      if fview and fview ~= "" then
-        local _, alias_desc = expand_type_view(fview, alias_views)
-        heading = fmt("### `%s` (%s) {#%s}", field.name or "", format_type_value_ref(fview), ref_id)
-        insert(doc, heading)
-        if (not field.desc or field.desc == "") and alias_desc and alias_desc ~= "" then
-          insert(doc, "")
-          insert(doc, alias_desc)
-        end
-      else
-        heading = fmt("### `%s` {#%s}", field.name or "", ref_id)
-        insert(doc, heading)
-      end
-      if field.desc then
-        insert(doc, "")
-        insert(doc, field.desc)
-      elseif field.value ~= nil then
-        local rendered_value = value_to_markdown(field.value)
-        if rendered_value then
-          insert(doc, "")
-          insert(doc, "Value: " .. rendered_value)
-        end
       end
     end
   end
