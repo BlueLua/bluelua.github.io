@@ -16,7 +16,7 @@ synthetic input events.
 
 ## Creating a virtual keyboard
 
-The simplest way to create a virtual keyboard:
+The simplest way to create a virtual keyboard using an [`evdev.uinputSpec`]:
 
 ```lua
 local evdev = require "evdev"
@@ -27,12 +27,6 @@ local ui = assert(UInput({ name = "Lua Virtual Keyboard" }))
 os.execute("sleep 0.5") -- Replace with your preferred sleep helper
 print(ui.path)
 ```
-
-::: details UInput options
-
-<!-- @include: ../reference/uinput-spec.md -->
-
-:::
 
 When `keys` option is omitted, evdev enables all real [KEY_*] and [BTN_*] codes.
 The `name` is what tools like `evtest` will display.
@@ -109,5 +103,6 @@ mouse:emit(evdev.ecodes.EV_KEY, evdev.ecodes.BTN_RIGHT, 0)
 mouse:sync()
 ```
 
-[KEY_*]: ../api/ecodes#key
-[BTN_*]: ../api/ecodes#btn
+[KEY_*]: ../types#evdev-ecodes-key
+[BTN_*]: ../types#evdev-ecodes-btn
+[`evdev.uinputSpec`]: ../types#evdev-uinputspec
