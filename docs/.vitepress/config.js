@@ -138,7 +138,6 @@ function buildSidebar() {
         },
         ...listNestedDocDirs(project).map((dir) => ({
           text: titleFromDir(dir),
-          collapsed: dir === "reference",
           items: listMarkdownFiles(project, dir).map((file) =>
             pageItem(project, `${dir}/${file}`),
           ),
