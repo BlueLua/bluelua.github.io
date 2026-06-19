@@ -165,12 +165,21 @@ function buildProjectNavItems() {
 }
 
 function buildEditLink({ filePath }) {
-  const [repo, ...rest] = filePath.split("/");
+  const projects = ["evdev", "mods", "timeutil", "tty"];
+  const parts = filePath.split("/");
+  const repo = parts[0];
+  const baseUrl = "https://github.com/BlueLua";
+
+  if (!projects.includes(repo)) {
+    return `${baseUrl}/bluelua.github.io/edit/main/docs/src/${filePath}`;
+  }
+
+  const rest = parts.slice(1);
   const isApi = rest[0] === "api";
   const target = isApi
     ? `types/${rest.slice(1).join("/").replace(/\.md$/, ".d.lua")}`
     : `docs/${rest.join("/")}`;
-  return `https://github.com/BlueLua/${repo}/edit/main/${target}`;
+  return `${baseUrl}/${repo}/edit/main/${target}`;
 }
 
 function filterSearchResult(result) {
@@ -189,6 +198,7 @@ export default defineConfig({
   base: siteBasePath,
   cleanUrls: true,
   appearance: true,
+  ignoreDeadLinks: [/\/mods\/reference\//],
   markdown: {
     config(md) {
       md.use(groupIconMdPlugin);
