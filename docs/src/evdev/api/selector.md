@@ -166,7 +166,6 @@ local sel = Selector({ kb1, kb2 })
 sel:remove(kb2)
 ```
 
-<!-- markdownlint-disable MD053 -->
 <!-- prettier-ignore-start -->
 [`add(device)`]: #add
 [`clear()`]: #clear
@@ -178,4 +177,3 @@ sel:remove(kb2)
 [`poll()`]: #poll
 [`remove(device)`]: #remove
 <!-- prettier-ignore-end -->
-<!-- markdownlint-enable MD053 -->

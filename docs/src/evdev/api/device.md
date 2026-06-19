@@ -332,7 +332,6 @@ assert(dev:grab())
 assert(dev:ungrab())
 ```
 
-<!-- markdownlint-disable MD053 -->
 <!-- prettier-ignore-start -->
 [`close()`]: #close
 [`evdev.Device`]: /evdev/api/device
@@ -353,4 +352,3 @@ assert(dev:ungrab())
 [`set_repeat(delay, period)`]: #set-repeat
 [`ungrab()`]: #ungrab
 <!-- prettier-ignore-end -->
-<!-- markdownlint-enable MD053 -->

@@ -221,7 +221,6 @@ ui:emit(evdev.ecodes.EV_KEY, evdev.ecodes.KEY_LEFTSHIFT, 0)
 ui:sync()
 ```
 
-<!-- markdownlint-disable MD053 -->
 <!-- prettier-ignore-start -->
 [`close()`]: #close
 [`create(spec?)`]: #create
@@ -240,4 +239,3 @@ ui:sync()
 [`set_repeat(delay, period)`]: #set-repeat
 [`sync()`]: #sync
 <!-- prettier-ignore-end -->
-<!-- markdownlint-enable MD053 -->
