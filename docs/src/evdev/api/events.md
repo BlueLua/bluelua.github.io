@@ -175,7 +175,6 @@ local e = { type = evdev.ecodes.EV_SYN }
 print(evdev.events.is_syn(e)) --> true
 ```
 
-<!-- markdownlint-disable MD053 -->
 <!-- prettier-ignore-start -->
 [`evdev.event`]: /evdev/types#evdev-event
 [`is_abs(event)`]: #is-abs
@@ -186,4 +185,3 @@ print(evdev.events.is_syn(e)) --> true
 [`is_repeat(event)`]: #is-repeat
 [`is_syn(event)`]: #is-syn
 <!-- prettier-ignore-end -->
-<!-- markdownlint-enable MD053 -->

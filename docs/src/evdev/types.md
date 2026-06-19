@@ -807,7 +807,6 @@ Configuration used to create a `/dev/uinput` virtual device.
 | `vendor`      | `integer`                                            | Yes      | Vendor ID (default: `0x1209`).                                                                                        |
 | `version`     | `integer`                                            | Yes      | Version number (default: `1`).                                                                                        |
 
-<!-- markdownlint-disable MD053 -->
 <!-- prettier-ignore-start -->
 [`evdev.Device`]: /evdev/api/device
 [`evdev.deviceInfo`]: /evdev/types#evdev-deviceinfo
@@ -819,4 +818,3 @@ Configuration used to create a `/dev/uinput` virtual device.
 [`evdev.event`]: /evdev/types#evdev-event
 [`evdev.fd`]: /evdev/types#evdev-fd
 <!-- prettier-ignore-end -->
-<!-- markdownlint-enable MD053 -->

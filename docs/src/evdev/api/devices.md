@@ -125,7 +125,6 @@ for _, dev in ipairs(devs) do
 end
 ```
 
-<!-- markdownlint-disable MD053 -->
 <!-- prettier-ignore-start -->
 [`device_info(path)`]: #device-info
 [`evdev.deviceInfo`]: /evdev/types#evdev-deviceinfo
@@ -134,4 +133,3 @@ end
 [`find_all(query)`]: #find-all
 [`list_devices()`]: #list-devices
 <!-- prettier-ignore-end -->
-<!-- markdownlint-enable MD053 -->
