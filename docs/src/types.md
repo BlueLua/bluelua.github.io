@@ -100,5 +100,5 @@ For more detailed setup options, refer to the [LuaLS Wiki Configuration Page].
 [LuaLS Wiki Configuration Page]: https://github.com/LuaLS/lua-language-server/wiki/Configuration-File
 [.vscode/settings.json]: vscode://settings/Lua.workspace.library
 [nvim-lspconfig]: https://github.com/neovim/nvim-lspconfig
-[`.luarc.json`]: types/#luarc-json
+[`.luarc.json`]: #luarc-json
 <!-- prettier-ignore-end -->
