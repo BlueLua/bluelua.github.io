@@ -185,8 +185,8 @@ local function split_type_rest(s)
       elseif ch:match("%s") and depth == 0 then
         local before = non_space_char(i, -1)
         local after = non_space_char(i, 1)
-        local is_allowed = (before == "|" or before == "," or before == ":") or
-                           (after == "|" or after == "," or after == ":")
+        local is_allowed = (before == "|" or before == "," or before == ":")
+          or (after == "|" or after == "," or after == ":")
         if not is_allowed then
           local type_part = s:sub(1, i - 1)
           local rest_part = s:sub(i + 1)
@@ -599,23 +599,49 @@ end
 
 local function parse_enum_body(body)
   local values = {}
-  for part in body:gmatch("[^,]+") do
-    local item = trim(part)
-    if item ~= "" then
-      local key, value = item:match("^%[(.-)%]%s*=%s*(.+)$")
+  local descs = {}
+  for line in body:gmatch("[^%c]+") do
+    local item_line = trim(line)
+    item_line = item_line:gsub(",%s*$", "")
+    local expr, desc = item_line:match("^(.-)%-%-%s*(.*)$")
+    if not expr then
+      expr = item_line
+    else
+      expr = trim(expr)
+      desc = trim(desc)
+    end
+    expr = expr:gsub(",%s*$", "")
+    expr = trim(expr)
+
+    if expr ~= "" then
+      local key, value = expr:match("^%[(.-)%]%s*=%s*(.+)$")
       if key then
-        values[trim(key)] = parse_enum_value(value)
+        key = trim(key)
+        local val = parse_enum_value(value)
+        values[key] = val
+        if desc and desc ~= "" then
+          descs[key] = desc
+        end
       else
-        local name, rhs = item:match("^([%w_]+)%s*=%s*(.+)$")
+        local name, rhs = expr:match("^([%w_]+)%s*=%s*(.+)$")
         if name then
-          values[name] = parse_enum_value(rhs)
+          name = trim(name)
+          local val = parse_enum_value(rhs)
+          values[name] = val
+          if desc and desc ~= "" then
+            descs[name] = desc
+          end
         else
-          insert(values, parse_enum_value(item))
+          local val = parse_enum_value(expr)
+          insert(values, val)
+          if desc and desc ~= "" then
+            descs[tostring(val)] = desc
+          end
         end
       end
     end
   end
-  return values
+  return values, descs
 end
 
 local function parse_field_assignment(line, table_name)
@@ -921,12 +947,13 @@ local function parse(source)
 
     local body = concat(lines, "\n")
     body = body:gsub("}%s*$", "")
-    local values = parse_enum_body(body)
+    local values, descs = parse_enum_body(body)
     insert(out.items, {
       kind = "enum",
       name = enum_capture.name,
       shortname = shortname(enum_capture.name),
       values = values,
+      value_descs = descs,
       desc = enum_capture.desc,
       tags = enum_capture.tags or {},
       start = enum_capture.start_line,
@@ -1227,8 +1254,11 @@ local function parse(source)
     line_no = line_no + 1
     if line:match("^%s*%-%-%-") then
       handle_comment_line(line, line_no)
+    elseif line:match("^%s*%-%-") then
+      -- Ignore standard comments (like stylua: ignore) to prevent resetting the tag block
     else
       local handled = false
+
       if handle_enum_capture(line, line_no) then
         handled = true
       elseif handle_field_capture(line) then
