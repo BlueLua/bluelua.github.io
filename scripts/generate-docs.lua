@@ -216,8 +216,6 @@ local function clean_main_content(s)
   else
     main_content = s
   end
-  -- Strip trailing markdownlint-disable MD053 comment
-  main_content = main_content:gsub("%s*<!%-%-%s*markdownlint%-disable%s+MD053%s*%-%->%s*$", "")
   -- Strip all trailing newlines and whitespace
   main_content = main_content:gsub("%s*$", "")
   return main_content
@@ -309,7 +307,11 @@ local function convert_inline_links_to_references(s)
 
   local sorted_keys = {}
   for k in pairs(existing_refs) do
-    insert(sorted_keys, k)
+    local escaped = k:gsub("[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%1")
+    local pattern = "%[%s*" .. escaped .. "%s*%]"
+    if modified_content:find(pattern) then
+      insert(sorted_keys, k)
+    end
   end
   sort(sorted_keys)
 
@@ -325,9 +327,11 @@ local function convert_inline_links_to_references(s)
   local new_ref_block_content = concat(new_ref_lines, "\n")
 
   return modified_content
-    .. "\n\n<!-- markdownlint-disable MD053 -->\n<!-- prettier-ignore-start -->\n"
+    .. "\n\n<!-- prettier-ignore-start -->\n"
     .. new_ref_block_content
-    .. "\n<!-- prettier-ignore-end -->\n<!-- markdownlint-enable MD053 -->\n"
+    .. "\n<!-- prettier-ignore-end -->\n"
+
+
 end
 
 local function resolve_code_spans_and_add_links(s)
@@ -436,9 +440,9 @@ local function resolve_code_spans_and_add_links(s)
   local new_ref_block_content = table.concat(new_ref_lines, "\n")
 
   return modified_content
-    .. "\n\n<!-- markdownlint-disable MD053 -->\n<!-- prettier-ignore-start -->\n"
+    .. "\n\n<!-- prettier-ignore-start -->\n"
     .. new_ref_block_content
-    .. "\n<!-- prettier-ignore-end -->\n<!-- markdownlint-enable MD053 -->\n"
+    .. "\n<!-- prettier-ignore-end -->\n"
 end
 
 local function sanitize_alias_part(part)
@@ -1349,11 +1353,9 @@ local function render_api_markdown(items)
   if #sorted_refs > 0 then
     sort(sorted_refs)
     insert(doc, "")
-    insert(doc, "<!-- markdownlint-disable MD053 -->")
     insert(doc, "<!-- prettier-ignore-start -->")
     insert(doc, concat(sorted_refs, "\n"))
     insert(doc, "<!-- prettier-ignore-end -->")
-    insert(doc, "<!-- markdownlint-enable MD053 -->")
   end
 
   local output = concat(doc, "\n")
