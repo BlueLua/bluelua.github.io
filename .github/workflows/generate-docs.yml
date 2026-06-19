@@ -1,27 +1,55 @@
 name: Generate Docs
 
 on:
-  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  generate:
-    name: Generate Docs
+  discover:
+    name: Discover Repos
     runs-on: ubuntu-latest
+    outputs:
+      repos: ${{ steps.find.outputs.repos }}
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Checkout source repo
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
+      - name: Find repos
+        id: find
+        run: |
+          set -euo pipefail
 
-      - name: Checkout docs repo (tooling)
+          ORG="${GITHUB_REPOSITORY_OWNER,,}"
+          repos=$(
+            gh api --paginate "/orgs/${ORG}/repos" \
+              --jq '[.[] | select(
+                .archived == false and
+                .disabled == false and
+                (.name | ascii_downcase | IN("bluelua.github.io", ".github") | not)
+              ) | .name]'
+          )
+          echo "repos=${repos}" >> "${GITHUB_OUTPUT}"
+
+  generate:
+    name: Generate ${{ matrix.repo }} Docs
+    needs: discover
+    if: ${{ needs.discover.outputs.repos != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo: ${{ fromJson(needs.discover.outputs.repos) }}
+      fail-fast: false
+    steps:
+      - name: Checkout central docs repo
+        uses: actions/checkout@v6
+
+      - name: Checkout target repo
         uses: actions/checkout@v6
         with:
-          repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
-          path: _docs
+          repository: ${{ github.repository_owner }}/${{ matrix.repo }}
+          path: _repo
 
       - name: Setup LuaJIT
         uses: leafo/gh-actions-lua@v13
@@ -30,17 +58,26 @@ jobs:
 
       - name: Generate docs
         run: |
-          mkdir -p "docs/api"
-          [ -f "README.md" ] && cp "README.md" "docs/index.md"
-          luajit _docs/scripts/generate-docs.lua "types" "docs/api"
+          target="docs/src/${{ matrix.repo }}"
+          rm -rf "${target}"
+          mkdir -p "${target}"
+          if [ -f "_repo/README.md" ]; then
+            cp "_repo/README.md" "${target}/index.md"
+          fi
+          if [ -d "_repo/types" ]; then
+            luajit scripts/generate-docs.lua "_repo/types" "${target}"
+          fi
+          if [ -d "_repo/tutorials" ]; then
+            cp -R _repo/tutorials "${target}/"
+          fi
 
       - name: Format docs
-        run: npx --yes prettier@latest --write "docs/**/*.md" --no-error-on-unmatched-pattern
+        run: npx --yes prettier@latest --write "docs/src/${{ matrix.repo }}/**/*.md" --no-error-on-unmatched-pattern
 
       - name: Open docs PR
         uses: peter-evans/create-pull-request@v8
         with:
-          commit-message: "docs: generate docs"
-          title: "docs: generate docs"
-          branch: "automation/generate-docs"
-          add-paths: docs
+          commit-message: "docs: generate docs for ${{ matrix.repo }}"
+          title: "docs: generate docs for ${{ matrix.repo }}"
+          branch: "automation/generate-docs-${{ matrix.repo }}"
+          add-paths: docs/src/${{ matrix.repo }}
