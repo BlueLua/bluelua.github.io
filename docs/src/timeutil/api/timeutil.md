@@ -12,15 +12,19 @@ timeutil.sleep(0.1)
 print(timeutil.now() - start)
 ```
 
+## Fields
+
+### `_VERSION` (`string`) {#version}
+
+Value: `"version"`
+
 ## Functions
 
-<a id="fn-mono"></a>
-
-### `mono()`
+### `mono()` {#mono}
 
 Returns monotonic elapsed time in seconds.
 
-**Return**:
+**Returns**:
 
 - `seconds` (`number`)
 
@@ -38,13 +42,13 @@ local elapsed_ms = math.floor((stop - start) * 1000)
 print(elapsed_ms.."ms") --> 500ms
 ```
 
-<a id="fn-now"></a>
+---
 
-### `now()`
+### `now()` {#now}
 
 Returns wall-clock Unix time in seconds.
 
-**Return**:
+**Returns**:
 
 - `seconds` (`number`)
 
@@ -59,9 +63,9 @@ local dt = string.format("%s.%03d", os.date("%Y-%m-%d %H:%M:%S", seconds), ms)
 print(dt) --> YYYY-MM-DD HH:mm:ss.SSS
 ```
 
-<a id="fn-sleep"></a>
+---
 
-### `sleep(seconds)`
+### `sleep(seconds)` {#sleep}
 
 Blocks the current thread for the requested non-negative duration.
 
@@ -75,11 +79,3 @@ Blocks the current thread for the requested non-negative duration.
 local time = require("timeutil")
 time.sleep(1.5) -- sleep for 1.5 seconds
 ```
-
-## Fields
-
-<a id="version"></a>
-
-### `_VERSION` (`string`)
-
-Value: `"version"`
