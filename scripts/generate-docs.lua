@@ -330,8 +330,6 @@ local function convert_inline_links_to_references(s)
     .. "\n\n<!-- prettier-ignore-start -->\n"
     .. new_ref_block_content
     .. "\n<!-- prettier-ignore-end -->\n"
-
-
 end
 
 local function resolve_code_spans_and_add_links(s)
@@ -1573,11 +1571,39 @@ local function generate_alias_docs(types_dir, output_dir)
         sort(keys, function(a, b)
           return tostring(a):lower() < tostring(b):lower()
         end)
-        insert(detail, "Name | Value")
-        insert(detail, "--- | ---")
-        for _, k in ipairs(keys) do
-          local val = item.values[k]
-          insert(detail, string.format("`%s` | %s", k, value_to_markdown(val) or esc_table_cell(tostring(val))))
+        local has_val_descs = false
+        if item.value_descs then
+          for _, k in ipairs(keys) do
+            if item.value_descs[k] and item.value_descs[k] ~= "" then
+              has_val_descs = true
+              break
+            end
+          end
+        end
+
+        if has_val_descs then
+          insert(detail, "Name | Value | Description")
+          insert(detail, "--- | --- | ---")
+          for _, k in ipairs(keys) do
+            local val = item.values[k]
+            local desc = item.value_descs[k] or ""
+            insert(
+              detail,
+              string.format(
+                "`%s` | %s | %s",
+                k,
+                value_to_markdown(val) or esc_table_cell(tostring(val)),
+                esc_table_cell(desc)
+              )
+            )
+          end
+        else
+          insert(detail, "Name | Value")
+          insert(detail, "--- | ---")
+          for _, k in ipairs(keys) do
+            local val = item.values[k]
+            insert(detail, string.format("`%s` | %s", k, value_to_markdown(val) or esc_table_cell(tostring(val))))
+          end
         end
       else
         sort(keys, function(a, b)
