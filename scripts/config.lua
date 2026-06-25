@@ -1,6 +1,6 @@
 return {
   -- Lua type files to ignore for individual API page generation.
-  ignored_stems = { "ecodes", "evdev", "mods" },
+  ignored_stems = { "ecodes", "evdev", "mods", "lest" },
 
   -- Minimum class fields required to render a quick-reference table.
   FIELD_OVERVIEW_MIN = 4,
