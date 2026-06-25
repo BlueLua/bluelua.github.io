@@ -25,6 +25,9 @@ local escaped_domain = domain:gsub("%.", "%%.")
 local internal_link_pattern = "https?://" .. escaped_domain .. "/([^%s%)%\"%'%>]+)"
 local api_dir_name = config.api_dir_name or "api"
 local types_file_name = config.types_file_name or "types"
+local function page_stem(filename)
+  return filename:gsub("%.d%.lua$", ""):gsub("%.lua$", ""):lower()
+end
 local link_refs = {}
 local types_dir, output_dir
 
@@ -603,11 +606,15 @@ local function first_match(items, pred)
   end
 end
 
-local function pick_module_name(items)
+local function pick_module_name(items, stem)
   local item = first_match(items, function(it)
     return it.kind == "meta" and it.shortname
   end)
-  return item and item.shortname or "module"
+  local name = item and item.shortname or "module"
+  if name == "_" and stem then
+    return stem
+  end
+  return name
 end
 
 local function pick_module_desc(items, module_name)
@@ -1074,7 +1081,7 @@ local function has_section_field(items)
   return false
 end
 
-local function render_api_markdown(items)
+local function render_api_markdown(items, filename)
   link_refs = {}
   local seen_anchors = {}
   local function unique_anchor(anchor)
@@ -1093,7 +1100,8 @@ local function render_api_markdown(items)
     end
   end
 
-  local module_name = pick_module_name(items)
+  local stem = filename and page_stem(filename)
+  local module_name = pick_module_name(items, stem)
   local module_desc = pick_module_desc(items, module_name)
   local fields = collect_class_fields(items)
   for _, field in ipairs(fields) do
@@ -1754,13 +1762,9 @@ end
 -- Main Driver Logic
 -- =========================================================================
 
-local function page_stem(filename)
-  return filename:gsub("%.d%.lua$", ""):gsub("%.lua$", ""):lower()
-end
-
 local function render_type_file(types_dir, filename)
   local content = read_file(types_dir .. "/" .. filename)
-  return render_api_markdown(lls.parse(content))
+  return render_api_markdown(lls.parse(content), filename)
 end
 
 local function generate_docs(types_dir, output_dir)
