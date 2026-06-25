@@ -1064,6 +1064,12 @@ local function has_section_field(items)
     if section and section.view and section.view ~= "" then
       return true
     end
+    if item.kind == "function" or is_function_doc_item(item) then
+      local name = item.shortname or item.name or ""
+      if name:sub(1, 2) == "__" then
+        return true
+      end
+    end
   end
   return false
 end
@@ -1200,6 +1206,10 @@ local function render_api_markdown(items)
       local section_name = nil
       if section_tag and section_tag.view and section_tag.view ~= "" then
         section_name = section_tag.view
+      end
+      local item_name = item.shortname or item.name or ""
+      if item_name:sub(1, 2) == "__" then
+        section_name = "Metamethods"
       end
       local row_anchor = ref_id
       if alias_doc_item then
