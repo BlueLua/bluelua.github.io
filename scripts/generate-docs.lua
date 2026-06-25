@@ -714,7 +714,7 @@ local function collect_class_fields(items)
         for _, field in ipairs(fields) do
           local name = field and field.name
           local desc = (field and field.desc or ""):gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
-          if name and (desc ~= "" or field.value ~= nil) and not seen[name] then
+          if name and name ~= "__index" and (desc ~= "" or field.value ~= nil) and not seen[name] then
             seen[name] = true
             insert(out, field)
           end
