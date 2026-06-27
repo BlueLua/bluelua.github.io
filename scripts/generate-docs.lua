@@ -1425,6 +1425,32 @@ local function format_type_value_inline(val)
   return table.concat(parts, " | ")
 end
 
+local function format_function_type(fn)
+  local params = {}
+  if fn.tags and fn.tags.params then
+    for _, p in ipairs(fn.tags.params) do
+      if p.name and p.name ~= "self" then
+        local cname, cview = adjust_optional_name_type(p.name, p.view)
+        if cname:sub(-1) == "?" then
+          insert(params, cname:sub(1, -2) .. "?: " .. cview)
+        else
+          insert(params, cname .. ": " .. cview)
+        end
+      end
+    end
+  end
+  local rets = {}
+  if fn.tags and fn.tags.returns then
+    for _, r in ipairs(fn.tags.returns) do
+      if r.view then
+        insert(rets, r.view)
+      end
+    end
+  end
+  local ret_str = #rets > 0 and (": " .. table.concat(rets, "|")) or ""
+  return "fun(" .. table.concat(params, ", ") .. ")" .. ret_str
+end
+
 local function generate_alias_docs(types_dir, output_dir)
   if not exists_dir(types_dir) then
     error("types directory does not exist: " .. types_dir)
@@ -1439,6 +1465,7 @@ local function generate_alias_docs(types_dir, output_dir)
 
   local aliases = {}
   local classes = {}
+  local all_functions = {}
   local function_prefixes = {}
   for _, filename in ipairs(files) do
     local content = read_file(types_dir .. "/" .. filename)
@@ -1447,13 +1474,13 @@ local function generate_alias_docs(types_dir, output_dir)
       item.filename = filename
       if (item.kind == "alias" and not is_function_doc_item(item)) or item.kind == "enum" then
         local alias_name = (item.name or ""):gsub("<[^>]+>", "")
-        if alias_name ~= "M" and not alias_name:match("^M%.") and alias_name ~= "_G" and not alias_name:match("^_G%.") then
+        if alias_name ~= "" and alias_name ~= "_" and alias_name ~= "M" and not alias_name:match("^M%.") and alias_name ~= "_G" and not alias_name:match("^_G%.") then
           insert(aliases, item)
         end
       elseif item.kind == "class" then
         local class_name = item.view:match("^([^:]+)") or item.view
         class_name = trim(class_name):gsub("<[^>]+>", "")
-        if class_name ~= "M" and not class_name:match("^M%.") and class_name ~= "_G" and not class_name:match("^_G%.") then
+        if class_name ~= "" and class_name ~= "_" and class_name ~= "M" and not class_name:match("^M%.") and class_name ~= "_G" and not class_name:match("^_G%.") then
           insert(classes, item)
         end
       elseif item.kind == "function" or (item.kind == "alias" and is_function_doc_item(item)) then
@@ -1463,6 +1490,7 @@ local function generate_alias_docs(types_dir, output_dir)
             prefix = trim(prefix)
             function_prefixes[prefix:lower()] = true
           end
+          insert(all_functions, item)
         end
       end
     end
@@ -1494,28 +1522,30 @@ local function generate_alias_docs(types_dir, output_dir)
   end
 
   for _, item in ipairs(classes) do
-    if item.tags and item.tags.fields and #item.tags.fields > 0 then
-      local class_name = item.view:match("^([^:]+)") or item.view
-      class_name = trim(class_name)
-      local clean_class_name = strip_generics(class_name) or ""
-      local short_name = clean_class_name:match("[^%.]+$") or clean_class_name
-      short_name = trim(short_name)
+    local class_name = item.view:match("^([^:]+)") or item.view
+    class_name = trim(class_name)
+    local clean_class_name = strip_generics(class_name) or ""
+    local short_name = clean_class_name:match("[^%.]+$") or clean_class_name
+    short_name = trim(short_name)
 
-      local has_own_api_page = is_api_page(module_name, short_name:lower())
+    local has_own_api_page = is_api_page(module_name, short_name:lower())
 
-      local is_module_class = false
-      if item.filename then
-        local stem = item.filename:gsub("%.d%.lua$", ""):gsub("%.lua$", ""):lower()
-        local stem_class_1 = (module_name .. "." .. stem):lower()
-        local stem_class_2 = stem:lower()
-        local cn_lower = clean_class_name:lower()
-        if cn_lower == stem_class_1 or cn_lower == stem_class_2 then
-          is_module_class = true
-        end
+    local is_module_class = false
+    if item.filename then
+      local stem = item.filename:gsub("%.d%.lua$", ""):gsub("%.lua$", ""):lower()
+      local stem_class_1 = (module_name .. "." .. stem):lower()
+      local stem_class_2 = stem:lower()
+      local cn_lower = clean_class_name:lower()
+      if cn_lower == stem_class_1 or cn_lower == stem_class_2 then
+        is_module_class = true
       end
+    end
 
-      if not has_own_api_page and not is_module_class then
-        local mock_fields = {}
+    if not has_own_api_page and not is_module_class then
+      local mock_fields = {}
+      local seen_keys = {}
+
+      if item.tags and item.tags.fields then
         for _, f in ipairs(item.tags.fields) do
           if f.name then
             local tp = "any"
@@ -1535,9 +1565,38 @@ local function generate_alias_docs(types_dir, output_dir)
               fdesc = fdesc and (fdesc .. " " .. trim(f.desc)) or trim(f.desc)
             end
             insert(mock_fields, { key = f.name, type = tp, desc = fdesc })
+            local clean_k = f.name:gsub("%?$", "")
+            seen_keys[clean_k:lower()] = true
           end
         end
+      end
 
+      for _, fn in ipairs(all_functions) do
+        if fn.name then
+          local prefix = fn.name:match("^(.+)[%.:]")
+          if prefix then
+            prefix = trim(prefix):lower()
+            if prefix == clean_class_name:lower() or prefix == short_name:lower() then
+              local fn_key = fn.shortname or fn.name:match("[%.:]([^%.:]+)$") or fn.name
+              local clean_key = fn_key:gsub("%?$", "")
+              if not seen_keys[clean_key:lower()] then
+                seen_keys[clean_key:lower()] = true
+                local fn_type = format_function_type(fn)
+                local fn_desc = nil
+                if fn.desc and trim(fn.desc) ~= "" then
+                  local para = first_paragraph(fn.desc)
+                  if para ~= "" then
+                    fn_desc = normalize_api_desc(para)
+                  end
+                end
+                insert(mock_fields, { key = fn_key, type = fn_type, desc = fn_desc })
+              end
+            end
+          end
+        end
+      end
+
+      if #mock_fields > 0 then
         local mock_alias = {
           kind = "alias",
           name = class_name,
