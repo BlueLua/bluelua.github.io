@@ -113,11 +113,12 @@
 .types-page {
   table, thead, tbody, tr, th, td {
     border: none !important;
+    box-sizing: border-box;
   }
 
-  table, thead, tbody {
+  table, thead, tbody, tr {
     display: block;
-    width: 100%;
+    width: 100% !important;
   }
 
   tr:has(> :nth-child(3)) {
@@ -140,7 +141,7 @@
 
     > td:nth-child(3) {
       flex: 0 0 100%;
-      width: 100%;
+      width: 100% !important;
       color: var(--vp-c-text-2);
     }
   }
