@@ -8,10 +8,11 @@ Glob-style matching and filesystem expansion helpers.
 ## Usage
 
 ```lua
-glob = mods.glob
+local mods = require "mods"
+local glob = mods.glob
 
-print(glob.match("src/mods/fs.lua", "**/*.lua")) --> true
-print(glob.match("DATA.TXT", "*.txt", true))     --> true
+print(glob.match("src/mods/fs.lua", "**/*.lua"))     --> true
+print(glob.match("DATA.TXT", "*.txt", true))         --> true
 print(glob.filter({ "a.lua", "b.txt" }, "*.lua")[1]) --> "a.lua"
 print(glob.glob("src", "*.lua")[1])
 ```
@@ -116,18 +117,11 @@ glob.filter({ "a.lua", "b.txt", "c.lua" }, "*.lua") --> { "a.lua", "c.lua" }
 
 Return glob matches under `path`.
 
-**Options**:
-
-- `hidden`: include hidden paths; defaults to `true`.
-- `recursive`: recurse into subdirectories; defaults to `false`.
-- `follow`: recurse into symlinked directories; defaults to `false`.
-- `ignorecase`: use case-insensitive matching; defaults to platform semantics.
-
 **Parameters**:
 
 - `path` (`string`): Input path.
 - `pattern?` (`string`): Optional pattern to match.
-- `opts?` ([`mods.GlobOptions`]): Optional glob options.
+- `opts?` ([`mods.globOptions`]): Optional glob options.
 
 **Returns**:
 
@@ -136,8 +130,8 @@ Return glob matches under `path`.
 **Example**:
 
 ```lua
-glob.glob("src", "*.lua")
-glob.glob("src", "*.lua", { recursive = true })
+print(glob.glob("src", "*.lua"))
+print(glob.glob("src", "*.lua", { recursive = true }))
 ```
 
 ---
@@ -167,18 +161,11 @@ glob.has_magic("*.txt")   --> true
 
 Iterator over glob matches under `path`.
 
-**Options**:
-
-- `hidden`: include hidden paths; defaults to `true`.
-- `recursive`: recurse into subdirectories; defaults to `false`.
-- `follow`: recurse into symlinked directories; defaults to `false`.
-- `ignorecase`: use case-insensitive matching; defaults to platform semantics.
-
 **Parameters**:
 
 - `path` (`string`): Input path.
 - `pattern?` (`string`): Optional pattern to match.
-- `opts?` ([`mods.GlobOptions`]): Optional glob options.
+- `opts?` ([`mods.globOptions`]): Optional glob options.
 
 **Returns**:
 
@@ -266,7 +253,7 @@ print(matches == translated_matches) --> true
 [`has_magic(s)`]: #has-magic
 [`iglob(path, pattern?, opts?)`]: #iglob
 [`match(path, pattern, ignorecase?)`]: #match
-[`mods.GlobOptions`]: /mods/types#mods-globoptions
 [`mods.List`]: /mods/api/list
+[`mods.globOptions`]: /mods/types#mods-globoptions
 [`translate(pattern)`]: #translate
 <!-- prettier-ignore-end -->

@@ -548,8 +548,8 @@ s = Set({ "b", "a" }):join(", ", true) --> '"a", "b"'
 ```
 
 > [!NOTE]
->
-> Join order is not guaranteed.
+
+Join order is not guaranteed.
 
 ---
 
