@@ -31,23 +31,52 @@ end
 local link_refs = {}
 local types_dir, output_dir
 
+local has_ffi, ffi = pcall(require, "ffi")
+if has_ffi then
+  ffi.cdef [[
+    int access(const char *pathname, int mode);
+    int mkdir(const char *pathname, unsigned int mode);
+  ]]
+end
+
 local function shell_quote(s)
   return "'" .. tostring(s):gsub("'", [['"'"']]) .. "'"
 end
 
 local function exists_dir(path)
-  local ok = os.execute("[ -d " .. shell_quote(path) .. " ]")
-  return ok == true or ok == 0
+  if has_ffi then
+    return ffi.C.access(path .. "/.", 0) == 0
+  else
+    local f = io.open(path .. "/.", "r")
+    if f then
+      f:close()
+      return true
+    end
+    return false
+  end
 end
 
 local function is_valid_module(module)
-  if not module then return false end
+  if not module then
+    return false
+  end
   local std_types = {
-    string = true, number = true, boolean = true, table = true,
-    ["function"] = true, thread = true, userdata = true, ["nil"] = true,
-    any = true, void = true, integer = true, unknown = true
+    string = true,
+    number = true,
+    boolean = true,
+    table = true,
+    ["function"] = true,
+    thread = true,
+    userdata = true,
+    ["nil"] = true,
+    any = true,
+    void = true,
+    integer = true,
+    unknown = true,
   }
-  if std_types[module] then return false end
+  if std_types[module] then
+    return false
+  end
   local path = script_dir .. "/../docs/src/" .. module
   return exists_dir(path)
 end
@@ -574,10 +603,23 @@ end
 -- File System / CLI Helpers
 -- =========================================================================
 
-
-
 local function mkdir_p(path)
-  assert(os.execute("mkdir -p " .. shell_quote(path)))
+  if has_ffi then
+    local current = ""
+    if path:sub(1, 1) == "/" then
+      current = "/"
+    end
+    for part in path:gmatch("[^/]+") do
+      if current == "/" or current == "" then
+        current = current .. part
+      else
+        current = current .. "/" .. part
+      end
+      ffi.C.mkdir(current, 493) -- 0755 permissions
+    end
+  else
+    os.execute("mkdir -p " .. shell_quote(path))
+  end
 end
 
 local function read_file(path)
@@ -1408,7 +1450,9 @@ local function split_top_level_unions(s)
       depth = depth + 1
       insert(current, char)
     elseif char == ")" or char == "}" or char == ">" then
-      if depth > 0 then depth = depth - 1 end
+      if depth > 0 then
+        depth = depth - 1
+      end
       insert(current, char)
     elseif char == "|" and depth == 0 then
       insert(parts, table.concat(current))
@@ -1508,13 +1552,27 @@ local function generate_alias_docs(types_dir, output_dir)
       item.filename = filename
       if (item.kind == "alias" and not is_function_doc_item(item)) or item.kind == "enum" then
         local alias_name = (item.name or ""):gsub("<[^>]+>", "")
-        if alias_name ~= "" and alias_name ~= "_" and alias_name ~= "M" and not alias_name:match("^M%.") and alias_name ~= "_G" and not alias_name:match("^_G%.") then
+        if
+          alias_name ~= ""
+          and alias_name ~= "_"
+          and alias_name ~= "M"
+          and not alias_name:match("^M%.")
+          and alias_name ~= "_G"
+          and not alias_name:match("^_G%.")
+        then
           insert(aliases, item)
         end
       elseif item.kind == "class" then
         local class_name = item.view:match("^([^:]+)") or item.view
         class_name = trim(class_name):gsub("<[^>]+>", "")
-        if class_name ~= "" and class_name ~= "_" and class_name ~= "M" and not class_name:match("^M%.") and class_name ~= "_G" and not class_name:match("^_G%.") then
+        if
+          class_name ~= ""
+          and class_name ~= "_"
+          and class_name ~= "M"
+          and not class_name:match("^M%.")
+          and class_name ~= "_G"
+          and not class_name:match("^_G%.")
+        then
           insert(classes, item)
         end
       elseif item.kind == "function" or (item.kind == "alias" and is_function_doc_item(item)) then
@@ -1829,11 +1887,7 @@ local function generate_alias_docs(types_dir, output_dir)
             for _, field in ipairs(processed) do
               insert(
                 detail,
-                string.format(
-                  "`%s` | %s",
-                  field.display_key,
-                  esc_table_cell(format_type_value_inline(field.type))
-                )
+                string.format("`%s` | %s", field.display_key, esc_table_cell(format_type_value_inline(field.type)))
               )
             end
           end
