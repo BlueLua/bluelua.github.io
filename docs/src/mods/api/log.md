@@ -96,8 +96,8 @@ Emit a `warn` record. **Parameters**:
 [`info(...)`]: #info
 [`log(levelname, ...)`]: #log
 [`mods.LogLevel`]: /mods/types#mods-loglevel
-[`mods.log.logger`]: /mods/api/log
-[`mods.log.new.opts`]: /mods/api/log
+[`mods.log.logger`]: /mods/types#mods-log-logger
+[`mods.log.new.opts`]: /mods/types#mods-log-new-opts
 [`new(opts?)`]: #new
 [`warn(...)`]: #warn
 <!-- prettier-ignore-end -->

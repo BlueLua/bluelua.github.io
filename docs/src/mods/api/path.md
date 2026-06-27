@@ -556,7 +556,8 @@ path.relpath([[C:\a\b\c]], [[C:\a]]) --> [[b\c]]
 
 #### `cwd` {#cwd}
 
-## Return the current working directory path.
+Return the current working directory path.
+---
 
 #### `expanduser(path)` {#expanduser}
 

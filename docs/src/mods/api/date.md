@@ -1,14 +1,19 @@
 ---
 title: "date"
-description: "Timezone-naive date helpers and immutable date values."
+description: "Create, calculate, compare, and format timezone-naive dates."
 ---
 
-Timezone-naive date helpers and immutable date values.
+Create, calculate, compare, and format timezone-naive dates.
+
+> [!WARNING]
+>
+> [`mods.List`] [`evdev.device`] This module is still under development and may
+> not be stable. The API is incomplete and may change in future versions.
 
 ## Usage
 
 ```lua
-local Date = require "mods.date"
+local Date = mods.date
 
 local a = Date("2026-03-30T14:45:06")
 local b = Date("2026-03-30 14:45:06.123")
@@ -29,8 +34,8 @@ print(f)                               --> 2026-01-01 00:00:00
 
 > [!NOTE]
 >
-> - String inputs accept [ISO 8601] forms, variants using a space instead of
->   `T`, and custom formats via `Date(input, pattern)`:
+> - String inputs accept [ISO 8601] `Date(input, pattern)` (see [format tokens]
+>   and [preset aliases]):
 >
 >   ```lua
 >   Date("2026-03-30T14:45:06")
@@ -47,7 +52,7 @@ print(f)                               --> 2026-01-01 00:00:00
 >   print(a == b)                      --> true
 >   ```
 >
-> - When calling `Date` without arguments, it uses [mstime] for millisecond
+> - When calling `Date` without arguments, it uses [`timeutil`] for millisecond
 >   precision if installed; otherwise it falls back to [`os.time`].
 
 ## Fields
@@ -64,7 +69,7 @@ print(f)                               --> 2026-01-01 00:00:00
 | [`yday`]  | Day-of-year component starting at `1`.                       |
 | [`year`]  | Year component.                                              |
 
-### `day` (`modsCalendarMonthday`) {#day}
+### `day` ([`mods.calendarMonthDay`]) {#day}
 
 Day-of-month component.
 
@@ -94,7 +99,7 @@ print(Date("2026-03-30T14:45:06").min) --> 45
 
 ---
 
-### `month` (`modsCalendarMonth`) {#month}
+### `month` ([`mods.calendarMonth`]) {#month}
 
 Month component.
 
@@ -124,7 +129,7 @@ print(Date("2026-03-30T14:45:06").sec) --> 6
 
 ---
 
-### `wday` (`modsCalendarWeekday`) {#wday}
+### `wday` ([`mods.calendarWeekday`]) {#wday}
 
 ISO weekday component where Monday is `1` and Sunday is `7`.
 
@@ -154,10 +159,11 @@ print(Date("2026-03-30").year) --> 2026
 
 ## Functions
 
-| Function                 | Description                                                              |
-| ------------------------ | ------------------------------------------------------------------------ |
-| [`new(input, pattern?)`] | Create a Date from a string using an optional pattern.                   |
-| [`new(input?)`]          | Create a Date from a Unix timestamp (milliseconds) or a DateParts table. |
+| Function                 | Description                                                                  |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| [`new(input, pattern?)`] | Create a Date from a string using an optional pattern.                       |
+| [`new(input?)`]          | Create a Date from a Unix timestamp (milliseconds) or a [`DateParts`] table. |
+| [`unix(timestamp)`]      | Create a Date from a Unix timestamp in whole or fractional seconds.          |
 
 **Arithmetic**:
 
@@ -213,12 +219,6 @@ print(Date("2026-03-30").year) --> 2026
 | [`is_tomorrow()`]                                | Return `true` when the value falls on the next local day.         |
 | [`is_yesterday()`]                               | Return `true` when the value falls on the previous local day.     |
 
-**Duration**:
-
-| Function               | Description                                                                 |
-| ---------------------- | --------------------------------------------------------------------------- |
-| [`is_duration(value)`] | Return `true` when the value is a duration created by `date.duration(...)`. |
-
 **Formatting**:
 
 | Function            | Description                                                                                             |
@@ -234,12 +234,6 @@ print(Date("2026-03-30").year) --> 2026
 | [`from_now(without_suffix?)`]   | Return relative time from the current local time to this Date. |
 | [`to(date, without_suffix?)`]   | Return relative time from this Date to another one.            |
 | [`to_now(without_suffix?)`]     | Return relative time from this Date to the current local time. |
-
-**Unix**:
-
-| Function            | Description                                                         |
-| ------------------- | ------------------------------------------------------------------- |
-| [`unix(timestamp)`] | Create a Date from a Unix timestamp in whole or fractional seconds. |
 
 **Validation**:
 
@@ -262,6 +256,8 @@ print(Date("2026-03-30").year) --> 2026
 
 Create a Date from a string using an optional pattern.
 
+See [format tokens] and [preset aliases].
+
 **Parameters**:
 
 - `input` (`string`): The date string to parse.
@@ -282,7 +278,7 @@ local d2 = Date("12-25-1995", "MM-DD-YYYY")
 
 ### `new(input?)` {#new}
 
-Create a Date from a Unix timestamp (milliseconds) or a DateParts table.
+Create a Date from a Unix timestamp (milliseconds) or a [`DateParts`] table.
 
 **Parameters**:
 
@@ -302,6 +298,27 @@ local d2 = Date({ year = 2026, month = 3 })
 
 ---
 
+### `unix(timestamp)` {#unix}
+
+Create a Date from a Unix timestamp in whole or fractional seconds.
+
+**Parameters**:
+
+- `timestamp` (`number`): Unix timestamp in whole or fractional seconds.
+
+**Returns**:
+
+- `date` ([`mods.Date`]): Date value for the given Unix timestamp.
+
+**Example**:
+
+```lua
+print(Date.unix(1318781876))          --> 2011-10-16 18:17:56
+print(Date.unix(1318781876.721).year) --> 2011
+```
+
+---
+
 ### Arithmetic
 
 #### `add(amount, unit?)` {#add}
@@ -310,9 +327,9 @@ Return a copy shifted by the given amount and unit.
 
 **Parameters**:
 
-- `amount` (`integer` | [`mods.DateDurationParts`]): Signed amount to add, or a
+- `amount` (`integer` | [`mods.DurationParts`]): Signed amount to add, or a
   duration-style table.
-- `unit?` ([`mods.DateUnit`]): Unit for the addition.
+- `unit?` ([`mods.durationUnit`]): Unit for the addition.
 
 **Returns**:
 
@@ -339,7 +356,8 @@ Return the signed difference to another Date in the requested unit.
 **Parameters**:
 
 - `date` ([`mods.Date`]): Date to compare against.
-- `unit?` ([`mods.DateUnit`]): Unit used for the difference. Defaults to `"ms"`.
+- `unit?` ([`mods.durationUnit`]): Unit used for the difference. Defaults to
+  `"ms"`.
 
 **Returns**:
 
@@ -362,9 +380,9 @@ Return a copy shifted backward by the given amount and unit.
 
 **Parameters**:
 
-- `amount` (`integer` | [`mods.DateDurationParts`]): Signed amount to subtract,
-  or a duration-style table.
-- `unit?` ([`mods.DateUnit`]): Unit for the subtraction.
+- `amount` (`integer` | [`mods.DurationParts`]): Signed amount to subtract, or a
+  duration-style table.
+- `unit?` ([`mods.durationUnit`]): Unit for the subtraction.
 
 **Returns**:
 
@@ -391,7 +409,7 @@ Return the end boundary for the given unit.
 
 **Parameters**:
 
-- `unit` ([`mods.DateUnit`] | `"isoWeek"`): Boundary unit.
+- `unit` ([`mods.durationUnit`] | `"isoWeek"`): Boundary unit.
 
 **Returns**:
 
@@ -416,7 +434,7 @@ Return the start boundary for the given unit.
 
 **Parameters**:
 
-- `unit` ([`mods.DateUnit`] | `"isoWeek"`): Boundary unit.
+- `unit` ([`mods.durationUnit`] | `"isoWeek"`): Boundary unit.
 
 **Returns**:
 
@@ -525,7 +543,7 @@ Return or set the ISO weekday number where Monday is `1` and Sunday is `7`.
 
 **Returns**:
 
-- `isoWeekdayOrDate` (`modsCalendarWeekday` | [`mods.Date`]): Current ISO
+- `isoWeekdayOrDate` ([`mods.calendarWeekday`] | [`mods.Date`]): Current ISO
   weekday number, or a shifted Date when `iso_weekday_number` is provided.
 
 **Example**:
@@ -563,7 +581,7 @@ Return the number of days in the value's month.
 
 **Returns**:
 
-- `ndays` (`modsCalendarMonthday`): Number of days in the current month.
+- `ndays` ([`mods.calendarMonthDay`]): Number of days in the current month.
 
 **Example**:
 
@@ -954,30 +972,6 @@ print(Date():subtract(1, "day"):is_yesterday()) --> true
 
 ---
 
-### Duration
-
-#### `is_duration(value)` {#is-duration}
-
-Return `true` when the value is a duration created by `date.duration(...)`.
-
-**Parameters**:
-
-- `value` (`any`): Value to test.
-
-**Returns**:
-
-- `isDuration` (`boolean`): Whether the value is a [`mods.Duration`].
-
-**Example**:
-
-```lua
-local shift = date.duration({ day = 2 })
-print(date.is_duration(shift)) --> true
-print(date.is_duration({ day = 2 })) --> false
-```
-
----
-
 ### Formatting
 
 #### `format(pattern)` {#format}
@@ -1014,69 +1008,7 @@ print(ts:format("X x"))                    --> 1523520536 1523520536123
 > d:format("[hours:]HH") -- hours:14
 > ```
 
-**Supported tokens**:
-
-| Token  | Example            | Meaning                            |
-| ------ | ------------------ | ---------------------------------- |
-| `YY`   | `26`               | 2-digit year                       |
-| `YYYY` | `2026`             | 4-digit year                       |
-| `Q`    | `1-4`              | Quarter                            |
-| `Qo`   | `1st..4th`         | Ordinal quarter                    |
-| `M`    | `1-12`             | Month                              |
-| `MM`   | `03-12`            | Month, zero-padded                 |
-| `MMM`  | `Jan-Dec`          | Short month name                   |
-| `MMMM` | `January-December` | Full month name                    |
-| `D`    | `1-31`             | Day of month                       |
-| `DD`   | `01-31`            | Day of month, zero-padded          |
-| `DDD`  | `1-366`            | Day of year                        |
-| `DDDD` | `001-366`          | Day of year, zero-padded           |
-| `d`    | `0-6`              | Weekday number where Sunday is `0` |
-| `e`    | `0-6`              | Weekday number where Sunday is `0` |
-| `E`    | `1-7`              | ISO weekday number                 |
-| `dd`   | `Su-Sa`            | Minimal weekday name               |
-| `ddd`  | `Sun-Sat`          | Short weekday name                 |
-| `dddd` | `Sunday-Saturday`  | Full weekday name                  |
-| `Do`   | `1st..31th`        | Ordinal day of month               |
-| `H`    | `0-23`             | 24-hour                            |
-| `HH`   | `00-23`            | 24-hour, zero-padded               |
-| `h`    | `1-12`             | 12-hour                            |
-| `hh`   | `01-12`            | 12-hour, zero-padded               |
-| `k`    | `1-24`             | 1-24 hour                          |
-| `kk`   | `01-24`            | 1-24 hour, zero-padded             |
-| `m`    | `0-59`             | Minute                             |
-| `mm`   | `00-59`            | Minute, zero-padded                |
-| `s`    | `0-59`             | Second                             |
-| `ss`   | `00-59`            | Second, zero-padded                |
-| `S`    | `0-9`              | Hundreds digit of milliseconds     |
-| `SS`   | `00-99`            | First two digits of milliseconds   |
-| `SSS`  | `000-999`          | Millisecond, zero-padded           |
-| `w`    | `1-53`             | Week of year                       |
-| `ww`   | `01-53`            | Week of year, zero-padded          |
-| `wo`   | `1st..53rd`        | Ordinal week of year               |
-| `W`    | `1-53`             | ISO week of year                   |
-| `WW`   | `01-53`            | ISO week of year, zero-padded      |
-| `GG`   | `26`               | 2-digit ISO week-year              |
-| `GGGG` | `2026`             | ISO week-year                      |
-| `gggg` | `2026`             | Week-year                          |
-| `a`    | `am pm`            | Meridiem lowercase                 |
-| `A`    | `AM PM`            | Meridiem uppercase                 |
-| `x`    | `1523520536123`    | Unix timestamp in milliseconds     |
-| `X`    | `1523520536`       | Unix timestamp in seconds          |
-
-English preset aliases:
-
-| Alias  | Expands to                  |
-| ------ | --------------------------- |
-| `LT`   | `h:mm A`                    |
-| `LTS`  | `h:mm:ss A`                 |
-| `L`    | `MM/DD/YYYY`                |
-| `LL`   | `MMMM D, YYYY`              |
-| `LLL`  | `MMMM D, YYYY h:mm A`       |
-| `LLLL` | `dddd, MMMM D, YYYY h:mm A` |
-| `l`    | `M/D/YYYY`                  |
-| `ll`   | `MMM D, YYYY`               |
-| `lll`  | `MMM D, YYYY h:mm A`        |
-| `llll` | `ddd, MMM D, YYYY h:mm A`   |
+See [format tokens] and [preset aliases].
 
 ---
 
@@ -1194,34 +1126,13 @@ print(d:to_now()) --> in a day
 
 ---
 
-### Unix
-
-#### `unix(timestamp)` {#unix}
-
-Create a Date from a Unix timestamp in whole or fractional seconds.
-
-**Parameters**:
-
-- `timestamp` (`number`): Unix timestamp in whole or fractional seconds.
-
-**Returns**:
-
-- `date` ([`mods.Date`]): Date value for the given Unix timestamp.
-
-**Example**:
-
-```lua
-print(Date.unix(1318781876))          --> 2011-10-16 18:17:56
-print(Date.unix(1318781876.721).year) --> 2011
-```
-
----
-
 ### Validation
 
 #### `is_valid(input?, pattern?)` {#is-valid}
 
 Return `true` when the input can be parsed as a valid Date.
+
+See [format tokens] and [preset aliases].
 
 Unlike `Date(...)`, this helper never raises for invalid input; it just returns
 `false`.
@@ -1380,6 +1291,7 @@ print(Date("2026-03-30T14:45:06")) --> 2026-03-30 14:45:06
 <!-- prettier-ignore-start -->
 [ISO 8601]: https://en.wikipedia.org/wiki/ISO_8601
 [`Date.unix(ts)`]: #fn-unix
+[`DateParts`]: /mods/reference/date-parts
 [`__add(a, b)`]: #add-1
 [`__eq(date)`]: #eq
 [`__le(date)`]: #le
@@ -1391,6 +1303,7 @@ print(Date("2026-03-30T14:45:06")) --> 2026-03-30 14:45:06
 [`day`]: #day
 [`diff(date, unit?)`]: #diff
 [`endof(unit)`]: #endof
+[`evdev.device`]: /evdev/api/device
 [`format(pattern)`]: #format
 [`from(date, without_suffix?)`]: #from
 [`from_now(without_suffix?)`]: #from-now
@@ -1398,7 +1311,6 @@ print(Date("2026-03-30T14:45:06")) --> 2026-03-30 14:45:06
 [`is_after(date)`]: #is-after
 [`is_before(date)`]: #is-before
 [`is_between(start_date, end_date, inclusive?)`]: #is-between
-[`is_duration(value)`]: #is-duration
 [`is_leap_year()`]: #is-leap-year
 [`is_same(date)`]: #is-same
 [`is_same_or_after(date)`]: #is-same-or-after
@@ -1415,12 +1327,15 @@ print(Date("2026-03-30T14:45:06")) --> 2026-03-30 14:45:06
 [`min(...)`]: #min-1
 [`min`]: #min
 [`minmax(...)`]: #minmax
-[`mods.DateDurationParts`]: /mods/types#mods-datedurationparts
 [`mods.DateParts`]: /mods/types#mods-dateparts
-[`mods.DateUnit`]: /mods/types#mods-dateunit
 [`mods.Date`]: /mods/api/date
-[`mods.Duration`]: /mods/api/duration
+[`mods.DurationParts`]: /mods/types#mods-durationparts
+[`mods.List`]: /mods/api/list
 [`mods.calendar.firstweekday`]: /mods/api/calendar#firstweekday
+[`mods.calendarMonthDay`]: /mods/types#mods-calendarmonthday
+[`mods.calendarMonth`]: /mods/types#mods-calendarmonth
+[`mods.calendarWeekday`]: /mods/types#mods-calendarweekday
+[`mods.durationUnit`]: /mods/types#mods-durationunit
 [`month_days()`]: #month-days
 [`month`]: #month
 [`ms`]: #ms
@@ -1431,6 +1346,7 @@ print(Date("2026-03-30T14:45:06")) --> 2026-03-30 14:45:06
 [`sec`]: #sec
 [`startof(unit)`]: #startof
 [`subtract(amount, unit?)`]: #subtract
+[`timeutil`]: https://github.com/BlueLua/timeutil
 [`to(date, without_suffix?)`]: #to
 [`to_now(without_suffix?)`]: #to-now
 [`tostring()`]: #tostring
@@ -1442,5 +1358,6 @@ print(Date("2026-03-30T14:45:06")) --> 2026-03-30 14:45:06
 [`weeks_in_year()`]: #weeks-in-year
 [`yday`]: #yday
 [`year`]: #year
-[mstime]: https://github.com/luamod/mstime
+[format tokens]: /mods/reference/date-tokens
+[preset aliases]: /mods/reference/date-presets
 <!-- prettier-ignore-end -->
