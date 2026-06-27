@@ -1403,10 +1403,11 @@ local function format_type_value_inline(val)
   local parts = {}
   for part in s:gmatch("[^|]+") do
     local p = part:match("^%s*(.-)%s*$") -- trim
+    local has_link = false
     local formatted = p:gsub("([%w_]+)%.([%w_%.]+)", function(module, name)
       if module and is_valid_module(module) then
+        has_link = true
         local first_seg = name:match("^([^%.]+)") or name
-        local stem = first_seg:lower()
         local url
         if is_api_page(module, name:lower()) then
           url = string.format("/%s/api/%s", module, name:lower())
@@ -1415,11 +1416,16 @@ local function format_type_value_inline(val)
           local slug = clean_p:lower():gsub("[^%w%-]+", "-"):gsub("%-+", "-"):gsub("^%-+", ""):gsub("%-+$", "")
           url = string.format("/%s/types#%s", module, slug)
         end
-        return "`[`" .. module .. "." .. name .. "`](" .. url .. ")`"
+        return '<a href="' .. url .. '">' .. module .. "." .. name .. "</a>"
       end
       return nil
     end)
-    local final_part = ("`" .. formatted .. "`"):gsub("``", "")
+    local final_part
+    if has_link then
+      final_part = "<code>" .. formatted .. "</code>"
+    else
+      final_part = "`" .. formatted .. "`"
+    end
     insert(parts, final_part)
   end
   return table.concat(parts, " | ")
@@ -1624,6 +1630,7 @@ local function generate_alias_docs(types_dir, output_dir)
   insert(md, "---")
   insert(md, 'title: "Types"')
   insert(md, 'description: "Types defined in the ' .. module_name .. ' module."')
+  insert(md, 'pageClass: "types-page"')
   insert(md, "---")
   insert(md, "")
   insert(md, "Types defined in the " .. module_name .. " module.")
@@ -1744,22 +1751,22 @@ local function generate_alias_docs(types_dir, output_dir)
         if fields then
           local processed = {}
           for _, field in ipairs(fields) do
-            local is_optional
             local key = field.key
             local tp = field.type
             local desc = field.desc
 
+            local is_opt = false
             if key:sub(-1) == "?" then
               key = key:sub(1, -2)
-              is_optional = "Yes"
+              is_opt = true
             elseif tp:sub(-1) == "?" then
               tp = tp:sub(1, -2)
-              is_optional = "Yes"
-            else
-              is_optional = "No"
+              is_opt = true
             end
 
-            insert(processed, { key = key, type = tp, is_optional = is_optional, desc = desc })
+            local display_key = is_opt and (key .. "?") or key
+
+            insert(processed, { key = key, display_key = display_key, type = tp, desc = desc })
           end
 
           sort(processed, function(a, b)
@@ -1775,31 +1782,29 @@ local function generate_alias_docs(types_dir, output_dir)
           end
 
           if has_any_desc then
-            insert(detail, "Field | Type | Optional | Description")
-            insert(detail, "--- | --- | --- | ---")
-            for _, field in ipairs(processed) do
-              insert(
-                detail,
-                string.format(
-                  "`%s` | %s | %s | %s",
-                  field.key,
-                  esc_table_cell(format_type_value_inline(field.type)),
-                  field.is_optional,
-                  esc_table_cell(field.desc or "")
-                )
-              )
-            end
-          else
-            insert(detail, "Field | Type | Optional")
+            insert(detail, "Key | Type | Description")
             insert(detail, "--- | --- | ---")
             for _, field in ipairs(processed) do
               insert(
                 detail,
                 string.format(
                   "`%s` | %s | %s",
-                  field.key,
+                  field.display_key,
                   esc_table_cell(format_type_value_inline(field.type)),
-                  field.is_optional
+                  esc_table_cell(field.desc or "")
+                )
+              )
+            end
+          else
+            insert(detail, "Key | Type")
+            insert(detail, "--- | ---")
+            for _, field in ipairs(processed) do
+              insert(
+                detail,
+                string.format(
+                  "`%s` | %s",
+                  field.display_key,
+                  esc_table_cell(format_type_value_inline(field.type))
                 )
               )
             end
