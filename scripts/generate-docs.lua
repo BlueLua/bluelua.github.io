@@ -31,6 +31,27 @@ end
 local link_refs = {}
 local types_dir, output_dir
 
+local function shell_quote(s)
+  return "'" .. tostring(s):gsub("'", [['"'"']]) .. "'"
+end
+
+local function exists_dir(path)
+  local ok = os.execute("[ -d " .. shell_quote(path) .. " ]")
+  return ok == true or ok == 0
+end
+
+local function is_valid_module(module)
+  if not module then return false end
+  local std_types = {
+    string = true, number = true, boolean = true, table = true,
+    ["function"] = true, thread = true, userdata = true, ["nil"] = true,
+    any = true, void = true, integer = true, unknown = true
+  }
+  if std_types[module] then return false end
+  local path = script_dir .. "/../docs/src/" .. module
+  return exists_dir(path)
+end
+
 local function is_api_page(module, stem)
   -- 1. Check if the generated markdown file exists in the central docs repo
   local central_path = string.format("%s/../docs/src/%s/api/%s.md", script_dir, module, stem)
@@ -384,7 +405,7 @@ local function resolve_code_spans_and_add_links(s)
     end
 
     local module, rest = content:match("^([%w_]+)%.(.+)$")
-    if module and (module == "mods" or module == "evdev" or module == "timeutil" or module == "tty") then
+    if module and is_valid_module(module) then
       local name_path, paren_part = rest:match("^([%w_%.:]+)(.*)$")
       if name_path then
         local clean_p = module .. "." .. name_path
@@ -553,14 +574,7 @@ end
 -- File System / CLI Helpers
 -- =========================================================================
 
-local function shell_quote(s)
-  return "'" .. tostring(s):gsub("'", [['"'"']]) .. "'"
-end
 
-local function exists_dir(path)
-  local ok = os.execute("[ -d " .. shell_quote(path) .. " ]")
-  return ok == true or ok == 0
-end
 
 local function mkdir_p(path)
   assert(os.execute("mkdir -p " .. shell_quote(path)))
@@ -808,12 +822,12 @@ local function format_type_value_ref(val)
   for part in s:gmatch("[^|]+") do
     local p = part:match("^%s*(.-)%s*$") -- trim
     local formatted = p:gsub("([%w_]+)%.([%w_%.]+)", function(module, name)
-      if module == "mods" or module == "evdev" or module == "timeutil" or module == "tty" then
+      if module and is_valid_module(module) then
         local first_seg = name:match("^([^%.]+)") or name
         local stem = first_seg:lower()
         local url
-        if is_api_page(module, stem) then
-          url = string.format("/%s/api/%s", module, stem)
+        if is_api_page(module, name:lower()) then
+          url = string.format("/%s/api/%s", module, name:lower())
         else
           local clean_p = module .. "." .. name
           local slug = clean_p:lower():gsub("[^%w%-]+", "-"):gsub("%-+", "-"):gsub("^%-+", ""):gsub("%-+$", "")
@@ -1390,12 +1404,12 @@ local function format_type_value_inline(val)
   for part in s:gmatch("[^|]+") do
     local p = part:match("^%s*(.-)%s*$") -- trim
     local formatted = p:gsub("([%w_]+)%.([%w_%.]+)", function(module, name)
-      if module == "mods" or module == "evdev" or module == "timeutil" or module == "tty" then
+      if module and is_valid_module(module) then
         local first_seg = name:match("^([^%.]+)") or name
         local stem = first_seg:lower()
         local url
-        if is_api_page(module, stem) then
-          url = string.format("/%s/api/%s", module, stem)
+        if is_api_page(module, name:lower()) then
+          url = string.format("/%s/api/%s", module, name:lower())
         else
           local clean_p = module .. "." .. name
           local slug = clean_p:lower():gsub("[^%w%-]+", "-"):gsub("%-+", "-"):gsub("^%-+", ""):gsub("%-+$", "")
@@ -1487,10 +1501,7 @@ local function generate_alias_docs(types_dir, output_dir)
       local short_name = clean_class_name:match("[^%.]+$") or clean_class_name
       short_name = trim(short_name)
 
-      local has_functions = false
-      if function_prefixes[clean_class_name:lower()] or function_prefixes[short_name:lower()] then
-        has_functions = true
-      end
+      local has_own_api_page = is_api_page(module_name, short_name:lower())
 
       local is_module_class = false
       if item.filename then
@@ -1503,7 +1514,7 @@ local function generate_alias_docs(types_dir, output_dir)
         end
       end
 
-      if not has_functions and not is_module_class then
+      if not has_own_api_page and not is_module_class then
         local mock_fields = {}
         for _, f in ipairs(item.tags.fields) do
           if f.name then
