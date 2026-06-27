@@ -206,6 +206,13 @@ export default defineConfig({
   },
   vite: {
     plugins: [groupIconVitePlugin({ customIcon: groupIcons })],
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: "modern-compiler",
+        },
+      },
+    },
   },
   // prettier-ignore
   head: [
