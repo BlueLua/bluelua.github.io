@@ -1433,13 +1433,13 @@ local function generate_alias_docs(types_dir, output_dir)
       item.filename = filename
       if (item.kind == "alias" and not is_function_doc_item(item)) or item.kind == "enum" then
         local alias_name = (item.name or ""):gsub("<[^>]+>", "")
-        if alias_name ~= "M" and not alias_name:match("^M%.") then
+        if alias_name ~= "M" and not alias_name:match("^M%.") and alias_name ~= "_G" and not alias_name:match("^_G%.") then
           insert(aliases, item)
         end
       elseif item.kind == "class" then
         local class_name = item.view:match("^([^:]+)") or item.view
         class_name = trim(class_name):gsub("<[^>]+>", "")
-        if class_name ~= "M" and not class_name:match("^M%.") then
+        if class_name ~= "M" and not class_name:match("^M%.") and class_name ~= "_G" and not class_name:match("^_G%.") then
           insert(classes, item)
         end
       elseif item.kind == "function" or (item.kind == "alias" and is_function_doc_item(item)) then
