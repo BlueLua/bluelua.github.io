@@ -1824,3 +1824,6 @@ local alias_result = generate_alias_docs(types_dir, base_dir)
 io.stdout:write(
   string.format("generated %d consolidated alias doc file(s) in %s\n", alias_result.files, alias_result.output_dir)
 )
+
+-- 3. Auto-format the generated markdown files using Prettier
+os.execute("npx prettier --write " .. shell_quote(base_dir))
