@@ -116,23 +116,25 @@
     box-sizing: border-box;
   }
 
-  table, thead, tbody, tr {
+  table, thead, tbody {
     display: block;
     width: 100% !important;
   }
 
-  tr:has(> :nth-child(3)) {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
+  tr {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: baseline !important;
+    width: 100% !important;
 
     > :nth-child(1) {
-      flex: 0 0 30%;
-      min-width: 140px;
+      flex: 0 0 auto;
+      padding-right: 1.5rem;
     }
 
     > :nth-child(2) {
-      flex: 1 1 65%;
+      flex: 1 1 0;
+      min-width: 0;
     }
 
     > th:nth-child(3) {
