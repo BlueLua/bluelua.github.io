@@ -1398,35 +1398,63 @@ end
 -- Consolidated Types/Alias Generation
 -- =========================================================================
 
+local function split_top_level_unions(s)
+  local parts = {}
+  local current = {}
+  local depth = 0
+  for i = 1, #s do
+    local char = s:sub(i, i)
+    if char == "(" or char == "{" or char == "<" then
+      depth = depth + 1
+      insert(current, char)
+    elseif char == ")" or char == "}" or char == ">" then
+      if depth > 0 then depth = depth - 1 end
+      insert(current, char)
+    elseif char == "|" and depth == 0 then
+      insert(parts, table.concat(current))
+      current = {}
+    else
+      insert(current, char)
+    end
+  end
+  if #current > 0 then
+    insert(parts, table.concat(current))
+  end
+  return parts
+end
+
 local function format_type_value_inline(val)
   local s = tostring(val):gsub("self:%s*[^,)]+", "self")
+  local raw_parts = split_top_level_unions(s)
   local parts = {}
-  for part in s:gmatch("[^|]+") do
+  for _, part in ipairs(raw_parts) do
     local p = part:match("^%s*(.-)%s*$") -- trim
-    local has_link = false
-    local formatted = p:gsub("([%w_]+)%.([%w_%.]+)", function(module, name)
-      if module and is_valid_module(module) then
-        has_link = true
-        local first_seg = name:match("^([^%.]+)") or name
-        local url
-        if is_api_page(module, name:lower()) then
-          url = string.format("/%s/api/%s", module, name:lower())
-        else
-          local clean_p = module .. "." .. name
-          local slug = clean_p:lower():gsub("[^%w%-]+", "-"):gsub("%-+", "-"):gsub("^%-+", ""):gsub("%-+$", "")
-          url = string.format("/%s/types#%s", module, slug)
+    if p ~= "" then
+      local has_link = false
+      local formatted = p:gsub("([%w_]+)%.([%w_%.]+)", function(module, name)
+        if module and is_valid_module(module) then
+          has_link = true
+          local first_seg = name:match("^([^%.]+)") or name
+          local url
+          if is_api_page(module, name:lower()) then
+            url = string.format("/%s/api/%s", module, name:lower())
+          else
+            local clean_p = module .. "." .. name
+            local slug = clean_p:lower():gsub("[^%w%-]+", "-"):gsub("%-+", "-"):gsub("^%-+", ""):gsub("%-+$", "")
+            url = string.format("/%s/types#%s", module, slug)
+          end
+          return '<a href="' .. url .. '">' .. module .. "." .. name .. "</a>"
         end
-        return '<a href="' .. url .. '">' .. module .. "." .. name .. "</a>"
+        return nil
+      end)
+      local final_part
+      if has_link then
+        final_part = "<code>" .. formatted .. "</code>"
+      else
+        final_part = "`" .. formatted .. "`"
       end
-      return nil
-    end)
-    local final_part
-    if has_link then
-      final_part = "<code>" .. formatted .. "</code>"
-    else
-      final_part = "`" .. formatted .. "`"
+      insert(parts, final_part)
     end
-    insert(parts, final_part)
   end
   return table.concat(parts, " | ")
 end
