@@ -111,6 +111,10 @@
 
 /* Custom table layout for types documentation pages */
 .types-page {
+  table, thead, tbody, tr, th, td {
+    border: none !important;
+  }
+
   table, thead, tbody {
     display: block;
     width: 100%;
@@ -120,10 +124,6 @@
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-
-    > th, > td {
-      border: none;
-    }
 
     > :nth-child(1) {
       flex: 0 0 30%;
