@@ -5,11 +5,21 @@
   --vp-c-brand-soft: rgba(0, 92, 197, 0.14);
 
   --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #79b8ff 30%, #005cc5);
-  --vp-home-hero-image-background-image: linear-gradient(-45deg, #79b8ff 50%, #005cc5 50%);
+  --vp-home-hero-name-background: -webkit-linear-gradient(
+    120deg,
+    #79b8ff 30%,
+    #005cc5
+  );
+  --vp-home-hero-image-background-image: linear-gradient(
+    -45deg,
+    #79b8ff 50%,
+    #005cc5 50%
+  );
   --vp-home-hero-image-filter: blur(44px);
 
-  --vp-font-family-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --vp-font-family-mono:
+    "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 }
 
 .dark {
@@ -44,7 +54,10 @@
     text-decoration: none;
 
     /* Keep inline code link color when code is clickable */
-    &, &:hover, &:visited, &:active {
+    &,
+    &:hover,
+    &:visited,
+    &:active {
       > code {
         color: var(--vp-c-brand-1) !important;
       }
@@ -83,7 +96,7 @@
       "important": "❗",
       "warning": "⚠️",
       "danger": "❌",
-      "caution": "⚠️"
+      "caution": "⚠️",
     );
 
     @each $name, $icon in $alerts {
@@ -99,7 +112,7 @@
   $sidebar-icons: (
     "/api/": "🧬 ",
     "/tutorials/": "🎓 ",
-    "/types": "📜 "
+    "/types": "📜 ",
   );
 
   @each $path, $icon in $sidebar-icons {
@@ -111,12 +124,19 @@
 
 /* Custom table layout for types documentation pages */
 .types-page {
-  table, thead, tbody, tr, th, td {
+  table,
+  thead,
+  tbody,
+  tr,
+  th,
+  td {
     border: none !important;
     box-sizing: border-box;
   }
 
-  table, thead, tbody {
+  table,
+  thead,
+  tbody {
     display: block;
     width: 100% !important;
   }
