@@ -1,5 +1,5 @@
 ---
-title: "List"
+title: "list"
 description:
   "A list class for creating, transforming, and querying sequences of values."
 ---
@@ -66,14 +66,14 @@ print(ls:index("b"))    --> 2
 
 **Queries**:
 
-| Function           | Description                                                 |
-| ------------------ | ----------------------------------------------------------- |
-| [`contains(v)`]    | Return `true` if the list contains the value.               |
-| [`count(v)`]       | Count how many times a value appears.                       |
-| [`index(v)`]       | Return the index of the first matching value.               |
-| [`index_if(pred)`] | Return the index of the first value matching the predicate. |
-| [`isempty()`]      | Return whether the list has no elements.                    |
-| [`len()`]          | Return the number of elements in the list.                  |
+| Function           | Description                                                                   |
+| ------------------ | ----------------------------------------------------------------------------- |
+| [`contains(v)`]    | Return `true` if the list contains the value.                                 |
+| [`count(v)`]       | Count how many times a value appears.                                         |
+| [`index(v)`]       | Return the index of the first matching value.                                 |
+| [`index_if(pred)`] | Return the index of the first value matching the predicate.                   |
+| [`isempty()`]      | Return whether the list has no elements.                                      |
+| [`len()`]          | Return the length of the list, defined by its maximum positive integer index. |
 
 **Transforms**:
 
@@ -666,21 +666,17 @@ ok = List():isempty() --> true
 
 #### `len()` {#len}
 
-Return the number of elements in the list.
+Return the length of the list, defined by its maximum positive integer index.
 
 **Returns**:
 
-- `count` (`integer`): Element count.
+- `length` (`integer`): List length.
 
 **Example**:
 
 ```lua
-n = List({ "a", "b", "c" }):len() --> 3
+n = List({ "a", nil, "c" }):len() --> 3
 ```
-
-> [!NOTE]
->
-> Uses Lua's `#` operator.
 
 ---
 

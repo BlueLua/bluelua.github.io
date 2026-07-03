@@ -549,13 +549,13 @@ Iterator over items in `path`.
 
 - `path` (`string`): Input path.
 - `opts?`
-  (`{hidden?:boolean, recursive?:boolean, follow?:boolean, type?:`[`mods.FsEntryType`]`}`):
+  (`{hidden?:boolean, recursive?:boolean, follow?:boolean, type?:`[`mods.fsEntryType`]`}`):
   Optional traversal options.
 
 **Returns**:
 
 - `iterator?`
-  (`(fun(state:table, prev?:string):basename?: string, type?: `[`mods.FsEntryType`]`)`):
+  (`(fun(state:table, prev?:string):basename?: string, type?: `[`mods.fsEntryType`]`)`):
   Iterator, or `nil` on failure.
 - `state` (`table` | `string`): Iterator state on success, or error message on
   failure.
@@ -587,7 +587,7 @@ Return direct children of a directory.
 
 - `path` (`string`): Input path.
 - `opts?`
-  (`{hidden?:boolean, recursive?:boolean, follow?:boolean, type?:`[`mods.FsEntryType`]`, names?:boolean}`):
+  (`{hidden?:boolean, recursive?:boolean, follow?:boolean, type?:`[`mods.fsEntryType`]`, names?:boolean}`):
   Optional traversal options.
 
 **Returns**:
@@ -663,8 +663,8 @@ fs.read_text("README.md")
 [`listdir(path, opts?)`]: #listdir
 [`lstat(path)`]: #lstat
 [`mkdir(path, parents?)`]: #mkdir
-[`mods.FsEntryType`]: /mods/types#mods-fsentrytype
 [`mods.List`]: /mods/api/list
+[`mods.fsEntryType`]: /mods/types#mods-fsentrytype
 [`read_bytes(path)`]: #read-bytes
 [`read_text(path)`]: #read-text
 [`rename(oldname, newname)`]: #rename

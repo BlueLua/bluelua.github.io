@@ -121,7 +121,7 @@ Return glob matches under `path`.
 
 - `path` (`string`): Input path.
 - `pattern?` (`string`): Optional pattern to match.
-- `opts?` ([`mods.globOptions`]): Optional glob options.
+- `opts?` ([`mods.GlobOptions`]): Optional glob options.
 
 **Returns**:
 
@@ -165,7 +165,7 @@ Iterator over glob matches under `path`.
 
 - `path` (`string`): Input path.
 - `pattern?` (`string`): Optional pattern to match.
-- `opts?` ([`mods.globOptions`]): Optional glob options.
+- `opts?` ([`mods.GlobOptions`]): Optional glob options.
 
 **Returns**:
 
@@ -253,7 +253,7 @@ print(matches == translated_matches) --> true
 [`has_magic(s)`]: #has-magic
 [`iglob(path, pattern?, opts?)`]: #iglob
 [`match(path, pattern, ignorecase?)`]: #match
+[`mods.GlobOptions`]: /mods/types#mods-globoptions
 [`mods.List`]: /mods/api/list
-[`mods.globOptions`]: /mods/types#mods-globoptions
 [`translate(pattern)`]: #translate
 <!-- prettier-ignore-end -->

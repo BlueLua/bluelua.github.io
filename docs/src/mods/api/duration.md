@@ -1,15 +1,15 @@
 ---
 title: "duration"
-description:
-  "Reusable immutable duration values for date arithmetic and formatting."
+description: "Represent, calculate, and humanize time spans."
 ---
 
-Reusable immutable duration values for date arithmetic and formatting.
+Represent, calculate, and humanize time spans.
 
 ## Usage
 
 ```lua
-local Duration = require "mods.duration"
+local mods = require "mods"
+local Duration = mods.duration
 
 local shift = Duration({ day = 2, hour = 3 })
 print(shift:format("D [days] HH:mm")) --> 2 days 03:00
@@ -17,27 +17,22 @@ print(shift:format("D [days] HH:mm")) --> 2 days 03:00
 
 ## Functions
 
-| Function               | Description                                                                                                  |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------ |
-| [`new(input, unit?)`]  | Create a duration from a numeric amount and unit.                                                            |
-| [`new(input?)`]        | Create a duration from numeric parts, an ISO 8601 string, or another duration.                               |
-| [`is_duration(value)`] | Return `true` when the value is a duration created by [`mods.duration(...)`] or [`mods.date.duration(...)`]. |
-
-**Duration**:
-
-| Function                                        | Description                                                               |
-| ----------------------------------------------- | ------------------------------------------------------------------------- |
-| [`add(value, unit?)`]                           | Return a new duration with another duration or unit amount added.         |
-| [`as(unit)`]                                    | Return the duration expressed in the requested unit.                      |
-| [`clone()`]                                     | Return a shallow copy of the duration value.                              |
-| [`compare(other)`]                              | Compare this duration to another duration-like value.                     |
-| [`equals(other)`]                               | Return `true` when both duration values have identical components.        |
-| [`format(pattern)`]                             | Format the duration using duration tokens like `Y`, `MM`, `DD`, and `HH`. |
-| [`humanize(with_suffix_or_options?, options?)`] | Return a human-readable relative-style phrase for the duration.           |
-| [`normalize()`]                                 | Return a compacted duration using the module's canonical carry rules.     |
-| [`subtract(value, unit?)`]                      | Return a new duration with another duration or unit amount subtracted.    |
-| [`to_iso()`]                                    | Return an ISO 8601 duration string.                                       |
-| [`tostring()`]                                  | Return a debug-friendly string representation of the duration.            |
+| Function                                        | Description                                                                    |
+| ----------------------------------------------- | ------------------------------------------------------------------------------ |
+| [`new(input, unit?)`]                           | Create a duration from a numeric amount and unit.                              |
+| [`new(input?)`]                                 | Create a duration from numeric parts, an ISO 8601 string, or another duration. |
+| [`add(value, unit?)`]                           | Return a new duration with another duration or unit amount added.              |
+| [`as(unit)`]                                    | Return the duration expressed in the requested unit.                           |
+| [`clone()`]                                     | Return a shallow copy of the duration value.                                   |
+| [`compare(other)`]                              | Compare this duration to another duration-like value.                          |
+| [`equals(other)`]                               | Return `true` when both duration values have identical components.             |
+| [`format(pattern)`]                             | Format the duration using duration tokens like `Y`, `MM`, `DD`, and `HH`.      |
+| [`humanize(with_suffix_or_options?, options?)`] | Return a human-readable relative-style phrase for the duration.                |
+| [`is_duration(value)`]                          | Return `true` when the value is a duration created by [`mods.duration(...)`].  |
+| [`normalize()`]                                 | Return a compacted duration using the module's canonical carry rules.          |
+| [`subtract(value, unit?)`]                      | Return a new duration with another duration or unit amount subtracted.         |
+| [`to_iso()`]                                    | Return an ISO 8601 duration string.                                            |
+| [`tostring()`]                                  | Return a debug-friendly string representation of the duration.                 |
 
 **Metamethods**:
 
@@ -55,8 +50,8 @@ Create a duration from a numeric amount and unit.
 **Parameters**:
 
 - `input` (`number`): Numeric amount to convert into a duration.
-- `unit?` ([`mods.DateUnit`]): Unit used with the numeric amount. Defaults to
-  `"ms"`.
+- `unit?` ([`mods.durationUnit`]): Unit used with the numeric amount. Defaults
+  to `"ms"`.
 
 **Returns**:
 
@@ -88,36 +83,12 @@ Create a duration from numeric parts, an ISO 8601 string, or another duration.
 ```lua
 local a = Duration({ day = 2, hour = 3 })
 local b = Duration("PT1H30M")
+local c = Duration(a)
 ```
 
 ---
 
-### `is_duration(value)` {#is-duration}
-
-Return `true` when the value is a duration created by [`mods.duration(...)`] or
-[`mods.date.duration(...)`].
-
-**Parameters**:
-
-- `value` (`any`)
-
-**Returns**:
-
-- `isDuration` (`boolean`)
-
-**Example**:
-
-```lua
-local Duration = require "mods.duration"
-print(Duration.is_duration(Duration({ day = 2 }))) --> true
-print(Duration.is_duration({ day = 2 })) --> false
-```
-
----
-
-### Duration
-
-#### `add(value, unit?)` {#add}
+### `add(value, unit?)` {#add}
 
 Return a new duration with another duration or unit amount added.
 
@@ -125,7 +96,7 @@ Return a new duration with another duration or unit amount added.
 
 - `value` (`number` | [`mods.DurationParts`] | [`mods.Duration`]): Signed amount
   to add, or another duration value.
-- `unit?` ([`mods.DateUnit`]): Unit used when `value` is a number.
+- `unit?` ([`mods.durationUnit`]): Unit used when `value` is a number.
 
 **Returns**:
 
@@ -134,7 +105,6 @@ Return a new duration with another duration or unit amount added.
 **Example**:
 
 ```lua
-local Duration = require "mods.duration"
 local a = Duration({ day = 2 })
 local b = a:add(3, "hour")
 print(b:format("D [days] HH:mm:ss")) --> 2 days 03:00:00
@@ -142,13 +112,13 @@ print(b:format("D [days] HH:mm:ss")) --> 2 days 03:00:00
 
 ---
 
-#### `as(unit)` {#as}
+### `as(unit)` {#as}
 
 Return the duration expressed in the requested unit.
 
 **Parameters**:
 
-- `unit` ([`mods.DateUnit`])
+- `unit` ([`mods.durationUnit`]): Milliseconds
 
 **Returns**:
 
@@ -157,14 +127,13 @@ Return the duration expressed in the requested unit.
 **Example**:
 
 ```lua
-local Duration = require "mods.duration"
 local d = Duration({ day = 1, hour = 12 })
 print(d:as("hour")) --> 36
 ```
 
 ---
 
-#### `clone()` {#clone}
+### `clone()` {#clone}
 
 Return a shallow copy of the duration value.
 
@@ -175,7 +144,6 @@ Return a shallow copy of the duration value.
 **Example**:
 
 ```lua
-local Duration = require "mods.duration"
 local d = Duration({ month = 1, day = 2 })
 local copy = d:clone()
 print(copy == d, rawequal(copy, d)) --> true false
@@ -183,7 +151,7 @@ print(copy == d, rawequal(copy, d)) --> true false
 
 ---
 
-#### `compare(other)` {#compare}
+### `compare(other)` {#compare}
 
 Compare this duration to another duration-like value.
 
@@ -200,13 +168,12 @@ Returns `-1` when smaller, `0` when equal, and `1` when larger.
 **Example**:
 
 ```lua
-local Duration = require "mods.duration"
 print(Duration({ day = 1 }):compare({ hour = 24 })) --> 0
 ```
 
 ---
 
-#### `equals(other)` {#equals}
+### `equals(other)` {#equals}
 
 Return `true` when both duration values have identical components.
 
@@ -221,7 +188,6 @@ Return `true` when both duration values have identical components.
 **Example**:
 
 ```lua
-local Duration = require "mods.duration"
 local a = Duration({ day = 2 })
 local b = Duration({ day = 2 })
 print(a:equals(b)) --> true
@@ -229,7 +195,7 @@ print(a:equals(b)) --> true
 
 ---
 
-#### `format(pattern)` {#format}
+### `format(pattern)` {#format}
 
 Format the duration using duration tokens like `Y`, `MM`, `DD`, and `HH`.
 
@@ -244,14 +210,13 @@ Format the duration using duration tokens like `Y`, `MM`, `DD`, and `HH`.
 **Example**:
 
 ```lua
-local Duration = require "mods.duration"
 local d = Duration({ day = 2, hour = 3, minute = 4 })
 print(d:format("D [days] HH:mm")) --> 2 days 03:04
 ```
 
 ---
 
-#### `humanize(with_suffix_or_options?, options?)` {#humanize}
+### `humanize(with_suffix_or_options?, options?)` {#humanize}
 
 Return a human-readable relative-style phrase for the duration.
 
@@ -273,7 +238,6 @@ output or explicit unit clamping.
 **Example**:
 
 ```lua
-local Duration = require "mods.duration"
 local d = Duration({ day = 3 })
 print(d:humanize()) --> 3 days
 print(d:humanize(true)) --> in 3 days
@@ -282,7 +246,28 @@ print(d:humanize({ short = true })) --> 3d
 
 ---
 
-#### `normalize()` {#normalize}
+### `is_duration(value)` {#is-duration}
+
+Return `true` when the value is a duration created by [`mods.duration(...)`].
+
+**Parameters**:
+
+- `value` (`any`)
+
+**Returns**:
+
+- `isDuration` (`boolean`)
+
+**Example**:
+
+```lua
+print(Duration.is_duration(Duration({ day = 2 }))) --> true
+print(Duration.is_duration({ day = 2 }))           --> false
+```
+
+---
+
+### `normalize()` {#normalize}
 
 Return a compacted duration using the module's canonical carry rules.
 
@@ -293,13 +278,12 @@ Return a compacted duration using the module's canonical carry rules.
 **Example**:
 
 ```lua
-local Duration = require "mods.duration"
 print(Duration({ minute = 90 }):normalize()) --> duration(hours=1, minutes=30)
 ```
 
 ---
 
-#### `subtract(value, unit?)` {#subtract}
+### `subtract(value, unit?)` {#subtract}
 
 Return a new duration with another duration or unit amount subtracted.
 
@@ -307,7 +291,7 @@ Return a new duration with another duration or unit amount subtracted.
 
 - `value` (`number` | [`mods.DurationParts`] | [`mods.Duration`]): Signed amount
   to subtract, or another duration value.
-- `unit?` ([`mods.DateUnit`]): Unit used when `value` is a number.
+- `unit?` ([`mods.durationUnit`]): Unit used when `value` is a number.
 
 **Returns**:
 
@@ -316,7 +300,6 @@ Return a new duration with another duration or unit amount subtracted.
 **Example**:
 
 ```lua
-local Duration = require "mods.duration"
 local a = Duration({ day = 2, hour = 3 })
 local b = a:subtract(3, "hour")
 print(b:format("D [days] HH:mm:ss")) --> 2 days 00:00:00
@@ -324,7 +307,7 @@ print(b:format("D [days] HH:mm:ss")) --> 2 days 00:00:00
 
 ---
 
-#### `to_iso()` {#to-iso}
+### `to_iso()` {#to-iso}
 
 Return an ISO 8601 duration string.
 
@@ -335,13 +318,12 @@ Return an ISO 8601 duration string.
 **Example**:
 
 ```lua
-local Duration = require "mods.duration"
 print(Duration({ hour = 1, minute = 30 }):to_iso()) --> PT1H30M
 ```
 
 ---
 
-#### `tostring()` {#tostring}
+### `tostring()` {#tostring}
 
 Return a debug-friendly string representation of the duration.
 
@@ -352,7 +334,6 @@ Return a debug-friendly string representation of the duration.
 **Example**:
 
 ```lua
-local Duration = require "mods.duration"
 print(Duration({ day = 2, hour = 3 })) --> duration(days=2, hours=3)
 ```
 
@@ -367,8 +348,8 @@ Create a duration from a numeric amount and unit.
 **Parameters**:
 
 - `input` (`number`): Numeric amount to convert into a duration.
-- `unit?` ([`mods.DateUnit`]): Unit used with the numeric amount. Defaults to
-  `"ms"`.
+- `unit?` ([`mods.durationUnit`]): Unit used with the numeric amount. Defaults
+  to `"ms"`.
 
 **Returns**:
 
@@ -377,7 +358,6 @@ Create a duration from a numeric amount and unit.
 **Example**:
 
 ```lua
-local Duration = require "mods.duration"
 local d = Duration(90, "minute")
 ```
 
@@ -399,9 +379,9 @@ Create a duration from numeric parts, an ISO 8601 string, or another duration.
 **Example**:
 
 ```lua
-local Duration = require "mods.duration"
 local a = Duration({ day = 2, hour = 3 })
 local b = Duration("PT1H30M")
+local c = Duration(a)
 ```
 
 ---
@@ -421,7 +401,6 @@ Return `true` when both duration values have identical components.
 **Example**:
 
 ```lua
-local Duration = require "mods.duration"
 print(Duration({ day = 2 }) == Duration({ day = 2 })) --> true
 ```
 
@@ -438,7 +417,6 @@ Return the same result as `tostring()` when coerced to a string.
 **Example**:
 
 ```lua
-local Duration = require "mods.duration"
 print(Duration({ day = 2 })) --> duration(days=2)
 ```
 
@@ -455,12 +433,11 @@ print(Duration({ day = 2 })) --> duration(days=2)
 [`format(pattern)`]: #format
 [`humanize(with_suffix_or_options?, options?)`]: #humanize
 [`is_duration(value)`]: #is-duration
-[`mods.DateUnit`]: /mods/types#mods-dateunit
 [`mods.DurationHumanizeOptions`]: /mods/types#mods-durationhumanizeoptions
 [`mods.DurationParts`]: /mods/types#mods-durationparts
 [`mods.Duration`]: /mods/api/duration
-[`mods.date.duration(...)`]: /mods/api/date#duration
 [`mods.duration(...)`]: /mods/api/duration
+[`mods.durationUnit`]: /mods/types#mods-durationunit
 [`new(input, unit?)`]: #new-1
 [`new(input?)`]: #new
 [`normalize()`]: #normalize

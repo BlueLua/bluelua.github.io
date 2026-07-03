@@ -147,7 +147,7 @@ Assert argument value using [`mods.validate`] and raise a Lua error on failure.
 
 - `argn` (`integer`): Argument index for error context.
 - `v` (`T`): Value to check.
-- `validator?` ([`mods.ValidatorName`]): Validator name (defaults to
+- `validator?` ([`mods.validatorName`]): Validator name (defaults to
   `"truthy"`).
 - `optional?` (`boolean`): Skip errors when `v` is `nil` (defaults to `false`).
 - `lv?` (`integer`): Error level passed to `error` (defaults to `3`).
@@ -182,7 +182,7 @@ Validate a value using [`mods.validate`] and raise a Lua error on failure.
 
 - `name` (`string`): Name for the error prefix.
 - `v` (`any`): Value to validate.
-- `validator?` ([`mods.ValidatorName`]): Validator name (defaults to
+- `validator?` ([`mods.validatorName`]): Validator name (defaults to
   `"truthy"`).
 - `optional?` (`boolean`): Skip errors when `v` is `nil` (defaults to `false`).
 - `msg?` (`string`): Optional override template passed to [`mods.validate`].
@@ -210,7 +210,7 @@ Validate a value using [`mods.validate`] and raise a Lua error on failure.
 
 - `path` (`table`): Path parts for the error name.
 - `v` (`any`): Value to validate.
-- `validator?` ([`mods.ValidatorName`]): Validator name (defaults to
+- `validator?` ([`mods.validatorName`]): Validator name (defaults to
   `"truthy"`).
 - `optional?` (`boolean`): Skip errors when `v` is `nil` (defaults to `false`).
 - `msg?` (`string`): Optional override template passed to [`mods.validate`].
@@ -236,9 +236,9 @@ utils.validate({ "ctx", "users", 1, "name" }, 123, "string")
 [`assert_arg(argn, v, validator?, optional?, lv?)`]: #assert-arg
 [`keypath(...)`]: #keypath
 [`lazy_module(name, err?)`]: #lazy-module
-[`mods.ValidatorName`]: /mods/types#mods-validatorname
 [`mods.utils.keypath`]: /mods/api/utils#keypath
 [`mods.validate`]: /mods/api/validate
+[`mods.validatorName`]: /mods/types#mods-validatorname
 [`quote(v)`]: #quote
 [`validate(name, v, validator?, optional?, msg?)`]: #validate
 [`validate(path, v, validator?, optional?, msg?)`]: #validate-1
