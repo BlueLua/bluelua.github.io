@@ -1,6 +1,7 @@
 ---
 title: "Types"
 description: "Types defined in the tty module."
+pageClass: "types-page"
 ---
 
 Types defined in the tty module.
