@@ -11,73 +11,18 @@ Lua runtime metadata and version compatibility flags.
 runtime = mods.runtime
 
 print(runtime.version)  --> 501 | 502 | 503 | 504 | 505
-print(runtime.is_lua55)    --> true | false
 ```
 
 ## Fields
 
-| Field          | Description                                       |
-| -------------- | ------------------------------------------------- |
-| [`is_lua51`]   | True only on Lua 5.1 runtimes.                    |
-| [`is_lua52`]   | True only on Lua 5.2 runtimes.                    |
-| [`is_lua53`]   | True only on Lua 5.3 runtimes.                    |
-| [`is_lua54`]   | True only on Lua 5.4 runtimes.                    |
-| [`is_lua55`]   | True only on Lua 5.5 runtimes.                    |
-| [`is_luajit`]  | True when running under LuaJIT.                   |
-| [`is_windows`] | True when running on a Windows host.              |
-| [`major`]      | Major version number parsed from `version`.       |
-| [`minor`]      | Minor version number parsed from `version`.       |
-| [`version`]    | Numeric version encoded as `major * 100 + minor`. |
-
-### `is_lua51` (`boolean`) {#is-lua51}
-
-True only on Lua 5.1 runtimes.
-
-```lua
-print(runtime.is_lua51) --> true | false
-```
-
----
-
-### `is_lua52` (`boolean`) {#is-lua52}
-
-True only on Lua 5.2 runtimes.
-
-```lua
-print(runtime.is_lua52) --> true | false
-```
-
----
-
-### `is_lua53` (`boolean`) {#is-lua53}
-
-True only on Lua 5.3 runtimes.
-
-```lua
-print(runtime.is_lua53) --> true | false
-```
-
----
-
-### `is_lua54` (`boolean`) {#is-lua54}
-
-True only on Lua 5.4 runtimes.
-
-```lua
-print(runtime.is_lua54) --> true | false
-```
-
----
-
-### `is_lua55` (`boolean`) {#is-lua55}
-
-True only on Lua 5.5 runtimes.
-
-```lua
-print(runtime.is_lua55) --> true | false
-```
-
----
+| Field          | Description                                           |
+| -------------- | ----------------------------------------------------- |
+| [`is_luajit`]  | True when running under LuaJIT.                       |
+| [`is_unix`]    | True when running on a Unix-like host (Linux, macOS). |
+| [`is_windows`] | True when running on a Windows host.                  |
+| [`major`]      | Major version number parsed from `version`.           |
+| [`minor`]      | Minor version number parsed from `version`.           |
+| [`version`]    | Numeric version encoded as `major * 100 + minor`.     |
 
 ### `is_luajit` (`boolean`) {#is-luajit}
 
@@ -85,6 +30,16 @@ True when running under LuaJIT.
 
 ```lua
 print(runtime.is_luajit) --> true | false
+```
+
+---
+
+### `is_unix` (`boolean`) {#is-unix}
+
+True when running on a Unix-like host (Linux, macOS).
+
+```lua
+print(runtime.is_unix) --> true | false
 ```
 
 ---
@@ -128,12 +83,8 @@ print(runtime.version) --> 501 | 502 | 503 | 504 | 505
 ```
 
 <!-- prettier-ignore-start -->
-[`is_lua51`]: #is-lua51
-[`is_lua52`]: #is-lua52
-[`is_lua53`]: #is-lua53
-[`is_lua54`]: #is-lua54
-[`is_lua55`]: #is-lua55
 [`is_luajit`]: #is-luajit
+[`is_unix`]: #is-unix
 [`is_windows`]: #is-windows
 [`major`]: #major
 [`minor`]: #minor

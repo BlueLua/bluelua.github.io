@@ -49,45 +49,51 @@ is("hello", "STRING") --> true
 
 **Path Checks**:
 
-| Function      | Description                                                  |
-| ------------- | ------------------------------------------------------------ |
-| [`block(v)`]  | Returns `true` when `v` is a block device path.              |
-| [`char(v)`]   | Returns `true` when `v` is a character device path.          |
-| [`device(v)`] | Returns `true` when `v` is a block or character device path. |
-| [`dir(v)`]    | Returns `true` when `v` is a directory path.                 |
-| [`fifo(v)`]   | Returns `true` when `v` is a FIFO path.                      |
-| [`file(v)`]   | Returns `true` when `v` is a file path.                      |
-| [`link(v)`]   | Returns `true` when `v` is a symlink path.                   |
-| [`path(v)`]   | Returns `true` when `v` is a valid filesystem path.          |
-| [`socket(v)`] | Returns `true` when `v` is a socket path.                    |
+| Function            | Description                                                  |
+| ------------------- | ------------------------------------------------------------ |
+| [`block_device(v)`] | Returns `true` when `v` is a block device path.              |
+| [`char_device(v)`]  | Returns `true` when `v` is a character device path.          |
+| [`device(v)`]       | Returns `true` when `v` is a block or character device path. |
+| [`dir(v)`]          | Returns `true` when `v` is a directory path.                 |
+| [`fifo(v)`]         | Returns `true` when `v` is a FIFO path.                      |
+| [`file(v)`]         | Returns `true` when `v` is a file path.                      |
+| [`path(v)`]         | Returns `true` when `v` is a valid filesystem path.          |
+| [`socket(v)`]       | Returns `true` when `v` is a socket path.                    |
+| [`symlink(v)`]      | Returns `true` when `v` is a symlink path.                   |
 
 **Type Checks**:
 
-| Function        | Description                            |
-| --------------- | -------------------------------------- |
-| [`boolean(v)`]  | Returns `true` when `v` is a boolean.  |
-| [`function(v)`] | Returns `true` when `v` is a function. |
-| [`nil(v)`]      | Returns `true` when `v` is `nil`.      |
-| [`number(v)`]   | Returns `true` when `v` is a number.   |
-| [`string(v)`]   | Returns `true` when `v` is a string.   |
-| [`table(v)`]    | Returns `true` when `v` is a table.    |
-| [`thread(v)`]   | Returns `true` when `v` is a thread.   |
-| [`userdata(v)`] | Returns `true` when `v` is userdata.   |
+| Function        | Description                                             |
+| --------------- | ------------------------------------------------------- |
+| [`Function(v)`] | Returns `true` when `v` is a function.                  |
+| [`Nil(v)`]      | Returns `true` when `v` is `nil`.                       |
+| [`boolean(v)`]  | Returns `true` when `v` is a boolean.                   |
+| [`cdata(v)`]    | Returns `true` when `v` is a cdata value (LuaJIT only). |
+| [`number(v)`]   | Returns `true` when `v` is a number.                    |
+| [`string(v)`]   | Returns `true` when `v` is a string.                    |
+| [`table(v)`]    | Returns `true` when `v` is a table.                     |
+| [`thread(v)`]   | Returns `true` when `v` is a thread.                    |
+| [`userdata(v)`] | Returns `true` when `v` is userdata.                    |
 
 **Value Checks**:
 
-| Function        | Description                                 |
-| --------------- | ------------------------------------------- |
-| [`callable(v)`] | Returns `true` when `v` is callable.        |
-| [`false(v)`]    | Returns `true` when `v` is exactly `false`. |
-| [`falsy(v)`]    | Returns `true` when `v` is falsy.           |
-| [`integer(v)`]  | Returns `true` when `v` is an integer.      |
-| [`true(v)`]     | Returns `true` when `v` is exactly `true`.  |
-| [`truthy(v)`]   | Returns `true` when `v` is truthy.          |
+| Function        | Description                                            |
+| --------------- | ------------------------------------------------------ |
+| [`False(v)`]    | Returns `true` when `v` is exactly `false`.            |
+| [`True(v)`]     | Returns `true` when `v` is exactly `true`.             |
+| [`callable(v)`] | Returns `true` when `v` is callable.                   |
+| [`defined(v)`]  | Returns `true` when `v` is defined (not `nil`).        |
+| [`falsy(v)`]    | Returns `true` when `v` is falsy.                      |
+| [`finite(v)`]   | Returns `true` when `v` is a finite number.            |
+| [`float(v)`]    | Returns `true` when `v` is a float number.             |
+| [`infinite(v)`] | Returns `true` when `v` is an infinite number.         |
+| [`integer(v)`]  | Returns `true` when `v` is an integer.                 |
+| [`nan(v)`]      | Returns `true` when `v` is a NaN (not-a-number) value. |
+| [`truthy(v)`]   | Returns `true` when `v` is truthy.                     |
 
 ### Path Checks
 
-#### `block(v)` {#block}
+#### `block_device(v)` {#block-device}
 
 Returns `true` when `v` is a block device path.
 
@@ -97,17 +103,17 @@ Returns `true` when `v` is a block device path.
 
 **Returns**:
 
-- `isBlock` (`boolean`): Whether the check succeeds.
+- `isBlockDevice` (`boolean`): Whether the check succeeds.
 
 **Example**:
 
 ```lua
-is.block("/dev/sda")
+is.block_device("/dev/sda")
 ```
 
 ---
 
-#### `char(v)` {#char}
+#### `char_device(v)` {#char-device}
 
 Returns `true` when `v` is a character device path.
 
@@ -117,12 +123,12 @@ Returns `true` when `v` is a character device path.
 
 **Returns**:
 
-- `isChar` (`boolean`): Whether the check succeeds.
+- `isCharDevice` (`boolean`): Whether the check succeeds.
 
 **Example**:
 
 ```lua
-is.char("/dev/null")
+is.char_device("/dev/null")
 ```
 
 ---
@@ -207,26 +213,6 @@ is.file("README.md")
 
 ---
 
-#### `link(v)` {#link}
-
-Returns `true` when `v` is a symlink path.
-
-**Parameters**:
-
-- `v` (`any`): Value to validate.
-
-**Returns**:
-
-- `isLink` (`boolean`): Whether the check succeeds.
-
-**Example**:
-
-```lua
-is.link("/path/to/link")
-```
-
----
-
 #### `path(v)` {#path}
 
 Returns `true` when `v` is a valid filesystem path.
@@ -271,7 +257,67 @@ is.socket("/path/to/socket")
 
 ---
 
+#### `symlink(v)` {#symlink}
+
+Returns `true` when `v` is a symlink path.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+
+**Returns**:
+
+- `isSymlink` (`boolean`): Whether the check succeeds.
+
+**Example**:
+
+```lua
+is.symlink("/path/to/link")
+```
+
+---
+
 ### Type Checks
+
+#### `Function(v)` {#function}
+
+Returns `true` when `v` is a function.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+
+**Returns**:
+
+- `isFunction` (`boolean`): Whether the check succeeds.
+
+**Example**:
+
+```lua
+is.Function(function() end)
+```
+
+---
+
+#### `Nil(v)` {#nil}
+
+Returns `true` when `v` is `nil`.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+
+**Returns**:
+
+- `isNil` (`boolean`): Whether the check succeeds.
+
+**Example**:
+
+```lua
+is.Nil(nil)
+```
+
+---
 
 #### `boolean(v)` {#boolean}
 
@@ -293,29 +339,9 @@ is.boolean(true)
 
 ---
 
-#### `function(v)` {#function}
+#### `cdata(v)` {#cdata}
 
-Returns `true` when `v` is a function.
-
-**Parameters**:
-
-- `v` (`any`): Value to validate.
-
-**Returns**:
-
-- `isFunction` (`boolean`): Whether the check succeeds.
-
-**Example**:
-
-```lua
-is.Function(function() end)
-```
-
----
-
-#### `nil(v)` {#nil}
-
-Returns `true` when `v` is `nil`.
+Returns `true` when `v` is a cdata value (LuaJIT only).
 
 **Parameters**:
 
@@ -323,12 +349,12 @@ Returns `true` when `v` is `nil`.
 
 **Returns**:
 
-- `isNil` (`boolean`): Whether the check succeeds.
+- `isCdata` (`boolean`): Whether the check succeeds.
 
 **Example**:
 
 ```lua
-is.Nil(nil)
+is.cdata(v)
 ```
 
 ---
@@ -435,6 +461,46 @@ is.userdata(io.stdout)
 
 ### Value Checks
 
+#### `False(v)` {#false}
+
+Returns `true` when `v` is exactly `false`.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+
+**Returns**:
+
+- `isFalse` (`boolean`): Whether the check succeeds.
+
+**Example**:
+
+```lua
+is.False(false)
+```
+
+---
+
+#### `True(v)` {#true}
+
+Returns `true` when `v` is exactly `true`.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+
+**Returns**:
+
+- `isTrue` (`boolean`): Whether the check succeeds.
+
+**Example**:
+
+```lua
+is.True(true)
+```
+
+---
+
 #### `callable(v)` {#callable}
 
 Returns `true` when `v` is callable.
@@ -455,9 +521,9 @@ is.callable(function() end)
 
 ---
 
-#### `false(v)` {#false}
+#### `defined(v)` {#defined}
 
-Returns `true` when `v` is exactly `false`.
+Returns `true` when `v` is defined (not `nil`).
 
 **Parameters**:
 
@@ -465,12 +531,14 @@ Returns `true` when `v` is exactly `false`.
 
 **Returns**:
 
-- `isFalse` (`boolean`): Whether the check succeeds.
+- `isDefined` (`boolean`): Whether the check succeeds.
 
 **Example**:
 
 ```lua
-is.False(false)
+is.defined(1)     --> true
+is.defined(false) --> true
+is.defined(nil)   --> false
 ```
 
 ---
@@ -495,6 +563,67 @@ is.falsy(false)
 
 ---
 
+#### `finite(v)` {#finite}
+
+Returns `true` when `v` is a finite number.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+
+**Returns**:
+
+- `isFinite` (`boolean`): Whether the check succeeds.
+
+**Example**:
+
+```lua
+is.finite(42) --> true
+```
+
+---
+
+#### `float(v)` {#float}
+
+Returns `true` when `v` is a float number.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+
+**Returns**:
+
+- `isFloat` (`boolean`): Whether the check succeeds.
+
+**Example**:
+
+```lua
+is.float(1.5) --> true
+is.float(1.0) --> true (on Lua >= 5.3) or false (on Lua <= 5.2)
+```
+
+---
+
+#### `infinite(v)` {#infinite}
+
+Returns `true` when `v` is an infinite number.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+
+**Returns**:
+
+- `isInfinite` (`boolean`): Whether the check succeeds.
+
+**Example**:
+
+```lua
+is.infinite(math.huge)  --> true
+```
+
+---
+
 #### `integer(v)` {#integer}
 
 Returns `true` when `v` is an integer.
@@ -515,9 +644,9 @@ is.integer(42)
 
 ---
 
-#### `true(v)` {#true}
+#### `nan(v)` {#nan}
 
-Returns `true` when `v` is exactly `true`.
+Returns `true` when `v` is a NaN (not-a-number) value.
 
 **Parameters**:
 
@@ -525,12 +654,12 @@ Returns `true` when `v` is exactly `true`.
 
 **Returns**:
 
-- `isTrue` (`boolean`): Whether the check succeeds.
+- `isNan` (`boolean`): Whether the check succeeds.
 
 **Example**:
 
 ```lua
-is.True(true)
+is.nan(0/0)
 ```
 
 ---
@@ -554,28 +683,34 @@ is.truthy("non-empty")
 ```
 
 <!-- prettier-ignore-start -->
-[`block(v)`]: #block
+[`False(v)`]: #false
+[`Function(v)`]: #function
+[`Nil(v)`]: #nil
+[`True(v)`]: #true
+[`block_device(v)`]: #block-device
 [`boolean(v)`]: #boolean
 [`callable(v)`]: #callable
-[`char(v)`]: #char
+[`cdata(v)`]: #cdata
+[`char_device(v)`]: #char-device
+[`defined(v)`]: #defined
 [`device(v)`]: #device
 [`dir(v)`]: #dir
-[`false(v)`]: #false
 [`falsy(v)`]: #falsy
 [`fifo(v)`]: #fifo
 [`file(v)`]: #file
-[`function(v)`]: #function
+[`finite(v)`]: #finite
+[`float(v)`]: #float
+[`infinite(v)`]: #infinite
 [`integer(v)`]: #integer
 [`lfs`]: https://github.com/lunarmodules/luafilesystem
-[`link(v)`]: #link
-[`nil(v)`]: #nil
+[`nan(v)`]: #nan
 [`number(v)`]: #number
 [`path(v)`]: #path
 [`socket(v)`]: #socket
 [`string(v)`]: #string
+[`symlink(v)`]: #symlink
 [`table(v)`]: #table
 [`thread(v)`]: #thread
-[`true(v)`]: #true
 [`truthy(v)`]: #truthy
 [`userdata(v)`]: #userdata
 <!-- prettier-ignore-end -->

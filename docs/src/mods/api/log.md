@@ -79,7 +79,7 @@ Emit an `info` record. **Parameters**:
 
 Emit a record for `level` when it passes the logger filter. **Parameters**:
 
-- `levelname` ([`mods.LogLevel`]): Log level to emit.
+- `levelname` ([`mods.logLevel`]): Log level to emit.
 - `...` (`any`): Additional values joined with spaces.
 
 ---
@@ -95,9 +95,9 @@ Emit a `warn` record. **Parameters**:
 [`error(...)`]: #error
 [`info(...)`]: #info
 [`log(levelname, ...)`]: #log
-[`mods.LogLevel`]: /mods/types#mods-loglevel
 [`mods.log.logger`]: /mods/types#mods-log-logger
 [`mods.log.new.opts`]: /mods/types#mods-log-new-opts
+[`mods.logLevel`]: /mods/types#mods-loglevel
 [`new(opts?)`]: #new
 [`warn(...)`]: #warn
 <!-- prettier-ignore-end -->

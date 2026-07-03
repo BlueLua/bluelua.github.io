@@ -110,17 +110,17 @@ ok, err = validate.number("x") --> false, "need number, got string"
 
 **Path Checks**:
 
-| Function            | Description                                                                                             |
-| ------------------- | ------------------------------------------------------------------------------------------------------- |
-| [`block(v, msg?)`]  | Returns `true` when `v` is a block device path. Otherwise returns `false` and an error message.         |
-| [`char(v, msg?)`]   | Returns `true` when `v` is a char device path. Otherwise returns `false` and an error message.          |
-| [`device(v, msg?)`] | Returns `true` when `v` is a block or char device path. Otherwise returns `false` and an error message. |
-| [`dir(v, msg?)`]    | Returns `true` when `v` is a directory path. Otherwise returns `false` and an error message.            |
-| [`fifo(v, msg?)`]   | Returns `true` when `v` is a FIFO path. Otherwise returns `false` and an error message.                 |
-| [`file(v, msg?)`]   | Returns `true` when `v` is a file path. Otherwise returns `false` and an error message.                 |
-| [`link(v, msg?)`]   | Returns `true` when `v` is a symlink path. Otherwise returns `false` and an error message.              |
-| [`path(v, msg?)`]   | Returns `true` when `v` is a valid filesystem path. Otherwise returns `false` and an error message.     |
-| [`socket(v, msg?)`] | Returns `true` when `v` is a socket path. Otherwise returns `false` and an error message.               |
+| Function                             | Description                                                                                             |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| [`block_device(v, msg?, optional?)`] | Returns `true` when `v` is a block device path. Otherwise returns `false` and an error message.         |
+| [`char_device(v, msg?, optional?)`]  | Returns `true` when `v` is a char device path. Otherwise returns `false` and an error message.          |
+| [`device(v, msg?, optional?)`]       | Returns `true` when `v` is a block or char device path. Otherwise returns `false` and an error message. |
+| [`dir(v, msg?, optional?)`]          | Returns `true` when `v` is a directory path. Otherwise returns `false` and an error message.            |
+| [`fifo(v, msg?, optional?)`]         | Returns `true` when `v` is a FIFO path. Otherwise returns `false` and an error message.                 |
+| [`file(v, msg?, optional?)`]         | Returns `true` when `v` is a file path. Otherwise returns `false` and an error message.                 |
+| [`path(v, msg?, optional?)`]         | Returns `true` when `v` is a valid filesystem path. Otherwise returns `false` and an error message.     |
+| [`socket(v, msg?, optional?)`]       | Returns `true` when `v` is a socket path. Otherwise returns `false` and an error message.               |
+| [`symlink(v, msg?, optional?)`]      | Returns `true` when `v` is a symlink path. Otherwise returns `false` and an error message.              |
 
 **Registration**:
 
@@ -130,31 +130,34 @@ ok, err = validate.number("x") --> false, "need number, got string"
 
 **Type Checks**:
 
-| Function              | Description                                                                                  |
-| --------------------- | -------------------------------------------------------------------------------------------- |
-| [`boolean(v, msg?)`]  | Returns `true` when `v` is a boolean. Otherwise returns `false` and an error message.        |
-| [`function(v, msg?)`] | Returns `true` when `v` is a function. Otherwise returns `false` and an error message.       |
-| [`nil(v, msg?)`]      | Returns `true` when `v` is `nil`. Otherwise returns `false` and an error message.            |
-| [`number(v, msg?)`]   | Returns `true` when `v` is a number. Otherwise returns `false` and an error message.         |
-| [`string(v, msg?)`]   | Returns `true` when `v` is a string. Otherwise returns `false` and an error message.         |
-| [`table(v, msg?)`]    | Returns `true` when `v` is a table. Otherwise returns `false` and an error message.          |
-| [`thread(v, msg?)`]   | Returns `true` when `v` is a thread. Otherwise returns `false` and an error message.         |
-| [`userdata(v, msg?)`] | Returns `true` when `v` is a userdata value. Otherwise returns `false` and an error message. |
+| Function                         | Description                                                                                             |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| [`Function(v, msg?, optional?)`] | Returns `true` when `v` is a function. Otherwise returns `false` and an error message.                  |
+| [`Nil(v, msg?, optional?)`]      | Returns `true` when `v` is `nil`. Otherwise returns `false` and an error message.                       |
+| [`boolean(v, msg?, optional?)`]  | Returns `true` when `v` is a boolean. Otherwise returns `false` and an error message.                   |
+| [`cdata(v, msg?, optional?)`]    | Returns `true` when `v` is a cdata value (LuaJIT only). Otherwise returns `false` and an error message. |
+| [`number(v, msg?, optional?)`]   | Returns `true` when `v` is a number. Otherwise returns `false` and an error message.                    |
+| [`string(v, msg?, optional?)`]   | Returns `true` when `v` is a string. Otherwise returns `false` and an error message.                    |
+| [`table(v, msg?, optional?)`]    | Returns `true` when `v` is a table. Otherwise returns `false` and an error message.                     |
+| [`thread(v, msg?, optional?)`]   | Returns `true` when `v` is a thread. Otherwise returns `false` and an error message.                    |
+| [`userdata(v, msg?, optional?)`] | Returns `true` when `v` is a userdata value. Otherwise returns `false` and an error message.            |
 
 **Value Checks**:
 
-| Function              | Description                                                                                 |
-| --------------------- | ------------------------------------------------------------------------------------------- |
-| [`callable(v, msg?)`] | Returns `true` when `v` is callable. Otherwise returns `false` and an error message.        |
-| [`false(v, msg?)`]    | Returns `true` when `v` is exactly `false`. Otherwise returns `false` and an error message. |
-| [`falsy(v, msg?)`]    | Returns `true` when `v` is falsy. Otherwise returns `false` and an error message.           |
-| [`integer(v, msg?)`]  | Returns `true` when `v` is an integer. Otherwise returns `false` and an error message.      |
-| [`true(v, msg?)`]     | Returns `true` when `v` is exactly `true`. Otherwise returns `false` and an error message.  |
-| [`truthy(v, msg?)`]   | Returns `true` when `v` is truthy. Otherwise returns `false` and an error message.          |
+| Function                         | Description                                                                                            |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| [`False(v, msg?, optional?)`]    | Returns `true` when `v` is exactly `false`. Otherwise returns `false` and an error message.            |
+| [`True(v, msg?, optional?)`]     | Returns `true` when `v` is exactly `true`. Otherwise returns `false` and an error message.             |
+| [`callable(v, msg?, optional?)`] | Returns `true` when `v` is callable. Otherwise returns `false` and an error message.                   |
+| [`defined(v, msg?, optional?)`]  | Returns `true` when `v` is defined (not `nil`). Otherwise returns `false` and an error message.        |
+| [`falsy(v, msg?, optional?)`]    | Returns `true` when `v` is falsy. Otherwise returns `false` and an error message.                      |
+| [`integer(v, msg?, optional?)`]  | Returns `true` when `v` is an integer. Otherwise returns `false` and an error message.                 |
+| [`nan(v, msg?, optional?)`]      | Returns `true` when `v` is a NaN (not-a-number) value. Otherwise returns `false` and an error message. |
+| [`truthy(v, msg?, optional?)`]   | Returns `true` when `v` is truthy. Otherwise returns `false` and an error message.                     |
 
 ### Path Checks
 
-#### `block(v, msg?)` {#block}
+#### `block_device(v, msg?, optional?)` {#block-device}
 
 Returns `true` when `v` is a block device path. Otherwise returns `false` and an
 error message.
@@ -163,6 +166,7 @@ error message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -172,12 +176,12 @@ error message.
 **Example**:
 
 ```lua
-ok, err = validate.block(".")
+ok, err = validate.block_device(".")
 ```
 
 ---
 
-#### `char(v, msg?)` {#char}
+#### `char_device(v, msg?, optional?)` {#char-device}
 
 Returns `true` when `v` is a char device path. Otherwise returns `false` and an
 error message.
@@ -186,6 +190,7 @@ error message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -195,12 +200,12 @@ error message.
 **Example**:
 
 ```lua
-ok, err = validate.char(".")
+ok, err = validate.char_device(".")
 ```
 
 ---
 
-#### `device(v, msg?)` {#device}
+#### `device(v, msg?, optional?)` {#device}
 
 Returns `true` when `v` is a block or char device path. Otherwise returns
 `false` and an error message.
@@ -209,6 +214,7 @@ Returns `true` when `v` is a block or char device path. Otherwise returns
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -223,7 +229,7 @@ ok, err = validate.device(".")
 
 ---
 
-#### `dir(v, msg?)` {#dir}
+#### `dir(v, msg?, optional?)` {#dir}
 
 Returns `true` when `v` is a directory path. Otherwise returns `false` and an
 error message.
@@ -232,6 +238,7 @@ error message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -246,7 +253,7 @@ ok, err = validate.dir(".")
 
 ---
 
-#### `fifo(v, msg?)` {#fifo}
+#### `fifo(v, msg?, optional?)` {#fifo}
 
 Returns `true` when `v` is a FIFO path. Otherwise returns `false` and an error
 message.
@@ -255,6 +262,7 @@ message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -269,7 +277,7 @@ ok, err = validate.fifo(".")
 
 ---
 
-#### `file(v, msg?)` {#file}
+#### `file(v, msg?, optional?)` {#file}
 
 Returns `true` when `v` is a file path. Otherwise returns `false` and an error
 message.
@@ -278,6 +286,7 @@ message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -292,30 +301,7 @@ ok, err = validate.file(".")
 
 ---
 
-#### `link(v, msg?)` {#link}
-
-Returns `true` when `v` is a symlink path. Otherwise returns `false` and an
-error message.
-
-**Parameters**:
-
-- `v` (`any`): Value to validate.
-- `msg?` (`string`): Optional override template.
-
-**Returns**:
-
-- `isValid` (`boolean`): Whether the check succeeds.
-- `err?` (`string`): Error message when the check fails.
-
-**Example**:
-
-```lua
-ok, err = validate.link(".")
-```
-
----
-
-#### `path(v, msg?)` {#path}
+#### `path(v, msg?, optional?)` {#path}
 
 Returns `true` when `v` is a valid filesystem path. Otherwise returns `false`
 and an error message.
@@ -324,6 +310,7 @@ and an error message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -338,7 +325,7 @@ ok, err = validate.path("README.md")
 
 ---
 
-#### `socket(v, msg?)` {#socket}
+#### `socket(v, msg?, optional?)` {#socket}
 
 Returns `true` when `v` is a socket path. Otherwise returns `false` and an error
 message.
@@ -347,6 +334,7 @@ message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -357,6 +345,30 @@ message.
 
 ```lua
 ok, err = validate.socket(".")
+```
+
+---
+
+#### `symlink(v, msg?, optional?)` {#symlink}
+
+Returns `true` when `v` is a symlink path. Otherwise returns `false` and an
+error message.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+- `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
+
+**Returns**:
+
+- `isValid` (`boolean`): Whether the check succeeds.
+- `err?` (`string`): Error message when the check fails.
+
+**Example**:
+
+```lua
+ok, err = validate.symlink(".")
 ```
 
 ---
@@ -400,31 +412,7 @@ ok, err = validate(2, "odd")  --> false, "2 does not satisfy odd"
 
 ### Type Checks
 
-#### `boolean(v, msg?)` {#boolean}
-
-Returns `true` when `v` is a boolean. Otherwise returns `false` and an error
-message.
-
-**Parameters**:
-
-- `v` (`any`): Value to validate.
-- `msg?` (`string`): Optional override template.
-
-**Returns**:
-
-- `isValid` (`boolean`): Whether the check succeeds.
-- `err?` (`string`): Error message when the check fails.
-
-**Example**:
-
-```lua
-ok, err = validate.boolean(true) --> true, nil
-ok, err = validate.boolean(1)    --> false, "boolean expected, got number"
-```
-
----
-
-#### `function(v, msg?)` {#function}
+#### `Function(v, msg?, optional?)` {#function}
 
 Returns `true` when `v` is a function. Otherwise returns `false` and an error
 message.
@@ -433,6 +421,7 @@ message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -449,7 +438,7 @@ ok, err = validate.Function(1)
 
 ---
 
-#### `nil(v, msg?)` {#nil}
+#### `Nil(v, msg?, optional?)` {#nil}
 
 Returns `true` when `v` is `nil`. Otherwise returns `false` and an error
 message.
@@ -458,6 +447,7 @@ message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -473,7 +463,56 @@ ok, err = validate.Nil(0)   --> false, "nil expected, got number"
 
 ---
 
-#### `number(v, msg?)` {#number}
+#### `boolean(v, msg?, optional?)` {#boolean}
+
+Returns `true` when `v` is a boolean. Otherwise returns `false` and an error
+message.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+- `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
+
+**Returns**:
+
+- `isValid` (`boolean`): Whether the check succeeds.
+- `err?` (`string`): Error message when the check fails.
+
+**Example**:
+
+```lua
+ok, err = validate.boolean(true) --> true, nil
+ok, err = validate.boolean(1)    --> false, "boolean expected, got number"
+```
+
+---
+
+#### `cdata(v, msg?, optional?)` {#cdata}
+
+Returns `true` when `v` is a cdata value (LuaJIT only). Otherwise returns
+`false` and an error message.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+- `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
+
+**Returns**:
+
+- `isValid` (`boolean`): Whether the check succeeds.
+- `err?` (`string`): Error message when the check fails.
+
+**Example**:
+
+```lua
+ok, err = validate.cdata(v)
+```
+
+---
+
+#### `number(v, msg?, optional?)` {#number}
 
 Returns `true` when `v` is a number. Otherwise returns `false` and an error
 message.
@@ -482,6 +521,7 @@ message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -497,7 +537,7 @@ ok, err = validate.number("x") --> false, "number expected, got string"
 
 ---
 
-#### `string(v, msg?)` {#string}
+#### `string(v, msg?, optional?)` {#string}
 
 Returns `true` when `v` is a string. Otherwise returns `false` and an error
 message.
@@ -506,6 +546,7 @@ message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -521,7 +562,7 @@ ok, err = validate.string(1)       --> false, "string expected, got number"
 
 ---
 
-#### `table(v, msg?)` {#table}
+#### `table(v, msg?, optional?)` {#table}
 
 Returns `true` when `v` is a table. Otherwise returns `false` and an error
 message.
@@ -530,6 +571,7 @@ message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -545,7 +587,7 @@ ok, err = validate.table(1)  --> false, "table expected, got number"
 
 ---
 
-#### `thread(v, msg?)` {#thread}
+#### `thread(v, msg?, optional?)` {#thread}
 
 Returns `true` when `v` is a thread. Otherwise returns `false` and an error
 message.
@@ -554,6 +596,7 @@ message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -570,7 +613,7 @@ ok, err = validate.thread(1)  --> false, "thread expected, got number"
 
 ---
 
-#### `userdata(v, msg?)` {#userdata}
+#### `userdata(v, msg?, optional?)` {#userdata}
 
 Returns `true` when `v` is a userdata value. Otherwise returns `false` and an
 error message.
@@ -579,6 +622,7 @@ error message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -596,31 +640,7 @@ ok, err = validate.userdata(1)         --> false, "userdata expected, got number
 
 ### Value Checks
 
-#### `callable(v, msg?)` {#callable}
-
-Returns `true` when `v` is callable. Otherwise returns `false` and an error
-message.
-
-**Parameters**:
-
-- `v` (`any`): Value to validate.
-- `msg?` (`string`): Optional override template.
-
-**Returns**:
-
-- `isValid` (`boolean`): Whether the check succeeds.
-- `err?` (`string`): Error message when the check fails.
-
-**Example**:
-
-```lua
-ok, err = validate.callable(type) --> true, nil
-ok, err = validate.callable(1)    --> false, "callable value expected, got 1"
-```
-
----
-
-#### `false(v, msg?)` {#false}
+#### `False(v, msg?, optional?)` {#false}
 
 Returns `true` when `v` is exactly `false`. Otherwise returns `false` and an
 error message.
@@ -629,6 +649,7 @@ error message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -644,55 +665,7 @@ ok, err = validate.False(true)  --> false, "false value expected, got true"
 
 ---
 
-#### `falsy(v, msg?)` {#falsy}
-
-Returns `true` when `v` is falsy. Otherwise returns `false` and an error
-message.
-
-**Parameters**:
-
-- `v` (`any`): Value to validate.
-- `msg?` (`string`): Optional override template.
-
-**Returns**:
-
-- `isValid` (`boolean`): Whether the check succeeds.
-- `err?` (`string`): Error message when the check fails.
-
-**Example**:
-
-```lua
-ok, err = validate.falsy(false) --> true, nil
-ok, err = validate.falsy(1)     --> false, "falsy value expected, got 1"
-```
-
----
-
-#### `integer(v, msg?)` {#integer}
-
-Returns `true` when `v` is an integer. Otherwise returns `false` and an error
-message.
-
-**Parameters**:
-
-- `v` (`any`): Value to validate.
-- `msg?` (`string`): Optional override template.
-
-**Returns**:
-
-- `isValid` (`boolean`): Whether the check succeeds.
-- `err?` (`string`): Error message when the check fails.
-
-**Example**:
-
-```lua
-ok, err = validate.integer(1)   --> true, nil
-ok, err = validate.integer(1.5) --> false, "integer value expected, got 1.5"
-```
-
----
-
-#### `true(v, msg?)` {#true}
+#### `True(v, msg?, optional?)` {#true}
 
 Returns `true` when `v` is exactly `true`. Otherwise returns `false` and an
 error message.
@@ -701,6 +674,7 @@ error message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -716,7 +690,132 @@ ok, err = validate.True(false) --> false, "true value expected, got false"
 
 ---
 
-#### `truthy(v, msg?)` {#truthy}
+#### `callable(v, msg?, optional?)` {#callable}
+
+Returns `true` when `v` is callable. Otherwise returns `false` and an error
+message.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+- `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
+
+**Returns**:
+
+- `isValid` (`boolean`): Whether the check succeeds.
+- `err?` (`string`): Error message when the check fails.
+
+**Example**:
+
+```lua
+ok, err = validate.callable(type) --> true, nil
+ok, err = validate.callable(1)    --> false, "callable value expected, got 1"
+```
+
+---
+
+#### `defined(v, msg?, optional?)` {#defined}
+
+Returns `true` when `v` is defined (not `nil`). Otherwise returns `false` and an
+error message.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+- `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
+
+**Returns**:
+
+- `isValid` (`boolean`): Whether the check succeeds.
+- `err?` (`string`): Error message when the check fails.
+
+**Example**:
+
+```lua
+ok, err = validate.defined(1)   --> true, nil
+ok, err = validate.defined(nil) --> false, "defined value expected, got no value"
+```
+
+---
+
+#### `falsy(v, msg?, optional?)` {#falsy}
+
+Returns `true` when `v` is falsy. Otherwise returns `false` and an error
+message.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+- `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
+
+**Returns**:
+
+- `isValid` (`boolean`): Whether the check succeeds.
+- `err?` (`string`): Error message when the check fails.
+
+**Example**:
+
+```lua
+ok, err = validate.falsy(false) --> true, nil
+ok, err = validate.falsy(1)     --> false, "falsy value expected, got 1"
+```
+
+---
+
+#### `integer(v, msg?, optional?)` {#integer}
+
+Returns `true` when `v` is an integer. Otherwise returns `false` and an error
+message.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+- `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
+
+**Returns**:
+
+- `isValid` (`boolean`): Whether the check succeeds.
+- `err?` (`string`): Error message when the check fails.
+
+**Example**:
+
+```lua
+ok, err = validate.integer(1)   --> true, nil
+ok, err = validate.integer(1.5) --> false, "integer value expected, got 1.5"
+```
+
+---
+
+#### `nan(v, msg?, optional?)` {#nan}
+
+Returns `true` when `v` is a NaN (not-a-number) value. Otherwise returns `false`
+and an error message.
+
+**Parameters**:
+
+- `v` (`any`): Value to validate.
+- `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
+
+**Returns**:
+
+- `isValid` (`boolean`): Whether the check succeeds.
+- `err?` (`string`): Error message when the check fails.
+
+**Example**:
+
+```lua
+ok, err = validate.nan(0/0) --> true, nil
+ok, err = validate.nan(1)   --> false, "nan value expected, got 1"
+```
+
+---
+
+#### `truthy(v, msg?, optional?)` {#truthy}
 
 Returns `true` when `v` is truthy. Otherwise returns `false` and an error
 message.
@@ -725,6 +824,7 @@ message.
 
 - `v` (`any`): Value to validate.
 - `msg?` (`string`): Optional override template.
+- `optional?` (`boolean`): Skip validation when `v` is `nil`.
 
 **Returns**:
 
@@ -739,29 +839,32 @@ ok, err = validate.truthy(false) --> false, "truthy value expected, got false"
 ```
 
 <!-- prettier-ignore-start -->
-[`block(v, msg?)`]: #block
-[`boolean(v, msg?)`]: #boolean
-[`callable(v, msg?)`]: #callable
-[`char(v, msg?)`]: #char
-[`device(v, msg?)`]: #device
-[`dir(v, msg?)`]: #dir
-[`false(v, msg?)`]: #false
-[`falsy(v, msg?)`]: #falsy
-[`fifo(v, msg?)`]: #fifo
-[`file(v, msg?)`]: #file
-[`function(v, msg?)`]: #function
-[`integer(v, msg?)`]: #integer
+[`False(v, msg?, optional?)`]: #false
+[`Function(v, msg?, optional?)`]: #function
+[`Nil(v, msg?, optional?)`]: #nil
+[`True(v, msg?, optional?)`]: #true
+[`block_device(v, msg?, optional?)`]: #block-device
+[`boolean(v, msg?, optional?)`]: #boolean
+[`callable(v, msg?, optional?)`]: #callable
+[`cdata(v, msg?, optional?)`]: #cdata
+[`char_device(v, msg?, optional?)`]: #char-device
+[`defined(v, msg?, optional?)`]: #defined
+[`device(v, msg?, optional?)`]: #device
+[`dir(v, msg?, optional?)`]: #dir
+[`falsy(v, msg?, optional?)`]: #falsy
+[`fifo(v, msg?, optional?)`]: #fifo
+[`file(v, msg?, optional?)`]: #file
+[`integer(v, msg?, optional?)`]: #integer
 [`lfs`]: https://github.com/lunarmodules/luafilesystem
-[`link(v, msg?)`]: #link
-[`nil(v, msg?)`]: #nil
-[`number(v, msg?)`]: #number
-[`path(v, msg?)`]: #path
+[`nan(v, msg?, optional?)`]: #nan
+[`number(v, msg?, optional?)`]: #number
+[`path(v, msg?, optional?)`]: #path
 [`register(name, validator, template?)`]: #register
-[`socket(v, msg?)`]: #socket
-[`string(v, msg?)`]: #string
-[`table(v, msg?)`]: #table
-[`thread(v, msg?)`]: #thread
-[`true(v, msg?)`]: #true
-[`truthy(v, msg?)`]: #truthy
-[`userdata(v, msg?)`]: #userdata
+[`socket(v, msg?, optional?)`]: #socket
+[`string(v, msg?, optional?)`]: #string
+[`symlink(v, msg?, optional?)`]: #symlink
+[`table(v, msg?, optional?)`]: #table
+[`thread(v, msg?, optional?)`]: #thread
+[`truthy(v, msg?, optional?)`]: #truthy
+[`userdata(v, msg?, optional?)`]: #userdata
 <!-- prettier-ignore-end -->
