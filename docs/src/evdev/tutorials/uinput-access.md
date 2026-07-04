@@ -69,3 +69,26 @@ by the current user.
   ```text
   crw-rw---- 1 root uinput 10, <minor> <MMM DD HH:MM> /dev/uinput
   ```
+
+## Physical Device Access (`input` group)
+
+If your Lua program needs to read from existing physical input devices (e.g.,
+`/dev/input/event*`), your user must also be a member of the system `input`
+group:
+
+1. Add your user to the `input` group:
+
+   ```bash
+   sudo usermod -aG input "$USER"
+   ```
+
+2. Refresh the current shell group list:
+
+   ```bash
+   newgrp input
+   ```
+
+   > [!TIP]
+   >
+   > Like with `uinput`, logging out and back in is the cleanest way to apply
+   > this group membership system-wide.
