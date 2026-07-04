@@ -1,6 +1,7 @@
 ---
 title: "Types"
 description: "Types defined in the evdev module."
+pageClass: "types-page"
 ---
 
 Types defined in the evdev module.
@@ -9,51 +10,53 @@ Types defined in the evdev module.
 
 Open and manage input devices.
 
-| Field        | Type                                                                | Optional |
-| ------------ | ------------------------------------------------------------------- | -------- |
-| `close`      | `fun(self): (ok:true?, err:string?)`                                | No       |
-| `fd`         | `fun(self): (fd:`[`evdev.fd`]`?, err:string?)`                      | No       |
-| `flush`      | `fun(self): (count:integer?, err:string?)`                          | No       |
-| `get_repeat` | `fun(self): (delay:integer?, period:integer?, err:string?)`         | No       |
-| `grab`       | `fun(self): (ok:true?, err:string?)`                                | No       |
-| `is_open`    | `fun(self): boolean`                                                | No       |
-| `poll`       | `fun(self): (ready:boolean?, err:string?)`                          | No       |
-| `read`       | `fun(self): (event:`[`evdev.event`]`?, err:string?)`                | No       |
-| `set_repeat` | `fun(self, delay:integer, period:integer): (ok:true?, err:string?)` | No       |
-| `ungrab`     | `fun(self): (ok:true?, err:string?)`                                | No       |
+| Key          | Type                                                                                             |
+| ------------ | ------------------------------------------------------------------------------------------------ |
+| `close`      | `fun(self): (ok:true?, err:string?)`                                                             |
+| `fd`         | <code>fun(self): (fd:<a href="/evdev/types#evdev-fd">evdev.fd</a>?, err:string?)</code>          |
+| `flush`      | `fun(self): (count:integer?, err:string?)`                                                       |
+| `get_repeat` | `fun(self): (delay:integer?, period:integer?, err:string?)`                                      |
+| `grab`       | `fun(self): (ok:true?, err:string?)`                                                             |
+| `is_open`    | `fun(self): boolean`                                                                             |
+| `poll`       | `fun(self): (ready:boolean?, err:string?)`                                                       |
+| `read`       | <code>fun(self): (event:<a href="/evdev/types#evdev-event">evdev.event</a>?, err:string?)</code> |
+| `set_repeat` | `fun(self, delay:integer, period:integer): (ok:true?, err:string?)`                              |
+| `ungrab`     | `fun(self): (ok:true?, err:string?)`                                                             |
 
 ## [`evdev.coreUInput`](https://github.com/BlueLua/evdev/blob/main/types/uinput.d.lua#L66-L77)
 
 Open virtual input device handle.
 
-| Field        | Type                                                                                                         | Optional |
-| ------------ | ------------------------------------------------------------------------------------------------------------ | -------- |
-| `close`      | `fun(self): (ok:true?, err:string?)`                                                                         | No       |
-| `emit`       | `fun(self, type:`[`evdev.ecodes.ev`]`, code:integer, value:`[`evdev.eventValue`]`): (ok:true?, err:string?)` | No       |
-| `get_repeat` | `fun(self): (delay:integer?, period_or_err:(integer` \| `string)?)`                                          | No       |
-| `info`       | `fun(self): (info:`[`evdev.deviceInfo`]`?, err:string?)`                                                     | No       |
-| `is_open`    | `fun(self): boolean`                                                                                         | No       |
-| `set_repeat` | `fun(self, delay:integer, period:integer): (ok:true?, err:string?)`                                          | No       |
-| `sync`       | `fun(self): (ok:true?, err:string?)`                                                                         | No       |
+| Key          | Type                                                                                                                                                                                               |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `close`      | `fun(self): (ok:true?, err:string?)`                                                                                                                                                               |
+| `emit`       | <code>fun(self, type:<a href="/evdev/types#evdev-ecodes-ev">evdev.ecodes.ev</a>, code:integer, value:<a href="/evdev/types#evdev-eventvalue">evdev.eventValue</a>): (ok:true?, err:string?)</code> |
+| `get_repeat` | `fun(self): (delay:integer?, period_or_err:(integer\|string)?)`                                                                                                                                    |
+| `info`       | <code>fun(self): (info:<a href="/evdev/types#evdev-deviceinfo">evdev.deviceInfo</a>?, err:string?)</code>                                                                                          |
+| `is_open`    | `fun(self): boolean`                                                                                                                                                                               |
+| `set_repeat` | `fun(self, delay:integer, period:integer): (ok:true?, err:string?)`                                                                                                                                |
+| `sync`       | `fun(self): (ok:true?, err:string?)`                                                                                                                                                               |
 
 ## [`evdev.deviceInfo`](https://github.com/BlueLua/evdev/blob/main/types/device.d.lua#L14-L28)
 
 Input device metadata.
 
-| Field          | Type       | Optional | Description                                                 |
-| -------------- | ---------- | -------- | ----------------------------------------------------------- |
-| `bustype`      | `integer`  | No       | Bus type from the kernel input ID.                          |
-| `id_aliases`   | `string[]` | Yes      | Symlink aliases under `/dev/input/by-id`, when available.   |
-| `name`         | `string`   | Yes      | Device name reported by the kernel.                         |
-| `path`         | `string`   | No       | Device node path.                                           |
-| `path_aliases` | `string[]` | Yes      | Symlink aliases under `/dev/input/by-path`, when available. |
-| `phys`         | `string`   | Yes      | Physical device path, when available.                       |
-| `product`      | `integer`  | No       | Product ID from the kernel input ID.                        |
-| `uniq`         | `string`   | Yes      | Unique identifier string, when available.                   |
-| `vendor`       | `integer`  | No       | Vendor ID from the kernel input ID.                         |
-| `version`      | `integer`  | No       | Hardware version from the kernel input ID.                  |
+| Key             | Type       | Description                                                 |
+| --------------- | ---------- | ----------------------------------------------------------- |
+| `bustype`       | `integer`  | Bus type from the kernel input ID.                          |
+| `id_aliases?`   | `string[]` | Symlink aliases under `/dev/input/by-id`, when available.   |
+| `name?`         | `string`   | Device name reported by the kernel.                         |
+| `path`          | `string`   | Device node path.                                           |
+| `path_aliases?` | `string[]` | Symlink aliases under `/dev/input/by-path`, when available. |
+| `phys?`         | `string`   | Physical device path, when available.                       |
+| `product`       | `integer`  | Product ID from the kernel input ID.                        |
+| `uniq?`         | `string`   | Unique identifier string, when available.                   |
+| `vendor`        | `integer`  | Vendor ID from the kernel input ID.                         |
+| `version`       | `integer`  | Hardware version from the kernel input ID.                  |
 
-## [`evdev.ecodes.btn`](https://github.com/BlueLua/evdev/blob/main/types/_enums.d.lua#L9-L134)
+## [`evdev.ecodes.btn`](https://github.com/BlueLua/evdev/blob/main/types/_enums.d.lua#L5-L134)
+
+Button codes (e.g. mouse buttons, joysticks, gamepads).
 
 | Name                  | Value |
 | --------------------- | ----- |
@@ -181,7 +184,10 @@ Input device metadata.
 | `BTN_Y`               | `308` |
 | `BTN_Z`               | `309` |
 
-## [`evdev.ecodes.ev`](https://github.com/BlueLua/evdev/blob/main/types/_enums.d.lua#L140-L156)
+## [`evdev.ecodes.ev`](https://github.com/BlueLua/evdev/blob/main/types/_enums.d.lua#L136-L156)
+
+Event types (e.g. key press, relative movement, absolute position,
+synchronization).
 
 | Name           | Value |
 | -------------- | ----- |
@@ -200,7 +206,9 @@ Input device metadata.
 | `EV_SW`        | `5`   |
 | `EV_SYN`       | `0`   |
 
-## [`evdev.ecodes.key`](https://github.com/BlueLua/evdev/blob/main/types/_enums.d.lua#L162-L688)
+## [`evdev.ecodes.key`](https://github.com/BlueLua/evdev/blob/main/types/_enums.d.lua#L158-L688)
+
+Keyboard key codes.
 
 | Name                           | Value |
 | ------------------------------ | ----- |
@@ -729,7 +737,9 @@ Input device metadata.
 | `KEY_ZOOMOUT`                  | `419` |
 | `KEY_ZOOMRESET`                | `420` |
 
-## [`evdev.ecodes.rel`](https://github.com/BlueLua/evdev/blob/main/types/_enums.d.lua#L694-L711)
+## [`evdev.ecodes.rel`](https://github.com/BlueLua/evdev/blob/main/types/_enums.d.lua#L690-L711)
+
+Relative axis codes (e.g. mouse movement, scroll wheels).
 
 | Name                | Value |
 | ------------------- | ----- |
@@ -749,7 +759,10 @@ Input device metadata.
 | `REL_Y`             | `1`   |
 | `REL_Z`             | `2`   |
 
-## [`evdev.ecodes.syn`](https://github.com/BlueLua/evdev/blob/main/types/_enums.d.lua#L717-L725)
+## [`evdev.ecodes.syn`](https://github.com/BlueLua/evdev/blob/main/types/_enums.d.lua#L713-L725)
+
+Synchronization event codes used to group events or signal device status
+changes.
 
 | Name            | Value |
 | --------------- | ----- |
@@ -764,14 +777,14 @@ Input device metadata.
 
 A Linux input event.
 
-| Field    | Type                 | Optional | Description                                                 |
-| -------- | -------------------- | -------- | ----------------------------------------------------------- |
-| `code`   | `integer`            | No       | Key/button/axis code, e.g. `KEY_A`.                         |
-| `device` | [`evdev.Device`]     | Yes      | The Device object that produced this event.                 |
-| `sec`    | `integer`            | Yes      | Timestamp seconds.                                          |
-| `type`   | [`evdev.ecodes.ev`]  | No       | Event type, e.g. `EV_KEY`.                                  |
-| `usec`   | `integer`            | Yes      | Timestamp microseconds.                                     |
-| `value`  | [`evdev.eventValue`] | No       | Event value, e.g. `0` = release, `1` = press, `2` = repeat. |
+| Key       | Type                                                                      | Description                                                 |
+| --------- | ------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `code`    | `integer`                                                                 | Key/button/axis code, e.g. `KEY_A`.                         |
+| `device?` | <code><a href="/evdev/api/device">evdev.Device</a></code>                 | The Device object that produced this event.                 |
+| `sec?`    | `integer`                                                                 | Timestamp seconds.                                          |
+| `type`    | <code><a href="/evdev/types#evdev-ecodes-ev">evdev.ecodes.ev</a></code>   | Event type, e.g. `EV_KEY`.                                  |
+| `usec?`   | `integer`                                                                 | Timestamp microseconds.                                     |
+| `value`   | <code><a href="/evdev/types#evdev-eventvalue">evdev.eventValue</a></code> | Event value, e.g. `0` = release, `1` = press, `2` = repeat. |
 
 ## [`evdev.eventValue`](https://github.com/BlueLua/evdev/blob/main/types/evdev.d.lua#L3-L6)
 
@@ -795,26 +808,14 @@ Path to an evdev device node or related input path.
 
 Configuration used to create a `/dev/uinput` virtual device.
 
-| Field         | Type                                                 | Optional | Description                                                                                                           |
-| ------------- | ---------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
-| `bustype`     | `integer`                                            | Yes      | Linux bus type (default: `BUS_USB` / 3).                                                                              |
-| `event_types` | [`evdev.ecodes.ev`]`[]`                              | Yes      | Event types to enable. Defaults to `EV_SYN`, plus `EV_KEY`/`EV_REP` for keyboard keys and `EV_REL` for relative axes. |
-| `keys`        | `(`[`evdev.ecodes.key`] \| [`evdev.ecodes.btn`]`)[]` | Yes      | Keys/buttons to expose. Defaults to all real `KEY_*` and `BTN_*` codes when omitted.                                  |
-| `name`        | `string`                                             | Yes      | Device name shown by the kernel (default: `"Lua evdev virtual keyboard"`).                                            |
-| `path`        | `string`                                             | Yes      | uinput control node (default: `"/dev/uinput"`). Kernel assigns `/dev/input/eventX`.                                   |
-| `product`     | `integer`                                            | Yes      | Product ID (default: `0xE7DE`).                                                                                       |
-| `rels`        | [`evdev.ecodes.rel`]`[]`                             | Yes      | Relative axes to expose. Defaults to all real `REL_*` codes when omitted.                                             |
-| `vendor`      | `integer`                                            | Yes      | Vendor ID (default: `0x1209`).                                                                                        |
-| `version`     | `integer`                                            | Yes      | Version number (default: `1`).                                                                                        |
-
-<!-- prettier-ignore-start -->
-[`evdev.Device`]: /evdev/api/device
-[`evdev.deviceInfo`]: /evdev/types#evdev-deviceinfo
-[`evdev.ecodes.btn`]: /evdev/api/ecodes
-[`evdev.ecodes.ev`]: /evdev/api/ecodes
-[`evdev.ecodes.key`]: /evdev/api/ecodes
-[`evdev.ecodes.rel`]: /evdev/api/ecodes
-[`evdev.eventValue`]: /evdev/types#evdev-eventvalue
-[`evdev.event`]: /evdev/types#evdev-event
-[`evdev.fd`]: /evdev/types#evdev-fd
-<!-- prettier-ignore-end -->
+| Key            | Type                                                                                                                                        | Description                                                                                                           |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `bustype?`     | `integer`                                                                                                                                   | Linux bus type (default: `BUS_USB` / 3).                                                                              |
+| `event_types?` | <code><a href="/evdev/types#evdev-ecodes-ev">evdev.ecodes.ev</a>[]</code>                                                                   | Event types to enable. Defaults to `EV_SYN`, plus `EV_KEY`/`EV_REP` for keyboard keys and `EV_REL` for relative axes. |
+| `keys?`        | <code>(<a href="/evdev/types#evdev-ecodes-key">evdev.ecodes.key</a>\|<a href="/evdev/types#evdev-ecodes-btn">evdev.ecodes.btn</a>)[]</code> | Keys/buttons to expose. Defaults to all real `KEY_*` and `BTN_*` codes when omitted.                                  |
+| `name?`        | `string`                                                                                                                                    | Device name shown by the kernel (default: `"Lua evdev virtual keyboard"`).                                            |
+| `path?`        | `string`                                                                                                                                    | uinput control node (default: `"/dev/uinput"`). Kernel assigns `/dev/input/eventX`.                                   |
+| `product?`     | `integer`                                                                                                                                   | Product ID (default: `0xE7DE`).                                                                                       |
+| `rels?`        | <code><a href="/evdev/types#evdev-ecodes-rel">evdev.ecodes.rel</a>[]</code>                                                                 | Relative axes to expose. Defaults to all real `REL_*` codes when omitted.                                             |
+| `vendor?`      | `integer`                                                                                                                                   | Vendor ID (default: `0x1209`).                                                                                        |
+| `version?`     | `integer`                                                                                                                                   | Version number (default: `1`).                                                                                        |

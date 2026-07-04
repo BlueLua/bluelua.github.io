@@ -226,10 +226,10 @@ ui:sync()
 [`create(spec?)`]: #create
 [`emit(type, code, value)`]: #emit
 [`evdev.UInput`]: /evdev/api/uinput
-[`evdev.ecodes.btn`]: /evdev/api/ecodes
-[`evdev.ecodes.ev`]: /evdev/api/ecodes
-[`evdev.ecodes.key`]: /evdev/api/ecodes
-[`evdev.ecodes.rel`]: /evdev/api/ecodes
+[`evdev.ecodes.btn`]: /evdev/types#evdev-ecodes-btn
+[`evdev.ecodes.ev`]: /evdev/types#evdev-ecodes-ev
+[`evdev.ecodes.key`]: /evdev/types#evdev-ecodes-key
+[`evdev.ecodes.rel`]: /evdev/types#evdev-ecodes-rel
 [`evdev.eventValue`]: /evdev/types#evdev-eventvalue
 [`evdev.fd`]: /evdev/types#evdev-fd
 [`evdev.uinputSpec`]: /evdev/types#evdev-uinputspec
