@@ -11,6 +11,6 @@
     "gray-matter": "^4.0.3",
     "sass": "^1.0.0",
     "vitepress": "^1.6.4",
-    "vitepress-plugin-group-icons": "^1.7.5"
+    "vitepress-plugin-group-icons": "^1.7.6"
   }
 }
